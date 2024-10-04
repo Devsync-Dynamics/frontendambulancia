@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { Activity, Truck, AlertCircle, Clock, MapPin } from 'react-feather';
+import { Activity, Truck, AlertCircle, Clock, MapPin, User, Calendar, RefreshCcw } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import ClientOnlyTimestamp from './ClientOnlyTimestamp';
+import { Button } from "@/components/ui/button";
 
 const MapWithNoSSR = dynamic(() => import('./MapComponent'), {
   ssr: false
@@ -20,9 +25,9 @@ interface IAmbulance {
 
 const Ambulancia: React.FC = () => {
   const [ambulances, setAmbulances] = useState<IAmbulance[]>([]);
+  const [lastUpdate, setLastUpdate] = useState<string>(new Date().toISOString());
 
   useEffect(() => {
-    // Inicializar ambulancias con mock data
     const mockAmbulances: IAmbulance[] = [
       {
         id: 1,
@@ -44,11 +49,19 @@ const Ambulancia: React.FC = () => {
         ultimaActualizacion: new Date().toISOString(),
         ubicacionActual: 'Soledad'
       },
-      
+      {
+        id: 3,
+        placa: 'DEF456',
+        conductor: 'Carlos Rodríguez',
+        estado: 'MANTENIMIENTO',
+        latitude: 10.9877,
+        longitude: -74.7885,
+        ultimaActualizacion: new Date().toISOString(),
+        ubicacionActual: 'Taller Central'
+      },
     ];
     setAmbulances(mockAmbulances);
 
-    // Simular movimiento de ambulancias
     const movementInterval = setInterval(() => {
       setAmbulances(prevAmbulances => 
         prevAmbulances.map(ambulance => ({
@@ -58,6 +71,7 @@ const Ambulancia: React.FC = () => {
           ultimaActualizacion: new Date().toISOString()
         }))
       );
+      setLastUpdate(new Date().toISOString());
     }, 10000);
 
     return () => clearInterval(movementInterval);
@@ -65,115 +79,100 @@ const Ambulancia: React.FC = () => {
 
   const getStatusColor = (estado: string): string => {
     const statusColors: { [key: string]: string } = {
-      'DISPONIBLE': 'bg-emerald-500',
-      'EN_SERVICIO': 'bg-amber-500',
-      'MANTENIMIENTO': 'bg-rose-500',
-      'INACTIVO': 'bg-slate-500'
+      'DISPONIBLE': 'bg-green-500 text-white',
+      'EN_SERVICIO': 'bg-yellow-500 text-black',
+      'MANTENIMIENTO': 'bg-red-500 text-white',
+      'INACTIVO': 'bg-gray-500 text-white'
     };
-    return statusColors[estado] || 'bg-slate-500';
+    return statusColors[estado] || 'bg-gray-500 text-white';
   };
 
-  const getStatusGlow = (estado: string): string => {
-    const statusGlow: { [key: string]: string } = {
-      'DISPONIBLE': 'shadow-emerald-500/50',
-      'EN_SERVICIO': 'shadow-amber-500/50',
-      'MANTENIMIENTO': 'shadow-rose-500/50',
-      'INACTIVO': 'shadow-slate-500/50'
-    };
-    return statusGlow[estado] || 'shadow-slate-500/50';
+  const refreshData = () => {
+    // Aquí iría la lógica para refrescar los datos desde el servidor
+    setLastUpdate(new Date().toISOString());
   };
 
   return (
-    <div className="space-y-6">
-      {/* Encabezado con estadísticas */}
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 shadow-xl">
-        <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-          <Activity className="h-8 w-8 text-blue-400" />
-          Sistema de Monitoreo en Tiempo Real
-        </h1>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[
-            {
-              label: 'Total Ambulancias',
-              value: ambulances.length,
-              icon: Truck,
-              color: 'text-blue-400'
-            },
-            {
-              label: 'Disponibles',
-              value: ambulances.filter(a => a.estado === 'DISPONIBLE').length,
-              icon: AlertCircle,
-              color: 'text-emerald-400'
-            },
-            {
-              label: 'En Servicio',
-              value: ambulances.filter(a => a.estado === 'EN_SERVICIO').length,
-              icon: Clock,
-              color: 'text-amber-400'
-            },
-            {
-              label: 'En Mantenimiento',
-              value: ambulances.filter(a => a.estado === 'MANTENIMIENTO').length,
-              icon: AlertCircle,
-              color: 'text-rose-400'
-            }
-          ].map((stat, index) => (
-            <div key={index} className="bg-white/5 backdrop-blur-md rounded-xl p-4 shadow-lg border border-white/10">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-300">{stat.label}</p>
-                  <p className="text-3xl font-bold mt-1">{stat.value}</p>
-                </div>
-                <stat.icon className={`h-8 w-8 ${stat.color}`} />
-              </div>
-            </div>
-          ))}
-        </div>
+    <div className="container mx-auto p-6 space-y-6 bg-blue-50 min-h-screen">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-blue-800">Sistema de Monitoreo de Ambulancias</h1>
+        <Button onClick={refreshData} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
+          <RefreshCcw className="h-4 w-4" />
+          Actualizar
+        </Button>
       </div>
 
-      {/* Mapa y Lista */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Mapa */}
-        <div className="lg:col-span-2 bg-white/10 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden border border-white/10">
-          <div className="h-[600px]">
-            <MapWithNoSSR ambulances={ambulances} />
-          </div>
-        </div>
-
-        {/* Lista de Ambulancias */}
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white/10 overflow-hidden">
-          <h2 className="text-xl font-bold mb-4 px-2">Estado de Unidades</h2>
-          <div className="space-y-3 max-h-[540px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-blue-100/10">
-            {ambulances.map((ambulance) => (
-              <div
-                key={ambulance.id}
-                className={`bg-white/5 rounded-xl p-4 border border-white/10 shadow-lg ${getStatusGlow(ambulance.estado)}`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-bold flex items-center gap-2">
-                    <Truck className="h-5 w-5" />
-                    {ambulance.placa}
-                  </h3>
-                  <span className={`px-2 py-1 rounded-full text-xs text-white ${getStatusColor(ambulance.estado)}`}>
-                    {ambulance.estado}
-                  </span>
-                </div>
-                <div className="space-y-1 text-sm text-gray-300">
-                  <p>{ambulance.conductor}</p>
-                  <p className="flex items-center gap-1">
-                    <MapPin className="h-4 w-4" />
-                    {ambulance.ubicacionActual}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    Última actualización: <ClientOnlyTimestamp timestamp={ambulance.ultimaActualizacion} />
-                  </p>
-                </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          { label: 'Total Ambulancias', value: ambulances.length, icon: Truck, color: 'bg-blue-100 text-blue-600' },
+          { label: 'Disponibles', value: ambulances.filter(a => a.estado === 'DISPONIBLE').length, icon: AlertCircle, color: 'bg-green-100 text-green-600' },
+          { label: 'En Servicio', value: ambulances.filter(a => a.estado === 'EN_SERVICIO').length, icon: Clock, color: 'bg-yellow-100 text-yellow-600' },
+          { label: 'En Mantenimiento', value: ambulances.filter(a => a.estado === 'MANTENIMIENTO').length, icon: Activity, color: 'bg-red-100 text-red-600' }
+        ].map((stat, index) => (
+          <Card key={index} className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white">
+            <CardContent className="flex items-center p-6">
+              <div className={`rounded-full p-3 mr-4 ${stat.color}`}>
+                <stat.icon className="h-6 w-6" />
               </div>
-            ))}
-          </div>
-        </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">{stat.label}</p>
+                <p className="text-2xl font-bold">{stat.value}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
+
+      <Tabs defaultValue="map" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-4 bg-blue-100">
+          <TabsTrigger value="map" className="text-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">Mapa en Vivo</TabsTrigger>
+          <TabsTrigger value="list" className="text-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">Lista de Ambulancias</TabsTrigger>
+        </TabsList>
+        <TabsContent value="map">
+          <Card className="shadow-xl bg-white">
+            <CardContent className="p-0">
+              <div className="h-[600px] rounded-lg overflow-hidden">
+                <MapWithNoSSR ambulances={ambulances} />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="list">
+          <Card className="shadow-xl bg-white">
+            <CardHeader>
+              <CardTitle className="text-2xl text-blue-800">Estado de Unidades</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[500px] w-full pr-4">
+                {ambulances.map((ambulance) => (
+                  <div key={ambulance.id} className="mb-4 p-6 rounded-lg border border-blue-200 shadow-sm hover:shadow-md transition-shadow duration-300 bg-blue-50">
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="text-xl font-semibold flex items-center gap-2 text-blue-700">
+                        <Truck className="h-5 w-5 text-blue-600" />
+                        {ambulance.placa}
+                      </h3>
+                      <Badge className={`${getStatusColor(ambulance.estado)} px-3 py-1 text-sm font-medium`}>
+                        {ambulance.estado}
+                      </Badge>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm text-blue-600">
+                      <p className="flex items-center gap-2"><User className="h-4 w-4 text-blue-400" /> {ambulance.conductor}</p>
+                      <p className="flex items-center gap-2"><MapPin className="h-4 w-4 text-blue-400" /> {ambulance.ubicacionActual}</p>
+                      <p className="flex items-center gap-2 col-span-2 text-xs text-blue-500">
+                        <Calendar className="h-3 w-3" /> Última actualización: <ClientOnlyTimestamp timestamp={ambulance.ultimaActualizacion} />
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+      
+      <p className="text-center text-sm text-blue-600 mt-4">
+        Última actualización: <ClientOnlyTimestamp timestamp={lastUpdate} />
+      </p>
     </div>
   );
 };
