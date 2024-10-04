@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { Activity, Truck, AlertCircle, Clock, MapPin, User, Calendar, RefreshCcw } from 'lucide-react';
+import { Activity, Truck, AlertCircle, Clock, MapPin, User, Calendar, RefreshCcw, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,24 +8,95 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import ClientOnlyTimestamp from './ClientOnlyTimestamp';
 import { Button } from "@/components/ui/button";
 
+// Importar el mapa dinámicamente para evitar problemas de SSR
 const MapWithNoSSR = dynamic(() => import('./MapComponent'), {
-  ssr: false
-});
+    ssr: false,
+    loading: () => (
+      <div className="h-[600px] w-full bg-white/5 flex items-center justify-center">
+        Cargando mapa...
+      </div>
+    )
+  });
 
-interface IAmbulance {
-  id: number;
-  placa: string;
-  conductor: string;
-  estado: string;
-  latitude: number;
-  longitude: number;
-  ultimaActualizacion: string;
-  ubicacionActual: string;
-}
+  interface IAmbulance {
+    id: number;
+    placa: string;
+    conductor: string;
+    estado: string;
+    latitude: number;
+    longitude: number;
+    ultimaActualizacion: string;
+    ubicacionActual: string;
+    distancia?: number; // Added optional distancia property
+  }
 
 const Ambulancia: React.FC = () => {
-  const [ambulances, setAmbulances] = useState<IAmbulance[]>([]);
-  const [lastUpdate, setLastUpdate] = useState<string>(new Date().toISOString());
+        const [busqueda, setBusqueda] = useState('');
+      const [ambulances, setAmbulances] = useState<IAmbulance[]>([]);
+      const [ubicacionBuscada, setUbicacionBuscada] = useState<{ lat: number; lon: number } | null>(null); // Updated type
+      const [ambulanciaCercana, setAmbulanciaCercana] = useState<IAmbulance | null>(null);
+      const [zoom, setZoom] = useState(13);
+      const [lastUpdate, setLastUpdate] = useState<string>(new Date().toISOString());
+       // Función para calcular la distancia entre dos puntos
+       const calcularDistancia = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+        const R = 6371; // Radio de la Tierra en km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+          Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+          Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+      };
+    
+       // Función para buscar ubicación usando Nominatim
+       const buscarUbicacion = async () => {
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(busqueda)}`
+          );
+          const data = await response.json();
+    
+          if (data && data.length > 0) {
+            const ubicacion = {
+              lat: parseFloat(data[0].lat),
+              lon: parseFloat(data[0].lon)
+            };
+            
+            setZoom(16);
+            setUbicacionBuscada(ubicacion);
+            
+            encontrarAmbulanciaCercana(ubicacion);
+          }
+        } catch (error) {
+          console.error('Error al buscar ubicación:', error);
+        }
+      };
+    
+      const encontrarAmbulanciaCercana = (ubicacion: { lat: number; lon: number }) => {
+        let distanciaMinima = Infinity;
+        let ambulanciaMasCercana = null;
+    
+        ambulances.forEach((ambulancia: IAmbulance) => { // Changed 'ambulancias' to 'ambulances'
+          if (ambulancia.estado === 'DISPONIBLE') {
+            const distancia = calcularDistancia(
+              ubicacion.lat,
+              ubicacion.lon,
+              ambulancia.latitude,
+              ambulancia.longitude
+            );
+            console.log('distancia'+distancia);
+            console.log('distanciaMinima'+distanciaMinima);
+            if (distancia < distanciaMinima) {
+              distanciaMinima = distancia;
+              ambulanciaMasCercana = { ...ambulancia, distancia };
+            }
+          }
+        });
+    console.log(ambulanciaMasCercana);
+        setAmbulanciaCercana(ambulanciaMasCercana);
+      };
 
   useEffect(() => {
     const mockAmbulances: IAmbulance[] = [
@@ -62,20 +133,21 @@ const Ambulancia: React.FC = () => {
     ];
     setAmbulances(mockAmbulances);
 
-    const movementInterval = setInterval(() => {
-      setAmbulances(prevAmbulances => 
-        prevAmbulances.map(ambulance => ({
-          ...ambulance,
-          latitude: ambulance.latitude + (Math.random() - 0.5) * 0.01,
-          longitude: ambulance.longitude + (Math.random() - 0.5) * 0.01,
-          ultimaActualizacion: new Date().toISOString()
-        }))
-      );
-      setLastUpdate(new Date().toISOString());
-    }, 10000);
+ // Simular movimiento de ambulancias
+ const movementInterval = setInterval(() => {
+    setAmbulances(prevAmbulances => 
+      prevAmbulances.map(ambulance => ({
+        ...ambulance,
+        latitude: ambulance.latitude + (Math.random() - 0.5) * 0.01,
+        longitude: ambulance.longitude + (Math.random() - 0.5) * 0.01,
+        ultimaActualizacion: new Date().toISOString()
+      }))
+    );
+  }, 10000);
 
-    return () => clearInterval(movementInterval);
-  }, []);
+  return () => clearInterval(movementInterval);
+}, []);
+
 
   const getStatusColor = (estado: string): string => {
     const statusColors: { [key: string]: string } = {
@@ -128,7 +200,35 @@ const Ambulancia: React.FC = () => {
           <TabsTrigger value="map" className="text-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">Mapa en Vivo</TabsTrigger>
           <TabsTrigger value="list" className="text-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">Lista de Ambulancias</TabsTrigger>
         </TabsList>
+        
         <TabsContent value="map">
+              {/* Barra de búsqueda */}
+      <div className="mt-4 px-4">
+        <div className="flex gap-2 mb-4">
+          <input
+            type="text"
+            placeholder="Buscar ubicación..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <button
+            onClick={buscarUbicacion}
+            className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            <Search className="mr-2 h-4 w-4" />
+            Buscar
+          </button>
+        </div>
+
+        {ambulanciaCercana && (
+          <div className="mt-2 p-2 bg-white/5 rounded-lg">
+            <p className="text-sm">
+              Ambulancia más cercana: {ambulanciaCercana.placa} - Distancia: {ambulanciaCercana.distancia} km
+            </p>
+          </div>
+        )}
+      </div>
           <Card className="shadow-xl bg-white">
             <CardContent className="p-0">
               <div className="h-[600px] rounded-lg overflow-hidden">
