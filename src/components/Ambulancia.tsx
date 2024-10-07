@@ -203,32 +203,85 @@ const Ambulancia: React.FC = () => {
         
         <TabsContent value="map">
               {/* Barra de búsqueda */}
-      <div className="mt-4 px-4">
-        <div className="flex gap-2 mb-4">
-          <input
-            type="text"
-            placeholder="Buscar ubicación..."
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <button
-            onClick={buscarUbicacion}
-            className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            <Search className="mr-2 h-4 w-4" />
-            Buscar
-          </button>
-        </div>
+              <div className="mt-4 px-4">
+  <div className="flex gap-2 mb-4">
+    <input
+      type="text"
+      placeholder="Buscar ubicación..."
+      value={busqueda}
+      onChange={(e) => setBusqueda(e.target.value)}
+      className="flex-1 px-4 py-2 rounded-lg border border-blue-200 
+                bg-white text-blue-900 placeholder-blue-400
+                focus:outline-none focus:ring-2 focus:ring-blue-500 
+                focus:border-blue-300 shadow-sm"
+    />
+    <Button
+      onClick={buscarUbicacion}
+      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+    >
+      <Search className="h-4 w-4" />
+      Buscar
+    </Button>
+  </div>
 
-        {ambulanciaCercana && (
-          <div className="mt-2 p-2 bg-white/5 rounded-lg">
-            <p className="text-sm">
-              Ambulancia más cercana: {ambulanciaCercana.placa} - Distancia: {ambulanciaCercana.distancia} km
-            </p>
+  {/* Popup para ambulancia cercana */}
+  {ambulanciaCercana && (
+    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center 
+                  justify-center p-4 z-50 backdrop-blur-sm">
+      <Card className="max-w-md w-full shadow-xl">
+        <CardHeader>
+          <CardTitle className="text-xl text-blue-800 flex items-center gap-2">
+            <AlertCircle className="h-6 w-6 text-blue-600" />
+            Ambulancia más cercana encontrada
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium text-blue-600">Placa</p>
+                  <p className="font-semibold text-blue-900">{ambulanciaCercana.placa}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-blue-600">Distancia</p>
+                  <p className="font-semibold text-blue-900">
+                    {ambulanciaCercana.distancia?.toFixed(2)} km
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-blue-600">Conductor</p>
+                  <p className="font-semibold text-blue-900">{ambulanciaCercana.conductor}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-blue-600">Estado</p>
+                  <Badge className={`${getStatusColor(ambulanciaCercana.estado)}`}>
+                    {ambulanciaCercana.estado}
+                  </Badge>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-sm font-medium text-blue-600">Ubicación Actual</p>
+                  <p className="font-semibold text-blue-900 flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-blue-400" />
+                    {ambulanciaCercana.ubicacionActual}
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <Button
+              onClick={() => setAmbulanciaCercana(null)}
+              variant="outline"
+              className="w-full border-blue-200 text-blue-600 hover:bg-blue-50"
+            >
+              Cerrar
+            </Button>
           </div>
-        )}
-      </div>
+        </CardContent>
+      </Card>
+    </div>
+  )}
+</div>
           <Card className="shadow-xl bg-white">
             <CardContent className="p-0">
               <div className="h-[600px] rounded-lg overflow-hidden">
