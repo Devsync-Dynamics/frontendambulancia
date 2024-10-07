@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { Activity, Truck, AlertCircle, Clock, MapPin, User, Calendar, RefreshCcw, Search } from 'lucide-react';
+import { Activity, Truck, AlertCircle, Clock, MapPin, User, Calendar, RefreshCcw, Search, Plus, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ClientOnlyTimestamp from './ClientOnlyTimestamp';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 // Importar el mapa dinámicamente para evitar problemas de SSR
 const MapWithNoSSR = dynamic(() => import('./MapComponent'), {
@@ -30,6 +33,13 @@ const MapWithNoSSR = dynamic(() => import('./MapComponent'), {
     distancia?: number; // Added optional distancia property
   }
 
+  interface AmbulanceFormData {
+    placa: string;
+    conductor: string;
+    estado: string;
+    ubicacionActual: string;
+  }
+
 const Ambulancia: React.FC = () => {
         const [busqueda, setBusqueda] = useState('');
       const [ambulances, setAmbulances] = useState<IAmbulance[]>([]);
@@ -37,6 +47,16 @@ const Ambulancia: React.FC = () => {
       const [ambulanciaCercana, setAmbulanciaCercana] = useState<IAmbulance | null>(null);
       const [zoom, setZoom] = useState(13);
       const [lastUpdate, setLastUpdate] = useState<string>(new Date().toISOString());
+      const [showAmbulanceModal, setShowAmbulanceModal] = useState(false);
+      const [editingAmbulance, setEditingAmbulance] = useState<IAmbulance | null>(null);
+      const [formData, setFormData] = useState<AmbulanceFormData>({
+        placa: '',
+        conductor: '',
+        estado: 'DISPONIBLE',
+        ubicacionActual: ''
+      });
+
+
        // Función para calcular la distancia entre dos puntos
        const calcularDistancia = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
         const R = 6371; // Radio de la Tierra en km
@@ -96,6 +116,63 @@ const Ambulancia: React.FC = () => {
         });
     console.log(ambulanciaMasCercana);
         setAmbulanciaCercana(ambulanciaMasCercana);
+      };
+
+      const handleCreateAmbulance = () => {
+        const newAmbulance: IAmbulance = {
+          id: ambulances.length + 1,
+          ...formData,
+          latitude: 10.9639 + (Math.random() - 0.5) * 0.1,
+          longitude: -74.7964 + (Math.random() - 0.5) * 0.1,
+          ultimaActualizacion: new Date().toISOString(),
+        };
+    
+        setAmbulances([...ambulances, newAmbulance]);
+        setShowAmbulanceModal(false);
+        resetForm();
+      };
+    
+      const handleEditAmbulance = () => {
+        if (!editingAmbulance) return;
+        
+        const updatedAmbulances = ambulances.map(amb => 
+          amb.id === editingAmbulance.id ? {
+            ...amb,
+            ...formData,
+            ultimaActualizacion: new Date().toISOString()
+          } : amb
+        );
+    
+        setAmbulances(updatedAmbulances);
+        setShowAmbulanceModal(false);
+        setEditingAmbulance(null);
+        resetForm();
+      };
+    
+      const handleDeleteAmbulance = (id: number) => {
+        if (confirm('¿Está seguro de que desea eliminar esta ambulancia?')) {
+          setAmbulances(ambulances.filter(amb => amb.id !== id));
+        }
+      };
+    
+      const resetForm = () => {
+        setFormData({
+          placa: '',
+          conductor: '',
+          estado: 'DISPONIBLE',
+          ubicacionActual: ''
+        });
+      };
+    
+      const openEditModal = (ambulance: IAmbulance) => {
+        setEditingAmbulance(ambulance);
+        setFormData({
+          placa: ambulance.placa,
+          conductor: ambulance.conductor,
+          estado: ambulance.estado,
+          ubicacionActual: ambulance.ubicacionActual
+        });
+        setShowAmbulanceModal(true);
       };
 
   useEffect(() => {
@@ -292,8 +369,19 @@ const Ambulancia: React.FC = () => {
         </TabsContent>
         <TabsContent value="list">
           <Card className="shadow-xl bg-white">
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-2xl text-blue-800">Estado de Unidades</CardTitle>
+              <Button 
+                onClick={() => {
+                  resetForm();
+                  setEditingAmbulance(null);
+                  setShowAmbulanceModal(true);
+                }}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Nueva Ambulancia
+              </Button>
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-[500px] w-full pr-4">
@@ -304,13 +392,35 @@ const Ambulancia: React.FC = () => {
                         <Truck className="h-5 w-5 text-blue-600" />
                         {ambulance.placa}
                       </h3>
-                      <Badge className={`${getStatusColor(ambulance.estado)} px-3 py-1 text-sm font-medium`}>
-                        {ambulance.estado}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge className={`${getStatusColor(ambulance.estado)} px-3 py-1 text-sm font-medium`}>
+                          {ambulance.estado}
+                        </Badge>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openEditModal(ambulance)}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteAmbulance(ambulance.id)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4 text-sm text-blue-600">
-                      <p className="flex items-center gap-2"><User className="h-4 w-4 text-blue-400" /> {ambulance.conductor}</p>
-                      <p className="flex items-center gap-2"><MapPin className="h-4 w-4 text-blue-400" /> {ambulance.ubicacionActual}</p>
+                      <p className="flex items-center gap-2">
+                        <User className="h-4 w-4 text-blue-400" /> {ambulance.conductor}
+                      </p>
+                      <p className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-blue-400" /> {ambulance.ubicacionActual}
+                      </p>
                       <p className="flex items-center gap-2 col-span-2 text-xs text-blue-500">
                         <Calendar className="h-3 w-3" /> Última actualización: <ClientOnlyTimestamp timestamp={ambulance.ultimaActualizacion} />
                       </p>
@@ -322,12 +432,85 @@ const Ambulancia: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
-      
+
+      {/* Modal para crear/editar ambulancia */}
+      {showAmbulanceModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+          <Card className="max-w-md w-full shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-xl text-blue-800 flex items-center gap-2">
+                <Truck className="h-6 w-6 text-blue-600" />
+                {editingAmbulance ? 'Editar Ambulancia' : 'Nueva Ambulancia'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-blue-600">Placa</label>
+                  <Input
+                    value={formData.placa}
+                    onChange={(e) => setFormData({...formData, placa: e.target.value})}
+                    placeholder="Ingrese la placa"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-blue-600">Conductor</label>
+                  <Input
+                    value={formData.conductor}
+                    onChange={(e) => setFormData({...formData, conductor: e.target.value})}
+                    placeholder="Nombre del conductor"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-blue-600">Estado</label>
+                  <Select
+                    value={formData.estado}
+                    onValueChange={(value) => setFormData({...formData, estado: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccione el estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="DISPONIBLE">Disponible</SelectItem>
+                      <SelectItem value="EN_SERVICIO">En Servicio</SelectItem>
+                      <SelectItem value="MANTENIMIENTO">Mantenimiento</SelectItem>
+                      <SelectItem value="INACTIVO">Inactivo</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-blue-600">Ubicación Actual</label>
+                  <Input
+                    value={formData.ubicacionActual}
+                    onChange={(e) => setFormData({...formData, ubicacionActual: e.target.value})}
+                    placeholder="Ubicación actual"
+                  />
+                </div>
+                <div className="flex gap-2 pt-4">
+                  <Button
+                    onClick={() => setShowAmbulanceModal(false)}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    onClick={editingAmbulance ? handleEditAmbulance : handleCreateAmbulance}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  >
+                    {editingAmbulance ? 'Guardar Cambios' : 'Crear Ambulancia'}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       <p className="text-center text-sm text-blue-600 mt-4">
         Última actualización: <ClientOnlyTimestamp timestamp={lastUpdate} />
       </p>
     </div>
   );
-};
-
+}
 export default Ambulancia;
