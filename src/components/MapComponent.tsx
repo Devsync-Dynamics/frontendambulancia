@@ -16,15 +16,22 @@ L.Icon.Default.mergeOptions({
   shadowUrl: shadowUrl.src,
 });
 
+interface ITripulante {
+  id: number;
+  nombre: string;
+  rol: 'PARAMEDICO' | 'CONDUCTOR' | 'ENFERMERO' | 'MEDICO';
+}
+
 interface IAmbulance {
   id: number;
   placa: string;
-  conductor: string;
+  tripulacion: ITripulante[];
   estado: string;
   latitude: number;
   longitude: number;
   ultimaActualizacion: string;
   ubicacionActual: string;
+  distancia?: number; // Added optional distancia property
 }
 
 interface IMapComponentProps {
@@ -69,8 +76,9 @@ const MapComponent: React.FC<IMapComponentProps> = ({ ambulances }) => {
               </h3>
               <div className="space-y-2">
                 <p className="flex items-center gap-2">
-                  <span className="font-semibold">Conductor:</span>
-                  {ambulance.conductor}
+                {ambulance.tripulacion.map((tripulante, index) => (
+                      <span className="font-semibold" key={index}> Tripulacion: {tripulante.nombre}</span> 
+                    ))}
                 </p>
                 <p className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />

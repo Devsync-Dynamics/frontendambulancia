@@ -21,10 +21,16 @@ const MapWithNoSSR = dynamic(() => import('./MapComponent'), {
     )
   });
 
+  interface ITripulante {
+    id: number;
+    nombre: string;
+    rol: 'PARAMEDICO' | 'CONDUCTOR' | 'ENFERMERO' | 'MEDICO';
+  }
+
   interface IAmbulance {
     id: number;
     placa: string;
-    conductor: string;
+    tripulacion: ITripulante[];
     estado: string;
     latitude: number;
     longitude: number;
@@ -35,7 +41,7 @@ const MapWithNoSSR = dynamic(() => import('./MapComponent'), {
 
   interface AmbulanceFormData {
     placa: string;
-    conductor: string;
+    tripulacion: ITripulante[]; // Corregido
     estado: string;
     ubicacionActual: string;
   }
@@ -44,14 +50,22 @@ const Ambulancia: React.FC = () => {
         const [busqueda, setBusqueda] = useState('');
       const [ambulances, setAmbulances] = useState<IAmbulance[]>([]);
       const [ubicacionBuscada, setUbicacionBuscada] = useState<{ lat: number; lon: number } | null>(null); // Updated type
+
+      const [tripulantes, setTripulantes] = useState<ITripulante[]>([
+        { id: 1, nombre: 'Juan Pérez', rol: 'CONDUCTOR' },
+        { id: 2, nombre: 'María López', rol: 'PARAMEDICO' },
+        { id: 3, nombre: 'Carlos Rodríguez', rol: 'CONDUCTOR' },
+        { id: 4, nombre: 'Ana Martínez', rol: 'PARAMEDICO' },
+      ]);
       const [ambulanciaCercana, setAmbulanciaCercana] = useState<IAmbulance | null>(null);
       const [zoom, setZoom] = useState(13);
       const [lastUpdate, setLastUpdate] = useState<string>(new Date().toISOString());
       const [showAmbulanceModal, setShowAmbulanceModal] = useState(false);
       const [editingAmbulance, setEditingAmbulance] = useState<IAmbulance | null>(null);
+      
       const [formData, setFormData] = useState<AmbulanceFormData>({
         placa: '',
-        conductor: '',
+        tripulacion: [], // Corregido
         estado: 'DISPONIBLE',
         ubicacionActual: ''
       });
@@ -72,6 +86,7 @@ const Ambulancia: React.FC = () => {
     
        // Función para buscar ubicación usando Nominatim
        const buscarUbicacion = async () => {
+        if (!busqueda.trim()) return; // Evitar búsquedas vacías
         try {
           const response = await fetch(
             `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(busqueda)}`
@@ -158,7 +173,7 @@ const Ambulancia: React.FC = () => {
       const resetForm = () => {
         setFormData({
           placa: '',
-          conductor: '',
+          tripulacion: [], // Corregido
           estado: 'DISPONIBLE',
           ubicacionActual: ''
         });
@@ -168,7 +183,7 @@ const Ambulancia: React.FC = () => {
         setEditingAmbulance(ambulance);
         setFormData({
           placa: ambulance.placa,
-          conductor: ambulance.conductor,
+          tripulacion: [], // Corregido
           estado: ambulance.estado,
           ubicacionActual: ambulance.ubicacionActual
         });
@@ -180,7 +195,10 @@ const Ambulancia: React.FC = () => {
       {
         id: 1,
         placa: 'ABC123',
-        conductor: 'Juan Pérez',
+        tripulacion: [
+          { id: 1, nombre: 'Juan Pérez', rol: 'CONDUCTOR' },
+          { id: 2, nombre: 'María López', rol: 'PARAMEDICO' }
+        ],
         estado: 'DISPONIBLE',
         latitude: 10.9639,
         longitude: -74.7964,
@@ -190,7 +208,10 @@ const Ambulancia: React.FC = () => {
       {
         id: 2,
         placa: 'XYZ789',
-        conductor: 'María López',
+        tripulacion: [
+          { id: 1, nombre: 'Juan Pérez', rol: 'CONDUCTOR' },
+          { id: 2, nombre: 'María López', rol: 'PARAMEDICO' }
+        ],
         estado: 'EN_SERVICIO',
         latitude: 10.9177,
         longitude: -74.7647,
@@ -200,7 +221,10 @@ const Ambulancia: React.FC = () => {
       {
         id: 3,
         placa: 'DEF456',
-        conductor: 'Carlos Rodríguez',
+        tripulacion: [
+        { id: 3, nombre: 'Carlos Rodríguez', rol: 'CONDUCTOR' },
+        { id: 4, nombre: 'Ana Martínez', rol: 'PARAMEDICO' }
+        ],
         estado: 'MANTENIMIENTO',
         latitude: 10.9877,
         longitude: -74.7885,
@@ -328,7 +352,11 @@ const Ambulancia: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-blue-600">Conductor</p>
-                  <p className="font-semibold text-blue-900">{ambulanciaCercana.conductor}</p>
+                  <p className="font-semibold text-blue-900">
+                    {ambulanciaCercana.tripulacion.map((tripulante, index) => (
+                      <span key={index}>{tripulante.nombre}</span> 
+                    ))}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-blue-600">Estado</p>
@@ -416,7 +444,11 @@ const Ambulancia: React.FC = () => {
                     </div>
                     <div className="grid grid-cols-2 gap-4 text-sm text-blue-600">
                       <p className="flex items-center gap-2">
-                        <User className="h-4 w-4 text-blue-400" /> {ambulance.conductor}
+                       {ambulance.tripulacion.map((tripulante) => (
+                          <React.Fragment key={tripulante.id}>
+                            <User className="h-4 w-4 text-blue-400" /> {tripulante.nombre}
+                          </React.Fragment>
+                       ))}
                       </p>
                       <p className="flex items-center gap-2">
                         <MapPin className="h-4 w-4 text-blue-400" /> {ambulance.ubicacionActual}
@@ -435,77 +467,116 @@ const Ambulancia: React.FC = () => {
 
       {/* Modal para crear/editar ambulancia */}
       {showAmbulanceModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-          <Card className="max-w-md w-full shadow-xl">
-            <CardHeader>
-              <CardTitle className="text-xl text-blue-800 flex items-center gap-2">
-                <Truck className="h-6 w-6 text-blue-600" />
-                {editingAmbulance ? 'Editar Ambulancia' : 'Nueva Ambulancia'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-blue-600">Placa</label>
-                  <Input
-                    value={formData.placa}
-                    onChange={(e) => setFormData({...formData, placa: e.target.value})}
-                    placeholder="Ingrese la placa"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-blue-600">Conductor</label>
-                  <Input
-                    value={formData.conductor}
-                    onChange={(e) => setFormData({...formData, conductor: e.target.value})}
-                    placeholder="Nombre del conductor"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-blue-600">Estado</label>
-                  <Select
-                    value={formData.estado}
-                    onValueChange={(value) => setFormData({...formData, estado: value})}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccione el estado" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="DISPONIBLE">Disponible</SelectItem>
-                      <SelectItem value="EN_SERVICIO">En Servicio</SelectItem>
-                      <SelectItem value="MANTENIMIENTO">Mantenimiento</SelectItem>
-                      <SelectItem value="INACTIVO">Inactivo</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-blue-600">Ubicación Actual</label>
-                  <Input
-                    value={formData.ubicacionActual}
-                    onChange={(e) => setFormData({...formData, ubicacionActual: e.target.value})}
-                    placeholder="Ubicación actual"
-                  />
-                </div>
-                <div className="flex gap-2 pt-4">
-                  <Button
-                    onClick={() => setShowAmbulanceModal(false)}
-                    variant="outline"
-                    className="flex-1"
-                  >
-                    Cancelar
-                  </Button>
-                  <Button
-                    onClick={editingAmbulance ? handleEditAmbulance : handleCreateAmbulance}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700"
-                  >
-                    {editingAmbulance ? 'Guardar Cambios' : 'Crear Ambulancia'}
-                  </Button>
-                </div>
+      <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+        <Card className="max-w-md w-full shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-xl text-blue-800 flex items-center gap-2">
+              <Truck className="h-6 w-6 text-blue-600" />
+              {editingAmbulance ? 'Editar Ambulancia' : 'Nueva Ambulancia'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-blue-600">Placa</label>
+                <Input
+                  value={formData.placa}
+                  onChange={(e) => setFormData({...formData, placa: e.target.value})}
+                  placeholder="Ingrese la placa"
+                />
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-blue-600">Tripulación</label>
+                <ScrollArea className="h-40 w-full border rounded-md p-2">
+                  {tripulantes.map((tripulante) => (
+                    <div key={tripulante.id} className="flex items-center space-x-2 py-1">
+                      <input
+                        type="checkbox"
+                        checked={formData.tripulacion.some(t => t.id === tripulante.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setFormData({
+                              ...formData,
+                              tripulacion: [...formData.tripulacion, tripulante]
+                            });
+                          } else {
+                            setFormData({
+                              ...formData,
+                              tripulacion: formData.tripulacion.filter(t => t.id !== tripulante.id)
+                            });
+                          }
+                        }}
+                        className="rounded border-gray-300"
+                      />
+                      <span className="text-sm">{tripulante.nombre}</span>
+                      <Badge className="ml-auto">{tripulante.rol}</Badge>
+                    </div>
+                  ))}
+                </ScrollArea>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-blue-600">Estado</label>
+                <Select
+                  value={formData.estado}
+                  onValueChange={(value) => setFormData({...formData, estado: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccione el estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="DISPONIBLE">Disponible</SelectItem>
+                    <SelectItem value="EN_SERVICIO">En Servicio</SelectItem>
+                    <SelectItem value="MANTENIMIENTO">Mantenimiento</SelectItem>
+                    <SelectItem value="INACTIVO">Inactivo</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-blue-600">Ubicación Actual</label>
+                <Input
+                  value={formData.ubicacionActual}
+                  onChange={(e) => setFormData({...formData, ubicacionActual: e.target.value})}
+                  placeholder="Ubicación actual"
+                />
+              </div>
+
+              {/* Mostrar la tripulación seleccionada */}
+              {formData.tripulacion.length > 0 && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-blue-600">Tripulación seleccionada:</label>
+                  <div className="flex flex-wrap gap-2">
+                    {formData.tripulacion.map((tripulante) => (
+                      <Badge key={tripulante.id} variant="secondary">
+                        {tripulante.nombre} - {tripulante.rol}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-2 pt-4">
+                <Button
+                  onClick={() => setShowAmbulanceModal(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={editingAmbulance ? handleEditAmbulance : handleCreateAmbulance}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                >
+                  {editingAmbulance ? 'Guardar Cambios' : 'Crear Ambulancia'}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )}
 
       <p className="text-center text-sm text-blue-600 mt-4">
         Última actualización: <ClientOnlyTimestamp timestamp={lastUpdate} />
