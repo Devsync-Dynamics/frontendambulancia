@@ -19,7 +19,6 @@ L.Icon.Default.mergeOptions({
 
 interface MapComponentProps {
   ambulancias: IAmbulancia[];
-  currentAmbulanceId: number;
 }
 
 const getStatusColor = (estado: string) => {

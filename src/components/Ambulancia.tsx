@@ -179,11 +179,8 @@ const Ambulancia: React.FC = () => {
             <Card className="shadow-xl bg-white mt-4">
               <CardContent className="p-0">
                 <div className="h-[600px] rounded-lg overflow-hidden">
-                  <MapWithNoSSR 
-                    ambulancias={ambulancias}
-                 //   ubicacionBuscada={ubicacionBuscada}
-                   // zoom={zoom}
-                  />
+                  <MapWithNoSSR ambulancias={ambulancias} />
+                 
                 </div>
               </CardContent>
             </Card>
