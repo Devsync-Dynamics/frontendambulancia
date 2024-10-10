@@ -32,9 +32,9 @@ const getStatusColor = (estado: string) => {
   return statusColors[estado] || 'bg-gray-500';
 };
 
-const SOCKET_URL = 'http://localhost:3001';
+const SOCKET_URL = 'https://backendtraslado-production.up.railway.app';
 
-const MapComponent: React.FC<MapComponentProps> = ({ ambulancias, currentAmbulanceId }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ ambulancias }) => {
   const [ambulanceLocations, setAmbulanceLocations] = useState<IAmbulancia[]>(ambulancias);
   const [socket, setSocket] = useState<Socket | null>(null);
 
@@ -49,8 +49,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ ambulancias, currentAmbulan
         (position) => {
           const { latitude, longitude } = position.coords;
           if (socket) {
-            socket.emit('updateLocation', { 
-              id: currentAmbulanceId, 
+            socket.emit('updateLocation', {  
               lat: latitude, 
               lng: longitude 
             });
@@ -63,7 +62,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ ambulancias, currentAmbulan
     } else {
       console.error("Geolocation is not supported by this browser.");
     }
-  }, [socket, currentAmbulanceId]);
+  }, [socket]);
 
   useEffect(() => {
     const socketInstance = io(SOCKET_URL, {
