@@ -47,7 +47,7 @@ const Ambulancia: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 10000); // Actualizar cada 10 segundos
+    const interval = setInterval(fetchData, 100000*6); // Actualizar cada 100*6 segundos
     return () => clearInterval(interval);
   }, []);
 
@@ -175,10 +175,7 @@ const Ambulancia: React.FC = () => {
         
         <TabsContent value="map">
           <div className="mt-4 px-4">
-            {/* <AmbulanciaSearch 
-             // onSearch={(location) => setUbicacionBuscada(location)}
-          //    onAmbulanciaFound={setAmbulanciaCercana}
-            /> */}
+          <AmbulanciaSearch ambulancia={ambulancias} />
             <Card className="shadow-xl bg-white mt-4">
               <CardContent className="p-0">
                 <div className="h-[600px] rounded-lg overflow-hidden">

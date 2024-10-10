@@ -4,7 +4,6 @@ import { IAmbulancia } from '@/services/ambulancia.service';
 
 interface AmbulanciaStatsProps {
   ambulancia: IAmbulancia[];
- 
 
 }
 export const AmbulanciaStats: React.FC<AmbulanciaStatsProps> = ({ ambulancia }) => {

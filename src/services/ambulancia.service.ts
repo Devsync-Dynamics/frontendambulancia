@@ -59,7 +59,7 @@ export const ambulanciaService = {
 
   getTripulantes: async (): Promise<ITripulante[]> => {
     try {
-      const response = await api.get('/user/tripulantes');
+      const response = await api.get('/users/tripulacion');
       return response.data;
     } catch (error) {
       toast({
@@ -141,7 +141,7 @@ export const ambulanciaService = {
 
   findNearestambulancia: async (latitude: number, longitude: number): Promise<IAmbulancia | null> => {
     try {
-      const response = await api.get('/ambulancias/nearest', {
+      const response = await api.get('/ambulancia/nearest', {
         params: { latitude, longitude }
       });
       return response.data;
