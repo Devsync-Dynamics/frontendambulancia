@@ -37,7 +37,6 @@ const Ambulancia: React.FC = () => {
   const [showAmbulanceModal, setShowAmbulanceModal] = useState(false);
   const [editingAmbulance, setEditingAmbulance] = useState<IAmbulancia | null>(null);
   const [loading, setLoading] = useState(false);
-  const [currentAmbulanceId, setCurrentAmbulanceId] = useState<number | null>(null);
   
   const [formData, setFormData] = useState<AmbulanciaFormData>({
     placa: '',
@@ -180,10 +179,11 @@ const Ambulancia: React.FC = () => {
             <Card className="shadow-xl bg-white mt-4">
               <CardContent className="p-0">
                 <div className="h-[600px] rounded-lg overflow-hidden">
-                <MapWithNoSSR 
-     ambulancias={ambulancias}
-     currentAmbulanceId={currentAmbulanceId || -1}
-   />
+                  <MapWithNoSSR 
+                    ambulancias={ambulancias}
+                 //   ubicacionBuscada={ubicacionBuscada}
+                   // zoom={zoom}
+                  />
                 </div>
               </CardContent>
             </Card>
