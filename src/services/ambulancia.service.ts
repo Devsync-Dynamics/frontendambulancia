@@ -189,10 +189,11 @@ export const ambulanciaService = {
     }
   },
 
-  updateLocation: async (id: number, latitude: number, longitude: number): Promise<IAmbulancia | null> =>{
+  updateLocation: async (id: number, latitude: number, longitude: number): Promise<IAmbulancia | null> => {
     try {
       const response = await api.patch(`/ambulancia/update/location/${id}`, {
-        params: { latitude, longitude }
+        latitude, // Pasar los datos en el cuerpo de la solicitud
+        longitude
       });
       return response.data;
     } catch (error) {
@@ -203,5 +204,5 @@ export const ambulanciaService = {
       });
       return null;
     }
-}
+  }
 };
