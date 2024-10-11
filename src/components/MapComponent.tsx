@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { Truck, MapPin } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -31,9 +31,19 @@ const getStatusColor = (estado: string) => {
   };
   return statusColors[estado] || 'bg-gray-500';
 };
-//const SOCKET_URL = 'http://localhost:3001';
-//const SOCKET_URL = 'wss://backendtraslado-production.up.railway.app';
-//const SOCKET_URL = 'https://backendtraslado.vercel.app';
+
+function MapUpdater({ ambulanceLocations }: { ambulanceLocations: IAmbulancia[] }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (ambulanceLocations.length > 0) {
+      const bounds = L.latLngBounds(ambulanceLocations.map(a => [a.latitude, a.longitude]));
+      map.fitBounds(bounds);
+    }
+  }, [map, ambulanceLocations]);
+
+  return null;
+}
 
 const MapComponent: React.FC<MapComponentProps> = ({ ambulancias, ambulanciaId }) => {
   const [ambulanceLocations, setAmbulanceLocations] = useState<IAmbulancia[]>(ambulancias);
@@ -46,18 +56,21 @@ const MapComponent: React.FC<MapComponentProps> = ({ ambulancias, ambulanciaId }
   
   }, [ambulancias]);
 
-  const updateCurrentLocation = useCallback(() => {
+  const updateCurrentLocation = useCallback(async () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
 
           try {
-            // Llamada a la API para actualizar la ubicación de la ambulancia
-            const response = await ambulanciaService.updateLocation(ambulanciaId, latitude, longitude);
-            console.log('Ubicación actualizada correctamente:', response);
+            // Actualizar la ubicación de la ambulancia actual
+            await ambulanciaService.updateLocation(ambulanciaId, latitude, longitude);
+
+            // Obtener las ubicaciones actualizadas de todas las ambulancias
+            const updatedAmbulances = await ambulanciaService.getAmbulancias();
+            setAmbulanceLocations(updatedAmbulances);
           } catch (error) {
-            console.error("Error en la solicitud de actualización:", error);
+            console.error("Error al actualizar las ubicaciones:", error);
           }
         },
         (error) => {
@@ -67,19 +80,18 @@ const MapComponent: React.FC<MapComponentProps> = ({ ambulancias, ambulanciaId }
     } else {
       console.error("Geolocalización no es soportada por este navegador.");
     }
-  }, [ambulanciaId]); // `ambulanciaId` se pasa como dependencia
+  }, [ambulanciaId]);
 
   useEffect(() => {
+    // Actualizar inmediatamente al montar el componente
+    updateCurrentLocation();
+
     // Configurar el intervalo para actualizar la ubicación cada 10 segundos
-    const intervalId = setInterval(() => {
-      updateCurrentLocation();
-    }, 10000); // Actualizar cada 10 segundos
+    const intervalId = setInterval(updateCurrentLocation, 10000);
 
     // Limpiar el intervalo cuando el componente se desmonte
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [updateCurrentLocation]); // `updateCurrentLocation` como dependencia
+    return () => clearInterval(intervalId);
+  }, [updateCurrentLocation]);
 
 
   return (
