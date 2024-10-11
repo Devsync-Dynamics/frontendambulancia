@@ -32,8 +32,8 @@ const getStatusColor = (estado: string) => {
   return statusColors[estado] || 'bg-gray-500';
 };
 //const SOCKET_URL = 'http://localhost:3001';
-//const SOCKET_URL = 'https://backendtraslado-production.up.railway.app';
-const SOCKET_URL = 'https://backendtraslado.vercel.app';
+const SOCKET_URL = 'wss://backendtraslado-production.up.railway.app';
+//const SOCKET_URL = 'https://backendtraslado.vercel.app';
 
 const MapComponent: React.FC<MapComponentProps> = ({ ambulancias, ambulanciaId }) => {
   const [ambulanceLocations, setAmbulanceLocations] = useState<IAmbulancia[]>(ambulancias);
