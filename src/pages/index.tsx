@@ -32,6 +32,7 @@ export default function Home() {
       }
 
       localStorage.setItem('token', data.access_token);
+      localStorage.setItem('user', email); 
       router.push('/dashboard');
     } catch (error) {
       console.error('Login error:', error);

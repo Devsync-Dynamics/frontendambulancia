@@ -19,6 +19,7 @@ L.Icon.Default.mergeOptions({
 
 interface MapComponentProps {
   ambulancias: IAmbulancia[];
+  ambulanciaId: number;
 }
 
 const getStatusColor = (estado: string) => {
@@ -30,10 +31,10 @@ const getStatusColor = (estado: string) => {
   };
   return statusColors[estado] || 'bg-gray-500';
 };
-
+//const SOCKET_URL = 'http://localhost:3001';
 const SOCKET_URL = 'https://backendtraslado-production.up.railway.app';
 
-const MapComponent: React.FC<MapComponentProps> = ({ ambulancias }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ ambulancias, ambulanciaId }) => {
   const [ambulanceLocations, setAmbulanceLocations] = useState<IAmbulancia[]>(ambulancias);
   const [socket, setSocket] = useState<Socket | null>(null);
 
@@ -42,13 +43,18 @@ const MapComponent: React.FC<MapComponentProps> = ({ ambulancias }) => {
     setAmbulanceLocations(ambulancias);
   }, [ambulancias]);
 
+
+  
   const updateCurrentLocation = useCallback(() => {
-    if ("geolocation" in navigator) {
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           if (socket) {
-            socket.emit('updateLocation', {  
+            console.log('emits update');
+            socket.emit('updateLocation', { 
+
+              ambulanciaId:  ambulanciaId,
               lat: latitude, 
               lng: longitude 
             });
@@ -64,6 +70,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ ambulancias }) => {
   }, [socket]);
 
   useEffect(() => {
+    
     const socketInstance = io(SOCKET_URL, {
       transports: ['websocket'],
       withCredentials: true,
