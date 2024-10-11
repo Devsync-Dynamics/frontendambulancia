@@ -31,6 +31,7 @@ const Ambulancia: React.FC = () => {
   const [ambulancias, setAmbulancias] = useState<IAmbulancia[]>([]);
   const [ubicacionBuscada, setUbicacionBuscada] = useState<{ lat: number; lon: number } | null>(null);
   const [tripulantes, setTripulantes] = useState<ITripulante[]>([]);
+  const [ambulanciaId, setAmbulanciaId] = useState<number | null>(null); // Estado para guardar el ID de la ambulancia
   const [ambulanciaCercana, setAmbulanciaCercana] = useState<IAmbulancia | null>(null);
   const [zoom, setZoom] = useState(13);
   const [lastUpdate, setLastUpdate] = useState<string>(new Date().toISOString());
@@ -56,11 +57,22 @@ const Ambulancia: React.FC = () => {
       setLoading(true);
       const [ambulanciasData, tripulantesData] = await Promise.all([
         ambulanciaService.getAmbulancias(),
-        ambulanciaService.getTripulantes()
+        ambulanciaService.getTripulantes(),
       ]);
       setAmbulancias(ambulanciasData);
       setTripulantes(tripulantesData);
+      
       setLastUpdate(new Date().toISOString());
+
+// Llamar al servicio que obtiene la tripulación completa
+const tripulacion = await ambulanciaService.getFilteredTripulantes(); 
+if (tripulacion) {
+  // Asumimos que el objeto tripulacion tiene una propiedad "ambulancia"
+  const  id  = tripulacion;
+
+  console.log('ambulancia ID',id)
+  setAmbulanciaId(id); // Guardar el ID de la ambulancia en el estado
+}
     } catch (error) {
       toast({
         title: "Error",
@@ -179,8 +191,8 @@ const Ambulancia: React.FC = () => {
             <Card className="shadow-xl bg-white mt-4">
               <CardContent className="p-0">
                 <div className="h-[600px] rounded-lg overflow-hidden">
-                  <MapWithNoSSR ambulancias={ambulancias} />
-                 
+                  <MapWithNoSSR ambulancias={ambulancias} ambulanciaId={ambulanciaId || 0}/>
+                  {/* Ensure ambulanciaId is a string by providing a default empty string */}
                 </div>
               </CardContent>
             </Card>

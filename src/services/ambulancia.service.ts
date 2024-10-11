@@ -2,7 +2,7 @@ import axios from 'axios';
 import { toast } from '@/hooks/use-toast';
 
 const API_URL = 'https://backendtraslado-production.up.railway.app';
-
+//const API_URL = 'http://localhost:3001';
 export const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -15,7 +15,12 @@ export interface ITripulante {
   nombre: string;
   apellido: string;
   idrol: 'PARAMEDICO' | 'CONDUCTOR' | 'ENFERMERO' | 'MEDICO';
+  email: string;
+  ambulancia: {
+    id: number;
+  }
 }
+
 
 export interface IAmbulancia {
   id: number;
@@ -70,6 +75,35 @@ export const ambulanciaService = {
       return [];
     }
   },
+
+  getFilteredTripulantes: async (): Promise<number | null> => {
+    try {
+      // Obtener todos los tripulantes
+      const allTripulantes = await ambulanciaService.getTripulantes();
+  
+      // Obtener el ID del tripulante almacenado en localStorage
+      const storedTripulanteId = localStorage.getItem('user');
+      
+      if (storedTripulanteId) {
+        // Buscar el tripulante basándose en el ID almacenado
+        const foundTripulante = allTripulantes.find(tripulante => tripulante.email === storedTripulanteId);
+        console.log('Tripulante encontrado:', foundTripulante);
+        return foundTripulante?.ambulancia.id || null;  // Si no se encuentra, devuelve `null`
+      } else {
+        // Si no hay IDs almacenados en localStorage, retornar `null` o algún valor por defecto
+        return null;
+      }
+    } catch (error) {
+      console.error("Error al filtrar tripulantes:", error);
+      toast({
+        title: "Error",
+        description: "Ocurrió un error al filtrar los tripulantes",
+        variant: "destructive",
+      });
+      return null;
+    }
+  },
+  
 
   createAmbulancia: async (formData: AmbulanciaFormData): Promise<IAmbulancia | null> => {
     try {
