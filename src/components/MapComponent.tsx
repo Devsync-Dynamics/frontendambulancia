@@ -6,7 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
-import { IAmbulancia } from '@/services/ambulancia.service';
+import { ambulanciaService, IAmbulancia } from '@/services/ambulancia.service';
 import { io, Socket } from 'socket.io-client';
 
 // Configuración del icono de Leaflet
@@ -32,82 +32,55 @@ const getStatusColor = (estado: string) => {
   return statusColors[estado] || 'bg-gray-500';
 };
 //const SOCKET_URL = 'http://localhost:3001';
-const SOCKET_URL = 'wss://backendtraslado-production.up.railway.app';
+//const SOCKET_URL = 'wss://backendtraslado-production.up.railway.app';
 //const SOCKET_URL = 'https://backendtraslado.vercel.app';
 
 const MapComponent: React.FC<MapComponentProps> = ({ ambulancias, ambulanciaId }) => {
   const [ambulanceLocations, setAmbulanceLocations] = useState<IAmbulancia[]>(ambulancias);
-  const [socket, setSocket] = useState<Socket | null>(null);
+
 
   // Actualizar ambulanceLocations cuando cambie ambulancias
   useEffect(() => {
     setAmbulanceLocations(ambulancias);
-  }, [ambulancias]);
-
 
   
+  }, [ambulancias]);
+
   const updateCurrentLocation = useCallback(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const { latitude, longitude } = position.coords;
-          if (socket) {
-            console.log('emits update');
-            socket.emit('updateLocation', { 
 
-              ambulanciaId:  ambulanciaId,
-              lat: latitude, 
-              lng: longitude 
-            });
+          try {
+            // Llamada a la API para actualizar la ubicación de la ambulancia
+            const response = await ambulanciaService.updateLocation(ambulanciaId, latitude, longitude);
+            console.log('Ubicación actualizada correctamente:', response);
+          } catch (error) {
+            console.error("Error en la solicitud de actualización:", error);
           }
         },
         (error) => {
-          console.error("Error getting location", error);
+          console.error("Error obteniendo la ubicación", error);
         }
       );
     } else {
-      console.error("Geolocation is not supported by this browser.");
+      console.error("Geolocalización no es soportada por este navegador.");
     }
-  }, [socket]);
+  }, [ambulanciaId]); // `ambulanciaId` se pasa como dependencia
 
   useEffect(() => {
-    
-    const socketInstance = io(SOCKET_URL, {
-      transports: ['websocket'],
-      withCredentials: true,
-    });
-
-    socketInstance.on('connect', () => {
-      console.log('Connected to WebSocket server');
-      setSocket(socketInstance);
-    });
-
-    socketInstance.on('connect_error', (error) => {
-      console.error('Connection error:', error);
-    });
-
-    socketInstance.on('locationUpdated', (updatedAmbulance: IAmbulancia) => {
-      console.log('Location updated:', updatedAmbulance);
-      setAmbulanceLocations((prevLocations) => 
-        prevLocations.map((ambulance) =>
-          ambulance.id === updatedAmbulance.id ? { ...ambulance, ...updatedAmbulance } : ambulance
-        )
-      );
-    });
-
-    // Configurar el intervalo para actualizar la ubicación
+    // Configurar el intervalo para actualizar la ubicación cada 10 segundos
     const intervalId = setInterval(() => {
       updateCurrentLocation();
     }, 10000); // Actualizar cada 10 segundos
 
-    // Limpiar el intervalo y desconectar el socket cuando el componente se desmonte
+    // Limpiar el intervalo cuando el componente se desmonte
     return () => {
       clearInterval(intervalId);
-      if (socketInstance.connected) {
-        socketInstance.disconnect();
-      }
     };
-  }, [updateCurrentLocation]);
+  }, [updateCurrentLocation]); // `updateCurrentLocation` como dependencia
+
 
   return (
     <MapContainer

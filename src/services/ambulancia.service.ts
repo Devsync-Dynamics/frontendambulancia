@@ -187,6 +187,21 @@ export const ambulanciaService = {
       });
       return null;
     }
-  }
+  },
 
+  updateLocation: async (id: number, latitude: number, longitude: number): Promise<IAmbulancia | null> =>{
+    try {
+      const response = await api.patch(`/ambulancia/update/location/${id}`, {
+        params: { latitude, longitude }
+      });
+      return response.data;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo encontrar la ambulancia más cercana",
+        variant: "destructive",
+      });
+      return null;
+    }
+}
 };
