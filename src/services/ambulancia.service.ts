@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { toast } from '@/hooks/use-toast';
 
-const API_URL = 'https://backendtraslado-production.up.railway.app';
-//const API_URL = 'http://localhost:3001';
+//const API_URL = 'https://backendtraslado-production.up.railway.app';
+const API_URL = 'http://localhost:3001';
 export const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -32,7 +32,7 @@ export interface IAmbulancia {
   };
   latitude: number;
   longitude: number;
-  ultimaActualizacion: string;
+  updatedAt: string;
   ubicacionActual: string;
   distancia?: number;
 }
@@ -190,19 +190,41 @@ export const ambulanciaService = {
   },
 
   updateLocation: async (id: number, latitude: number, longitude: number): Promise<IAmbulancia | null> => {
+    
     try {
+     const ubicacionActual = await ambulanciaService.getLocationNeighbourhood(latitude,longitude);
+     console.log('esto se va a enviar', ubicacionActual)
       const response = await api.patch(`/ambulancia/update/location/${id}`, {
-        latitude, // Pasar los datos en el cuerpo de la solicitud
-        longitude
+        latitude, 
+        longitude,
+        ubicacionActual        
       });
       return response.data;
     } catch (error) {
       toast({
         title: "Error",
-        description: "No se pudo encontrar la ambulancia más cercana",
+        description: "No se pudo actualizar la ubicacion actual de la ambulancia ",
         variant: "destructive",
       });
       return null;
     }
+  },
+
+  getLocationNeighbourhood: async (latitude: number, longitude: number): Promise<string | null> => {
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+      const data = await response.json();
+  
+      if (data.address) {
+        const { road = '', neighbourhood = '', county = '' } = data.address;
+        return `${road} ${neighbourhood} ${county}`.trim();
+      } else {
+        throw new Error('No address data found');
+      }
+    } catch (error) {
+      console.error('Error fetching location:', error);
+      throw new Error('No se pudo obtener la ubicación actual de la ambulancia');
+    }
   }
+  
 };

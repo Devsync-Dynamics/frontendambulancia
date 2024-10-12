@@ -70,7 +70,7 @@ export const AmbulanciaList: React.FC<AmbulanciaListProps> = ({
               <MapPin className="h-4 w-4 text-blue-400" /> {ambulancia.ubicacionActual}
             </p>
             <p className="flex items-center gap-2 col-span-2 text-xs text-blue-500">
-              <Calendar className="h-3 w-3" /> Última actualización: <ClientOnlyTimestamp timestamp={ambulancia.ultimaActualizacion} />
+              <Calendar className="h-3 w-3" /> Última actualización: <ClientOnlyTimestamp timestamp={ambulancia.updatedAt} />
             </p>
           </div>
         </div>
