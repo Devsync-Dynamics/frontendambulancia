@@ -18,4 +18,4 @@ function AmbulanciaPage() {
     AmbulanciaPage.getLayout = (page: React.ReactElement) => {
         return <GeneralLayout>{page}</GeneralLayout>;
       };
-        export default AmbulanciaPage;
+export default AmbulanciaPage;
