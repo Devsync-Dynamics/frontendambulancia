@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { toast } from '@/hooks/use-toast';
 
-const API_URL = 'https://backendtraslado-production.up.railway.app';
-//const API_URL = 'http://localhost:3001';
+//const API_URL = 'https://backendtraslado-production.up.railway.app';
+const API_URL = 'http://localhost:3001';
 export const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -45,6 +45,25 @@ export interface AmbulanciaFormData {
   latitude?: number;
   longitude?: number;
 }
+
+export interface Solicitud {
+  id: string;
+  paciente: string;
+  origen: string;
+  destino: string;
+  fecha: string;
+  estado: 'pendiente' | 'en_proceso' | 'completado' | 'cancelado';
+  prioridad: 'baja' | 'media' | 'alta';
+}
+
+export interface CreateSolicitudDto {
+  paciente: string;
+  origen: string;
+  destino: string;
+  fecha: string;
+  prioridad: 'baja' | 'media' | 'alta';
+}
+
 
 export const ambulanciaService = {
   getAmbulancias: async (): Promise<IAmbulancia[]> => {
@@ -225,6 +244,24 @@ export const ambulanciaService = {
       console.error('Error fetching location:', error);
       throw new Error('No se pudo obtener la ubicación actual de la ambulancia');
     }
-  }
+  },
+
+
+  //SERVICIO PARA LAS SOLICITUDES
+
+  async getSolicitudes(): Promise<Solicitud[]> {
+    const response = await axios.get<Solicitud[]>(`${API_URL}/solicitudes`);
+    return response.data;
+  },
+
+  async createSolicitud(solicitud: CreateSolicitudDto): Promise<Solicitud> {
+    const response = await axios.post<Solicitud>(`${API_URL}/solicitudes`, solicitud);
+    return response.data;
+  },
+
+  async updateSolicitud(id: string, estado: string): Promise<Solicitud> {
+    const response = await axios.patch<Solicitud>(`${API_URL}/solicitudes/${id}`, { estado });
+    return response.data;
+  },
   
 };
