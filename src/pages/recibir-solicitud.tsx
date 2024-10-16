@@ -4,6 +4,9 @@ import { useToast } from '@/hooks/use-toast';
 import { ambulanciaService, Solicitud } from '@/services/ambulancia.service';
 import SolicitudesTable from '@/components/Solicitudes/SolicitudesTable';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Ambulance, Bell, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function RecibirSolicitud() {
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
@@ -14,20 +17,8 @@ export default function RecibirSolicitud() {
   const { toast } = useToast();
 
   useEffect(() => {
-    const audio = new Audio();
-    const sources = [
-      { src: '/notificacion/alert1.mp3', type: 'audio/mpeg' },
-    ];
-    
-    sources.forEach(source => {
-      const sourceElement = document.createElement('source');
-      sourceElement.src = source.src;
-      sourceElement.type = source.type;
-      audio.appendChild(sourceElement);
-    });
-    
+    const audio = new Audio('/notificacion/alert1.mp3');
     audioRef.current = audio;
-    
     audio.onerror = (e) => {
       console.error('Error loading audio:', e);
       toast({
@@ -36,8 +27,12 @@ export default function RecibirSolicitud() {
         variant: "destructive",
       });
     };
-    
-    return () => audio.remove();
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
   }, [toast]);
 
   useEffect(() => {
@@ -138,50 +133,67 @@ export default function RecibirSolicitud() {
 
   return (
     <GeneralLayout>
-      <div className="p-6 bg-gradient-to-br from-blue-900 to-indigo-900 min-h-screen">
-        <h1 className="text-3xl font-bold text-white mb-6">Recibir Solicitudes de Traslado</h1>
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
-          </div>
-        ) : (
-          <SolicitudesTable
-            solicitudes={solicitudes}
-            onAceptar={handleAceptar}
-            onRechazar={handleRechazar}
-          />
-        )}
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 p-8">
+        <Card className="bg-white shadow-lg border-none">
+          <CardHeader className="bg-blue-600 text-white rounded-t-lg">
+            <CardTitle className="text-3xl font-bold flex items-center">
+              <Ambulance className="mr-2 h-8 w-8" />
+              Centro de Control de Traslados
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Solicitudes Pendientes</h2>
+            {isLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <Loader2 className="h-16 w-16 animate-spin text-blue-600" />
+              </div>
+            ) : (
+              <div className="bg-white rounded-lg shadow-inner p-4 overflow-x-auto">
+                <SolicitudesTable
+                  solicitudes={solicitudes}
+                  onAceptar={handleAceptar}
+                  onRechazar={handleRechazar}
+                  tipoVista={'recibir'}
+                />
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
       
       <Dialog open={showNotification} onOpenChange={setShowNotification}>
-        <DialogContent>
+        <DialogContent className="bg-white">
           <DialogHeader>
-            <DialogTitle>Nueva Solicitud de Traslado</DialogTitle>
-            <DialogDescription>
-              Se ha recibido una nueva solicitud de traslado con los siguientes detalles:
+            <DialogTitle className="text-2xl font-bold text-blue-600 flex items-center">
+              <Bell className="mr-2 h-6 w-6" />
+              Nueva Solicitud de Traslado
+            </DialogTitle>
+            <DialogDescription className="text-gray-600">
+              Se ha recibido una nueva solicitud con los siguientes detalles:
             </DialogDescription>
           </DialogHeader>
           {newSolicitud && (
-            <div className="mt-4">
-              <p><strong>Paciente:</strong> {newSolicitud.paciente}</p>
-              <p><strong>Origen:</strong> {newSolicitud.origen}</p>
-              <p><strong>Destino:</strong> {newSolicitud.destino}</p>
-              <p><strong>Fecha:</strong> {new Date(newSolicitud.fecha).toLocaleString()}</p>
+            <div className="mt-4 space-y-3 bg-blue-50 p-4 rounded-lg">
+              <p className="text-gray-800"><span className="font-semibold text-blue-600">Paciente:</span> {newSolicitud.paciente}</p>
+              <p className="text-gray-800"><span className="font-semibold text-blue-600">Origen:</span> {newSolicitud.origen}</p>
+              <p className="text-gray-800"><span className="font-semibold text-blue-600">Destino:</span> {newSolicitud.destino}</p>
+              <p className="text-gray-800"><span className="font-semibold text-blue-600">Fecha:</span> {new Date(newSolicitud.fecha).toLocaleString()}</p>
             </div>
           )}
           <div className="flex justify-end space-x-4 mt-6">
-            <button
+            <Button
               onClick={() => newSolicitud && handleRechazar(newSolicitud.id)}
-              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              variant="outline"
+              className="border-red-500 text-red-500 hover:bg-red-50"
             >
               Rechazar
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => newSolicitud && handleAceptar(newSolicitud.id)}
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              className="bg-green-500 hover:bg-green-600 text-white"
             >
               Aceptar
-            </button>
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
