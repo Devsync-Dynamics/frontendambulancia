@@ -3,7 +3,6 @@ import GeneralLayout from '@/components/GeneralLayout';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import dynamic from 'next/dynamic';
 import { ArrowUpIcon, ArrowDownIcon, ActivityIcon, Truck, Ambulance, Users, AlertTriangle } from 'lucide-react';
-import L from 'leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -31,7 +30,6 @@ const ChangeView = dynamic(() =>
 interface Ambulance {
   id: string;
   placa: string;
-  // Agrega aquí otras propiedades que pueda tener una ambulancia
 }
 
 function DashboardPage() {
@@ -42,7 +40,6 @@ function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [mapKey, setMapKey] = useState(0);
   
-  // Coordenadas centrales de Barranquilla
   const barranquillaCenterCoords: [number, number] = [10.9685, -74.7813];
   
   useEffect(() => {
@@ -90,17 +87,15 @@ function DashboardPage() {
   const fetchSimulatedRoute = async () => {
     const API_KEY = '5b3ce3597851110001cf6248a904ff409da54695a2742d31e07f3920';
     
-    // Coordenadas de algunas ubicaciones en el departamento del Atlántico
     const atlanticoLocations = [
-      [-74.7813, 10.9685], // Barranquilla
-      [-74.8861, 10.9877], // Soledad
-      [-74.7508, 10.8909], // Puerto Colombia
-      [-74.9197, 10.8813], // Galapa
-      [-74.7667, 10.7833], // Malambo
-      [-74.8833, 10.7500]  // Sabanagrande
+      [-74.7813, 10.9685], 
+      [-74.8861, 10.9877], 
+      [-74.7508, 10.8909], 
+      [-74.9197, 10.8813], 
+      [-74.7667, 10.7833], 
+      [-74.8833, 10.7500]  
     ];
 
-    // Seleccionar dos ubicaciones al azar para la ruta
     const start = atlanticoLocations[Math.floor(Math.random() * atlanticoLocations.length)];
     let end;
     do {
@@ -140,69 +135,72 @@ function DashboardPage() {
   };
 
   return (
-    <div className="p-6 bg-gradient-to-br from-blue-100 to-teal-100 min-h-screen">
-      <h1 className="text-4xl font-bold mb-8 text-center text-blue-800">Panel de Control de Salud</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg border-t-4 border-blue-500">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-blue-700">Total de Ambulancias</CardTitle>
-            <Ambulance className="h-4 w-4 text-blue-600" />
+    <div className="p-8 bg-teal-50 min-h-screen">
+      <h1 className="text-5xl font-bold mb-10 text-center text-teal-900">Health Dashboard</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+        <Card className="bg-white shadow-xl border-t-4 border-teal-500 hover:shadow-2xl rounded-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-4">
+            <CardTitle className="text-sm font-semibold text-teal-700">Total Ambulances</CardTitle>
+            <Ambulance className="h-6 w-6 text-teal-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-900">{ambulances.length}</div>
-            <p className="text-xs text-blue-600">
-              <ArrowUpIcon className="w-4 h-4 mr-1 inline text-green-500" />
-              <span className="text-green-600">5% más que ayer</span>
+            <div className="text-3xl font-bold text-teal-800">{ambulances.length}</div>
+            <p className="text-sm text-teal-500 mt-1 flex items-center">
+              <ArrowUpIcon className="w-5 h-5 text-green-500 mr-1" />
+              <span className="text-green-600">5% increase</span> from yesterday
             </p>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-red-50 to-red-100 shadow-lg border-t-4 border-red-400">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-red-700">Emergencias Activas</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-red-600" />
+
+        <Card className="bg-white shadow-xl border-t-4 border-red-500 hover:shadow-2xl rounded-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-4">
+            <CardTitle className="text-sm font-semibold text-teal-700">Active Emergencies</CardTitle>
+            <AlertTriangle className="h-6 w-6 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-900">3</div>
-            <p className="text-xs text-red-600">
-              <ArrowUpIcon className="w-4 h-4 mr-1 inline text-red-500" />
-              <span className="text-red-600">2 más que hace una hora</span>
+            <div className="text-3xl font-bold text-teal-800">3</div>
+            <p className="text-sm text-red-600 mt-1 flex items-center">
+              <ArrowUpIcon className="w-5 h-5 text-red-500 mr-1" />
+              2 more than an hour ago
             </p>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-indigo-50 to-indigo-100 shadow-lg border-t-4 border-indigo-400">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-indigo-700">Personal Disponible</CardTitle>
-            <Users className="h-4 w-4 text-indigo-600" />
+
+        <Card className="bg-white shadow-xl border-t-4 border-green-500 hover:shadow-2xl rounded-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-4">
+            <CardTitle className="text-sm font-semibold text-teal-700">Available Staff</CardTitle>
+            <Users className="h-6 w-6 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-indigo-900">25</div>
-            <p className="text-xs text-indigo-600">
-              <ArrowDownIcon className="w-4 h-4 mr-1 inline text-yellow-500" />
-              <span className="text-yellow-600">3 menos que ayer</span>
+            <div className="text-3xl font-bold text-teal-800">25</div>
+            <p className="text-sm text-yellow-600 mt-1 flex items-center">
+              <ArrowDownIcon className="w-5 h-5 text-yellow-500 mr-1" />
+              3 less than yesterday
             </p>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 shadow-lg border-t-4 border-green-400">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-green-700">Tiempo de Respuesta Promedio</CardTitle>
-            <ActivityIcon className="h-4 w-4 text-green-600" />
+
+        <Card className="bg-white shadow-xl border-t-4 border-teal-400 hover:shadow-2xl rounded-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-4">
+            <CardTitle className="text-sm font-semibold text-teal-700">Avg. Response Time</CardTitle>
+            <ActivityIcon className="h-6 w-6 text-teal-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-900">12 min</div>
-            <p className="text-xs text-green-600">
-              <ArrowDownIcon className="w-4 h-4 mr-1 inline text-green-500" />
-              <span className="text-green-600">2 min menos que el mes pasado</span>
+            <div className="text-3xl font-bold text-teal-800">12 min</div>
+            <p className="text-sm text-teal-600 mt-1 flex items-center">
+              <ArrowDownIcon className="w-5 h-5 text-green-500 mr-1" />
+              2 min less than last month
             </p>
           </CardContent>
         </Card>
       </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="col-span-1 bg-gradient-to-br from-blue-50 to-teal-50 shadow-lg">
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Card className="bg-white shadow-xl hover:shadow-2xl rounded-lg transition-shadow">
           <CardHeader>
-            <CardTitle className="text-xl font-semibold flex items-center text-blue-800">
-              <ActivityIcon className="w-5 h-5 mr-2 text-blue-600" />
-              Emergencias por Mes
+            <CardTitle className="text-xl font-bold text-teal-800">
+              <ActivityIcon className="w-6 h-6 mr-2 text-teal-500" />
+              Emergencies by Month
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -220,19 +218,19 @@ function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-        
-        <Card className="col-span-1 bg-gradient-to-br from-teal-50 to-blue-50 shadow-lg">
+
+        <Card className="bg-white shadow-xl hover:shadow-2xl rounded-lg transition-shadow">
           <CardHeader>
-            <CardTitle className="text-xl font-semibold flex items-center text-blue-800">
-              <Truck className="w-5 h-5 mr-2 text-blue-600" />
-              Recorrido de Ambulancia en Atlántico
+            <CardTitle className="text-xl font-bold text-teal-800">
+              <Truck className="w-6 h-6 mr-2 text-teal-500" />
+              Ambulance Route
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="mb-4">
               <Select onValueChange={handleAmbulanceSelect} value={selectedAmbulance || ''}>
-                <SelectTrigger className="w-full border-blue-300 focus:ring-blue-500">
-                  <SelectValue placeholder="Seleccionar Ambulancia" />
+                <SelectTrigger className="w-full border-gray-300 focus:ring-gray-500">
+                  <SelectValue placeholder="Select Ambulance" />
                 </SelectTrigger>
                 <SelectContent>
                   {ambulances.map((ambulance) => (
@@ -243,7 +241,7 @@ function DashboardPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="h-[400px] w-full rounded-lg overflow-hidden border-2 border-blue-200">
+            <div className="h-[400px] w-full rounded-lg overflow-hidden border border-gray-300">
               <MapContainer key={mapKey} center={barranquillaCenterCoords} zoom={10} style={{ height: '100%', width: '100%' }}>
                 <ChangeView center={barranquillaCenterCoords} zoom={10} />
                 <TileLayer
@@ -253,10 +251,10 @@ function DashboardPage() {
                 {ambulanceRoute.length > 0 && (
                   <>
                     <Marker position={ambulanceRoute[0]}>
-                      <Popup>Inicio del recorrido</Popup>
+                      <Popup>Start</Popup>
                     </Marker>
                     <Marker position={ambulanceRoute[ambulanceRoute.length - 1]}>
-                      <Popup>Fin del recorrido</Popup>
+                      <Popup>End</Popup>
                     </Marker>
                     <Polyline positions={ambulanceRoute} color="#3b82f6" weight={3} />
                   </>
