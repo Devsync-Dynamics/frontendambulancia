@@ -148,9 +148,9 @@ export default function EnviarSolicitud() {
   return (
     <GeneralLayout>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">Centro de Control de Ambulancias</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center text-teal-900">Centro de Control de Ambulancias</h1>
         <div className="grid grid-cols-1 gap-8">
-          <Card className="shadow-lg">
+          <Card className="shadow-xl bg-teal-50 border border-teal-200 rounded-lg">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-2xl font-semibold text-gray-700 flex items-center">
                 <ClipboardList className="mr-2 h-6 w-6" />
@@ -242,7 +242,7 @@ export default function EnviarSolicitud() {
             </CardHeader>
             <CardContent>
            
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Solicitudes Pendientes</h2>
+         
             {isLoading ? (
               <div className="flex justify-center items-center h-64">
                 <Loader2 className="h-16 w-16 animate-spin text-blue-600" />

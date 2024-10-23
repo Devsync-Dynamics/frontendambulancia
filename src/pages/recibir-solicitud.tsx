@@ -42,7 +42,6 @@ export default function RecibirSolicitud() {
         const response = await ambulanciaService.getSolicitudes();
         
         if (solicitudes.length > 0 && response.length > solicitudes.length) {
-          // Play the audio
           if (audioRef.current) {
             audioRef.current.play().catch(error => {
               console.error('Error playing audio:', error);
@@ -54,7 +53,6 @@ export default function RecibirSolicitud() {
             });
           }
           
-          // Find the new solicitud
           const newSolicitudData = response.find(s => !solicitudes.some(existingSolicitud => existingSolicitud.id === s.id));
           if (newSolicitudData) {
             setNewSolicitud(newSolicitudData);
@@ -81,7 +79,7 @@ export default function RecibirSolicitud() {
     };
 
     fetchSolicitudes();
-    const interval = setInterval(fetchSolicitudes, 15000); // Update every 15 seconds
+    const interval = setInterval(fetchSolicitudes, 15000); // Actualiza cada 15 segundos
 
     return () => clearInterval(interval);
   }, [solicitudes.length, toast]);
@@ -133,19 +131,19 @@ export default function RecibirSolicitud() {
 
   return (
     <GeneralLayout>
-      <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 p-8">
-        <Card className="bg-white shadow-lg border-none">
-          <CardHeader className="bg-blue-600 text-white rounded-t-lg">
+      <div className="min-h-screen from-teal-50 to-teal-100 p-8">
+        <Card className="bg-white shadow-lg border-t-4 border-teal-600 rounded-lg">
+          <CardHeader className="bg-teal-600 text-white rounded-t-lg">
             <CardTitle className="text-3xl font-bold flex items-center">
               <Ambulance className="mr-2 h-8 w-8" />
               Centro de Control de Traslados
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Solicitudes Pendientes</h2>
+          <CardContent className="p-6 bg-teal-50">
+            <h2 className="text-2xl font-semibold text-teal-800 mb-4">Solicitudes Pendientes</h2>
             {isLoading ? (
               <div className="flex justify-center items-center h-64">
-                <Loader2 className="h-16 w-16 animate-spin text-blue-600" />
+                <Loader2 className="h-16 w-16 animate-spin text-teal-600" />
               </div>
             ) : (
               <div className="bg-white rounded-lg shadow-inner p-4 overflow-x-auto">
@@ -162,9 +160,9 @@ export default function RecibirSolicitud() {
       </div>
       
       <Dialog open={showNotification} onOpenChange={setShowNotification}>
-        <DialogContent className="bg-white">
+        <DialogContent className="bg-white shadow-lg rounded-lg">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-blue-600 flex items-center">
+            <DialogTitle className="text-2xl font-bold text-teal-600 flex items-center">
               <Bell className="mr-2 h-6 w-6" />
               Nueva Solicitud de Traslado
             </DialogTitle>
@@ -173,11 +171,11 @@ export default function RecibirSolicitud() {
             </DialogDescription>
           </DialogHeader>
           {newSolicitud && (
-            <div className="mt-4 space-y-3 bg-blue-50 p-4 rounded-lg">
-              <p className="text-gray-800"><span className="font-semibold text-blue-600">Paciente:</span> {newSolicitud.paciente}</p>
-              <p className="text-gray-800"><span className="font-semibold text-blue-600">Origen:</span> {newSolicitud.origen}</p>
-              <p className="text-gray-800"><span className="font-semibold text-blue-600">Destino:</span> {newSolicitud.destino}</p>
-              <p className="text-gray-800"><span className="font-semibold text-blue-600">Fecha:</span> {new Date(newSolicitud.fecha).toLocaleString()}</p>
+            <div className="mt-4 space-y-3 bg-teal-50 p-4 rounded-lg">
+              <p className="text-teal-900"><span className="font-semibold text-teal-700">Paciente:</span> {newSolicitud.paciente}</p>
+              <p className="text-teal-900"><span className="font-semibold text-teal-700">Origen:</span> {newSolicitud.origen}</p>
+              <p className="text-teal-900"><span className="font-semibold text-teal-700">Destino:</span> {newSolicitud.destino}</p>
+              <p className="text-teal-900"><span className="font-semibold text-teal-700">Fecha:</span> {new Date(newSolicitud.fecha).toLocaleString()}</p>
             </div>
           )}
           <div className="flex justify-end space-x-4 mt-6">
@@ -190,7 +188,7 @@ export default function RecibirSolicitud() {
             </Button>
             <Button
               onClick={() => newSolicitud && handleAceptar(newSolicitud.id)}
-              className="bg-green-500 hover:bg-green-600 text-white"
+              className="bg-teal-600 hover:bg-teal-700 text-white"
             >
               Aceptar
             </Button>

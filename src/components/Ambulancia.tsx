@@ -1,26 +1,21 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { Activity, Truck, AlertCircle, Clock, MapPin, User, Calendar, RefreshCcw, Search, Plus, Edit, Trash2 } from 'lucide-react';
+import { RefreshCcw, Plus, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import ClientOnlyTimestamp from './ClientOnlyTimestamp';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from '@/hooks/use-toast';
 import { AmbulanciaStats } from './Ambulancias/AmbulanciaStats';
-import { AmbulanciaFormData, ambulanciaService, IAmbulancia, ITripulante } from '@/services/ambulancia.service';
-import { AmbulanciaSearch } from './Ambulancias/AmbulanciaSearch';
 import { AmbulanciaFormModal } from './Ambulancias/AmbulanciaFormModal';
 import { AmbulanciaList } from './Ambulancias/AmbulanciaList';
+import { AmbulanciaSearch } from './Ambulancias/AmbulanciaSearch';
+import { IAmbulancia, ITripulante, AmbulanciaFormData, ambulanciaService } from '@/services/ambulancia.service';
 
 const MapWithNoSSR = dynamic(() => import('./MapComponent'), {
   ssr: false,
   loading: () => (
-    <div className="h-[600px] w-full bg-white/5 flex items-center justify-center">
+    <div className="h-[600px] w-full bg-gray-100 flex items-center justify-center text-teal-600 font-semibold">
       Cargando mapa...
     </div>
   )
@@ -31,7 +26,7 @@ const Ambulancia: React.FC = () => {
   const [ambulancias, setAmbulancias] = useState<IAmbulancia[]>([]);
   const [ubicacionBuscada, setUbicacionBuscada] = useState<{ lat: number; lon: number } | null>(null);
   const [tripulantes, setTripulantes] = useState<ITripulante[]>([]);
-  const [ambulanciaId, setAmbulanciaId] = useState<number | null>(null); // Estado para guardar el ID de la ambulancia
+  const [ambulanciaId, setAmbulanciaId] = useState<number | null>(null);
   const [ambulanciaCercana, setAmbulanciaCercana] = useState<IAmbulancia | null>(null);
   const [zoom, setZoom] = useState(13);
   const [lastUpdate, setLastUpdate] = useState<string>(new Date().toISOString());
@@ -48,7 +43,7 @@ const Ambulancia: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 100000*6); // Actualizar cada 100*6 segundos
+    const interval = setInterval(fetchData, 600000); // Actualizar cada 10 minutos
     return () => clearInterval(interval);
   }, []);
 
@@ -61,18 +56,14 @@ const Ambulancia: React.FC = () => {
       ]);
       setAmbulancias(ambulanciasData);
       setTripulantes(tripulantesData);
-      
       setLastUpdate(new Date().toISOString());
 
-// Llamar al servicio que obtiene la tripulación completa
-const tripulacion = await ambulanciaService.getFilteredTripulantes(); 
-if (tripulacion) {
-  // Asumimos que el objeto tripulacion tiene una propiedad "ambulancia"
-  const  id  = tripulacion;
-
-  console.log('ambulancia ID',id)
-  setAmbulanciaId(id); // Guardar el ID de la ambulancia en el estado
-}
+      const tripulacion = await ambulanciaService.getFilteredTripulantes();
+      if (tripulacion) {
+        const id = tripulacion;
+        console.log('ambulancia ID', id);
+        setAmbulanciaId(id);
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -91,13 +82,13 @@ if (tripulacion) {
         await ambulanciaService.updateAmbulancia(editingAmbulance.id, formData);
         toast({
           title: "Éxito",
-          description: "Ambulancia actualizada correctamente"
+          description: "Ambulancia actualizada correctamente",
         });
       } else {
         await ambulanciaService.createAmbulancia(formData);
         toast({
           title: "Éxito",
-          description: "Ambulancia creada correctamente"
+          description: "Ambulancia creada correctamente",
         });
       }
       setShowAmbulanceModal(false);
@@ -107,7 +98,7 @@ if (tripulacion) {
       toast({
         title: "Error",
         description: "No se pudo guardar la ambulancia",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -121,14 +112,14 @@ if (tripulacion) {
         await ambulanciaService.deleteAmbulancia(id);
         toast({
           title: "Éxito",
-          description: "Ambulancia eliminada correctamente"
+          description: "Ambulancia eliminada correctamente",
         });
         fetchData();
       } catch (error) {
         toast({
           title: "Error",
           description: "No se pudo eliminar la ambulancia",
-          variant: "destructive"
+          variant: "destructive",
         });
       } finally {
         setLoading(false);
@@ -160,15 +151,15 @@ if (tripulacion) {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6 bg-blue-50 min-h-screen">
+    <div className="container mx-auto p-6 space-y-6 bg-gray-50 min-h-screen">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-blue-800">Sistema de Monitoreo de Ambulancias</h1>
+        <h1 className="text-4xl font-semibold text-teal-800">Sistema de Monitoreo de Ambulancias</h1>
         <Button 
           onClick={fetchData} 
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+          className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 transition-all shadow-lg"
           disabled={loading}
         >
-          <RefreshCcw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCcw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
           {loading ? 'Actualizando...' : 'Actualizar'}
         </Button>
       </div>
@@ -176,23 +167,22 @@ if (tripulacion) {
       <AmbulanciaStats ambulancia={ambulancias} />
 
       <Tabs defaultValue="map" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-4 bg-blue-100">
-          <TabsTrigger value="map" className="text-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+        <TabsList className="grid w-full grid-cols-2 mb-4 bg-teal-100 rounded-md shadow-sm">
+          <TabsTrigger value="map" className="text-lg py-2 text-teal-600 data-[state=active]:bg-teal-600 data-[state=active]:text-white">
             Mapa en Vivo
           </TabsTrigger>
-          <TabsTrigger value="list" className="text-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+          <TabsTrigger value="list" className="text-lg py-2 text-teal-600 data-[state=active]:bg-teal-600 data-[state=active]:text-white">
             Lista de Ambulancias
           </TabsTrigger>
         </TabsList>
         
         <TabsContent value="map">
           <div className="mt-4 px-4">
-          <AmbulanciaSearch ambulancia={ambulancias} />
-            <Card className="shadow-xl bg-white mt-4">
+            <AmbulanciaSearch ambulancia={ambulancias} />
+            <Card className="shadow-lg rounded-md bg-white mt-4">
               <CardContent className="p-0">
                 <div className="h-[600px] rounded-lg overflow-hidden">
-                  <MapWithNoSSR ambulancias={ambulancias} ambulanciaId={ambulanciaId || 0}/>
-                  {/* Ensure ambulanciaId is a string by providing a default empty string */}
+                  <MapWithNoSSR ambulancias={ambulancias} ambulanciaId={ambulanciaId || 0} />
                 </div>
               </CardContent>
             </Card>
@@ -200,17 +190,17 @@ if (tripulacion) {
         </TabsContent>
 
         <TabsContent value="list">
-          <Card className="shadow-xl bg-white">
+          <Card className="shadow-lg rounded-md bg-white">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-2xl text-blue-800">Estado de Unidades</CardTitle>
+              <CardTitle className="text-2xl text-teal-600">Estado de Unidades</CardTitle>
               <Button 
                 onClick={() => {
                   resetForm();
                   setShowAmbulanceModal(true);
                 }}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-teal-600 hover:bg-teal-700 transition-all shadow-lg"
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="h-5 w-5 mr-2" />
                 Nueva Ambulancia
               </Button>
             </CardHeader>
