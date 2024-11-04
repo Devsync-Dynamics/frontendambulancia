@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Menu, X, Home, Truck, Send, Inbox, LogOut } from 'lucide-react';
+import { Menu, X, Home, Truck, Send, Inbox, LogOut, Receipt } from 'lucide-react';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -12,6 +12,7 @@ const navItems = [
   { path: '/ambulancia', name: 'Ambulancia', icon: Truck },
   { path: '/enviar-solicitud', name: 'Enviar Solicitud', icon: Send },
   { path: '/recibir-solicitud', name: 'Recibir Solicitud', icon: Inbox },
+  { path: '/facturacion', name: 'Facturacion', icon: Receipt  },
 ];
 
 export default function GeneralLayout({ children }: LayoutProps) {
@@ -30,7 +31,7 @@ export default function GeneralLayout({ children }: LayoutProps) {
           <div className="flex justify-between h-16">
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
-                <h1 className="text-2xl font-bold text-white tracking-wide">Sistema de Ambulancias</h1>
+                <h1 className="text-2xl font-bold text-white tracking-wide">SIGTA</h1>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                 {navItems.map((item) => {

@@ -52,8 +52,10 @@ export default function Home() {
               <Ambulance className="h-12 w-12 text-white" />
               <Heart className="h-6 w-6 text-red-500 absolute -top-1 -right-1" />
             </div>
-            <h1 className="text-3xl font-bold text-teal-800 mb-2">Sistema de Salud</h1>
-            <p className="text-teal-600">Acceso a Servicios de Emergencia</p>
+            <h1 className="text-3xl font-bold text-teal-800 mb-2">SIGTA</h1>
+            <p className="text-teal-600 text-center">
+  Sistema Integral De Gestion De Traslados y Ambulancias
+</p>
           </div>
           {error && (
             <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
