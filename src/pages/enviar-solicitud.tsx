@@ -51,7 +51,6 @@ export default function EnviarSolicitud() {
   const fetchSolicitudes = useCallback(async (force: boolean = false) => {
     const now = Date.now();
     if (!force && now - lastFetchTimeRef.current < 5000) {
-      // Si no es forzado y han pasado menos de 5 segundos desde la última actualización, no hacemos nada
       return;
     }
 
@@ -61,7 +60,6 @@ export default function EnviarSolicitud() {
       lastFetchTimeRef.current = now;
 
       setSolicitudes(prevSolicitudes => {
-        // Comparar y notificar cambios
         data.forEach(newSolicitud => {
           const oldSolicitud = prevSolicitudes.find(s => s.id === newSolicitud.id);
           if (oldSolicitud && oldSolicitud.estado !== newSolicitud.estado) {
@@ -87,7 +85,7 @@ export default function EnviarSolicitud() {
   }, [toast]);
 
   useEffect(() => {
-    fetchSolicitudes(true); // Carga inicial forzada
+    fetchSolicitudes(true);
     const intervalId = setInterval(() => fetchSolicitudes(), 15000);
     return () => clearInterval(intervalId);
   }, [fetchSolicitudes]);
@@ -121,7 +119,7 @@ export default function EnviarSolicitud() {
         prioridad: 'media',
       });
       setIsModalOpen(false);
-      fetchSolicitudes(true); // Forzar actualización después de crear una nueva solicitud
+      fetchSolicitudes(true);
     } catch (error) {
       console.error('Error al crear la solicitud:', error);
       toast({
@@ -142,37 +140,34 @@ export default function EnviarSolicitud() {
     setFormData({ ...formData, prioridad: value as 'baja' | 'media' | 'alta' });
   };
 
-
-
-
   return (
     <GeneralLayout>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8 text-center text-teal-900">Centro de Control de Ambulancias</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center text-teal-700">Centro de Control de Ambulancias</h1>
         <div className="grid grid-cols-1 gap-8">
           <Card className="shadow-xl bg-teal-50 border border-teal-200 rounded-lg">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-2xl font-semibold text-gray-700 flex items-center">
+              <CardTitle className="text-2xl font-semibold text-teal-700 flex items-center">
                 <ClipboardList className="mr-2 h-6 w-6" />
                 Solicitudes Pendientes
               </CardTitle>
               <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                 <DialogTrigger asChild>
-                  <Button className="bg-green-500 hover:bg-green-600">
+                  <Button className="bg-teal-700 hover:bg-teal-600 text-white">
                     <Plus className="mr-2 h-4 w-4" />
                     Nueva Solicitud
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="sm:max-w-[425px] bg-teal-50 border border-teal-200">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold text-gray-800">Nueva Solicitud de Ambulancia</DialogTitle>
-                    <DialogDescription>
+                    <DialogTitle className="text-2xl font-bold text-teal-700">Nueva Solicitud de Ambulancia</DialogTitle>
+                    <DialogDescription className="text-teal-700">
                       Complete los detalles para crear una nueva solicitud de ambulancia.
                     </DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleSubmit} className="space-y-4 mt-4">
                     <div className="space-y-2">
-                      <Label htmlFor="paciente">Paciente</Label>
+                      <Label htmlFor="paciente" className="text-teal-700">Paciente</Label>
                       <Input
                         id="paciente"
                         name="paciente"
@@ -180,10 +175,11 @@ export default function EnviarSolicitud() {
                         onChange={handleInputChange}
                         placeholder="Nombre del paciente"
                         required
+                        className="bg-teal-50 border border-teal-200 text-teal-700"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="origen">Origen</Label>
+                      <Label htmlFor="origen" className="text-teal-700">Origen</Label>
                       <Input
                         id="origen"
                         name="origen"
@@ -191,10 +187,11 @@ export default function EnviarSolicitud() {
                         onChange={handleInputChange}
                         placeholder="Lugar de origen"
                         required
+                        className="bg-teal-50 border border-teal-200 text-teal-700"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="destino">Destino</Label>
+                      <Label htmlFor="destino" className="text-teal-700">Destino</Label>
                       <Input
                         id="destino"
                         name="destino"
@@ -202,10 +199,11 @@ export default function EnviarSolicitud() {
                         onChange={handleInputChange}
                         placeholder="Lugar de destino"
                         required
+                        className="bg-teal-50 border border-teal-200 text-teal-700"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="fecha">Fecha y Hora</Label>
+                      <Label htmlFor="fecha" className="text-teal-700">Fecha y Hora</Label>
                       <Input
                         id="fecha"
                         name="fecha"
@@ -213,12 +211,13 @@ export default function EnviarSolicitud() {
                         value={formData.fecha}
                         onChange={handleInputChange}
                         required
+                        className="bg-teal-50 border border-teal-200 text-teal-700"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="prioridad">Prioridad</Label>
+                      <Label htmlFor="prioridad" className="text-teal-700">Prioridad</Label>
                       <Select onValueChange={handleSelectChange} value={formData.prioridad}>
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-teal-50 border border-teal-200 text-teal-700">
                           <SelectValue placeholder="Seleccione la prioridad" />
                         </SelectTrigger>
                         <SelectContent>
@@ -228,7 +227,7 @@ export default function EnviarSolicitud() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    <Button type="submit" className="w-full bg-teal-700 hover:bg-teal-600 text-white" disabled={isSubmitting}>
                       {isSubmitting ? (
                         <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
                       ) : (
@@ -241,28 +240,25 @@ export default function EnviarSolicitud() {
               </Dialog>
             </CardHeader>
             <CardContent>
-           
-         
-            {isLoading ? (
-              <div className="flex justify-center items-center h-64">
-                <Loader2 className="h-16 w-16 animate-spin text-blue-600" />
-              </div>
-            ) : (
-              <div className="bg-white rounded-lg shadow-inner p-4 overflow-x-auto">
-                <SolicitudesTable
-                  solicitudes={solicitudes}
-                  tipoVista={'enviar'}
-                />
-              </div>
-            )}
+              {isLoading ? (
+                <div className="flex justify-center items-center h-64">
+                  <Loader2 className="h-16 w-16 animate-spin text-teal-700" />
+                </div>
+              ) : (
+                <div className="bg-white rounded-lg shadow-inner p-4 overflow-x-auto">
+                  <SolicitudesTable
+                    solicitudes={solicitudes}
+                    tipoVista={'enviar'}
+                  />
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
       </div>
-      {/* Notificación de estado de la solicitud */}
       {statusNotification.show && (
         <div className={`fixed bottom-4 right-4 p-4 rounded-md shadow-lg ${
-          statusNotification.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+          statusNotification.type === 'success' ? 'bg-teal-700' : 'bg-red-500'
         } text-white flex items-center`}>
           {statusNotification.type === 'success' ? (
             <CheckCircle className="mr-2 h-5 w-5" />
