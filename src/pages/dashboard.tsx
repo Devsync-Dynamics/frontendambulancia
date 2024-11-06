@@ -208,11 +208,11 @@ function DashboardPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={emergencyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="mes" stroke="#4b5563" />
-                  <YAxis stroke="#4b5563" />
-                  <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e5e7eb' }} />
+                  <XAxis dataKey="mes" stroke="#0f766e" />
+                  <YAxis stroke="#0f766e" />
+                  <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderColor: '#99f6e4' }} />
                   <Legend />
-                  <Bar dataKey="emergencias" fill="#3b82f6" />
+                  <Bar dataKey="emergencias" fill="#14b8a6" />
                 </BarChart>
               </ResponsiveContainer>
             </div>

@@ -154,7 +154,7 @@ export const AmbulanciaSearch = ({ ambulancia }: AmbulanciaSearchProps) => {
             />
             <Button
               onClick={buscarUbicacion}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-teal-700 hover:bg-blue-700 text-white"
               disabled={isLoading}
             >
               <Search className="h-5 w-5" />
@@ -172,7 +172,7 @@ export const AmbulanciaSearch = ({ ambulancia }: AmbulanciaSearchProps) => {
 
           <Button
             onClick={buscarUbicacionActual}
-            className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-6"
+            className="w-full flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white py-6"
             disabled={isLoading}
           >
             <MapPin className="h-5 w-5" />

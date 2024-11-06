@@ -32,27 +32,28 @@ export const AmbulanciaFormModal: React.FC<AmbulanciaFormModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-      <Card className="max-w-md w-full shadow-xl">
+      <Card className="max-w-md w-full shadow-xl bg-teal-50 border border-teal-200">
         <CardHeader>
-          <CardTitle className="text-xl text-blue-800 flex items-center gap-2">
-            <Truck className="h-6 w-6 text-blue-600" />
+          <CardTitle className="text-xl text-teal-700 flex items-center gap-2">
+            <Truck className="h-6 w-6 text-teal-700" />
             {editingAmbulance ? 'Editar Ambulancia' : 'Nueva Ambulancia'}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-blue-600">Placa</label>
+              <label className="text-sm font-medium text-teal-700">Placa</label>
               <Input
                 value={formData.placa}
-                onChange={(e) => setFormData({...formData, placa: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, placa: e.target.value })}
                 placeholder="Ingrese la placa"
+                className="bg-teal-50 border border-teal-200 text-teal-700"
               />
             </div>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium text-blue-600">Tripulación</label>
-              <ScrollArea className="h-40 w-full border rounded-md p-2">
+              <label className="text-sm font-medium text-teal-700">Tripulación</label>
+              <ScrollArea className="h-40 w-full border border-teal-200 rounded-md p-2 bg-teal-50">
                 {tripulantes.map((tripulante) => (
                   <div key={tripulante.id} className="flex items-center space-x-2 py-1">
                     <input
@@ -71,22 +72,22 @@ export const AmbulanciaFormModal: React.FC<AmbulanciaFormModalProps> = ({
                           });
                         }
                       }}
-                      className="rounded border-gray-300"
+                      className="rounded border-teal-200"
                     />
-                    <span className="text-sm">{tripulante.nombre}</span>
-                    <Badge className="ml-auto">{tripulante.idrol}</Badge>
+                    <span className="text-sm text-teal-700">{tripulante.nombre}</span>
+                    <Badge className="ml-auto bg-teal-200 text-teal-700">{tripulante.idrol}</Badge>
                   </div>
                 ))}
               </ScrollArea>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-blue-600">Estado</label>
+              <label className="text-sm font-medium text-teal-700">Estado</label>
               <Select
                 value={formData.estadoId}
-                onValueChange={(value) => setFormData({...formData, estadoId: value})}
+                onValueChange={(value) => setFormData({ ...formData, estadoId: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-teal-50 border border-teal-200 text-teal-700">
                   <SelectValue placeholder="Seleccione el estado" />
                 </SelectTrigger>
                 <SelectContent>
@@ -99,11 +100,12 @@ export const AmbulanciaFormModal: React.FC<AmbulanciaFormModalProps> = ({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-blue-600">Ubicación Actual</label>
+              <label className="text-sm font-medium text-teal-700">Ubicación Actual</label>
               <Input
                 value={formData.ubicacionActual}
-                onChange={(e) => setFormData({...formData, ubicacionActual: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, ubicacionActual: e.target.value })}
                 placeholder="Ubicación actual"
+                className="bg-teal-50 border border-teal-200 text-teal-700"
               />
             </div>
 
@@ -111,14 +113,14 @@ export const AmbulanciaFormModal: React.FC<AmbulanciaFormModalProps> = ({
               <Button
                 onClick={onClose}
                 variant="outline"
-                className="flex-1"
+                className="flex-1 border-teal-700 text-teal-700"
                 disabled={loading}
               >
                 Cancelar
               </Button>
               <Button
                 onClick={onSubmit}
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                className="flex-1 bg-teal-700 hover:bg-teal-600 text-white"
                 disabled={loading}
               >
                 {loading ? 'Guardando...' : (editingAmbulance ? 'Guardar Cambios' : 'Crear Ambulancia')}
