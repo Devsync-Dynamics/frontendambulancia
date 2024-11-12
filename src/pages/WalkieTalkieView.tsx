@@ -18,13 +18,12 @@ const WalkieTalkieView: React.FC<WalkieTalkieViewProps> = ({ initialUsers = [] }
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(!initialUsers.length);
   const [isClient, setIsClient] = useState(false);
+  const [isSomeoneTransmitting, setIsSomeoneTransmitting] = useState(false);
 
-  // Verificar si estamos en el cliente
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Cargar usuarios si no se proporcionaron inicialmente
   useEffect(() => {
     if (!initialUsers.length) {
       const loadUsers = async () => {
@@ -44,7 +43,6 @@ const WalkieTalkieView: React.FC<WalkieTalkieViewProps> = ({ initialUsers = [] }
     }
   }, [initialUsers]);
 
-  // Inicializar AgoraService solo en el cliente
   useEffect(() => {
     if (!isClient) return;
 
@@ -52,6 +50,20 @@ const WalkieTalkieView: React.FC<WalkieTalkieViewProps> = ({ initialUsers = [] }
       try {
         const { default: AgoraService } = await import('@/services/agora.service');
         const service = new AgoraService(AGORA_APP_ID);
+        
+        // Configurar los event listeners para el audio entrante
+        service.on('userPublished', (user, mediaType) => {
+          if (mediaType === 'audio') {
+            setIsSomeoneTransmitting(true);
+          }
+        });
+
+        service.on('userUnpublished', (user, mediaType) => {
+          if (mediaType === 'audio') {
+            setIsSomeoneTransmitting(false);
+          }
+        });
+
         setAgoraService(service);
       } catch (err) {
         console.error('Error initializing Agora service:', err);
@@ -111,7 +123,6 @@ const WalkieTalkieView: React.FC<WalkieTalkieViewProps> = ({ initialUsers = [] }
     }
   }, [agoraService]);
 
-  // Mostrar loading spinner mientras se carga en el cliente o se cargan los usuarios
   if (!isClient || isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -138,6 +149,12 @@ const WalkieTalkieView: React.FC<WalkieTalkieViewProps> = ({ initialUsers = [] }
         onSelectUser={handleSelectUser} 
       />
 
+      {isSomeoneTransmitting && (
+        <div className="fixed top-5 right-5 px-4 py-2 bg-green-500 text-white rounded-lg animate-pulse">
+          Recibiendo audio...
+        </div>
+      )}
+
       {isConnecting ? (
         <div className="fixed bottom-10 px-6 py-3 bg-gray-500 text-white rounded-full">
           Conectando...
@@ -153,7 +170,6 @@ const WalkieTalkieView: React.FC<WalkieTalkieViewProps> = ({ initialUsers = [] }
   );
 };
 
-// Asegurarse de que los usuarios se cargan en el servidor
 export const getServerSideProps = async () => {
   try {
     const users = await ambulanciaService.getTripulantes();
