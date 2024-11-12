@@ -7,7 +7,6 @@ interface AmbulanciaStatsProps {
 
 }
 export const AmbulanciaStats: React.FC<AmbulanciaStatsProps> = ({ ambulancia }) => {
-  console.log(ambulancia);
   const stats = [
     { 
       label: 'Total ambulancia', 

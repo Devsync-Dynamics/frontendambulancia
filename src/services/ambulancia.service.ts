@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { toast } from '@/hooks/use-toast';
 
-const API_URL = 'https://backendtraslado-production.up.railway.app';
-//const API_URL = 'http://localhost:3001';
+//const API_URL = 'https://backendtraslado-production.up.railway.app';
+const API_URL = 'http://localhost:3001';
 export const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -20,16 +20,18 @@ export interface ITripulante {
     id: number;
   }
 }
+ 
 
+export interface IEstadoAmbulancia {
+  id: string;
+  estado: string;
+}
 
 export interface IAmbulancia {
   id: number;
   placa: string;
   user: ITripulante[];
-  estado: {
-    id: string;
-    estado: string;
-  };
+  estado: IEstadoAmbulancia;
   latitude: number;
   longitude: number;
   updatedAt: string;
@@ -40,7 +42,7 @@ export interface IAmbulancia {
 export interface AmbulanciaFormData {
   placa: string;
   tripulacion: ITripulante[];
-  estadoId: string;
+  estado: IEstadoAmbulancia;
   ubicacionActual: string;
   latitude?: number;
   longitude?: number;
@@ -66,6 +68,21 @@ export interface CreateSolicitudDto {
 
 
 export const ambulanciaService = {
+
+  getEstadosAmbulancia: async (): Promise<IEstadoAmbulancia[]> => {
+    try {
+      const response = await api.get('/estado-ambulancia');
+      return response.data;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar los estados de ambulancia",
+        variant: "destructive",
+      });
+      return [];
+    }
+  },
+
   getAmbulancias: async (): Promise<IAmbulancia[]> => {
     try {
       const response = await api.get('/ambulancia');
@@ -128,8 +145,10 @@ export const ambulanciaService = {
     try {
       const tripulacionIds = formData.tripulacion.map(t => t.id);
       const response = await api.post('/ambulancia', {
-        ...formData,
+        placa: formData.placa,
         tripulacionIds,
+        estadoAmbulanciaId: formData.estado.id, // Usar estado.id para el backend
+        ubicacionActual: formData.ubicacionActual,
         latitude: formData.latitude || 10.9639,
         longitude: formData.longitude || -74.7964,
       });
@@ -154,8 +173,10 @@ export const ambulanciaService = {
     try {
       const tripulacionIds = formData.tripulacion.map(t => t.id);
       const response = await api.patch(`/ambulancia/${id}`, {
-        ...formData,
+        placa: formData.placa,
         tripulacionIds,
+        estadoAmbulanciaId: formData.estado.id, // Usar estado.id para el backend
+        ubicacionActual: formData.ubicacionActual,
       });
       
       toast({

@@ -2,7 +2,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Truck, Edit, Trash2, User, MapPin, Calendar } from 'lucide-react';
-import { IAmbulancia } from '@/services/ambulancia.service';
+import { IAmbulancia, IEstadoAmbulancia } from '@/services/ambulancia.service';
 import ClientOnlyTimestamp from '../ClientOnlyTimestamp';
 import React from "react";
 
@@ -17,14 +17,15 @@ export const AmbulanciaList: React.FC<AmbulanciaListProps> = ({
   onEdit,
   onDelete
 }) => {
-  const getStatusColor = (estado: string): string => {
+  const getStatusColor = (estado: IEstadoAmbulancia): string => {
+    // Mapeo basado en el estado.estado en lugar del ID
     const statusColors: { [key: string]: string } = {
       'Disponible': 'bg-green-500 text-white',
       'En servicio': 'bg-yellow-500 text-black',
       'En mantenimiento': 'bg-red-500 text-white',
-      'INACTIVO': 'bg-gray-500 text-white'
+     // 'INACTIVO': 'bg-gray-500 text-white'
     };
-    return statusColors[estado] || 'bg-gray-500 text-white';
+    return statusColors[estado.estado] || 'bg-gray-500 text-white';
   };
 
   return (
@@ -37,7 +38,7 @@ export const AmbulanciaList: React.FC<AmbulanciaListProps> = ({
               {ambulancia.placa}
             </h3>
             <div className="flex items-center gap-2">
-              <Badge className={`${getStatusColor(ambulancia.estado.estado)} px-3 py-1 text-sm font-medium`}>
+              <Badge className={`${getStatusColor(ambulancia.estado)} px-3 py-1 text-sm font-medium`}>
                 {ambulancia.estado.estado}
               </Badge>
               <Button
@@ -62,7 +63,7 @@ export const AmbulanciaList: React.FC<AmbulanciaListProps> = ({
             <p className="flex items-center gap-2">
               {ambulancia.user.map((tripulante) => (
                 <React.Fragment key={tripulante.id}>
-                  <User className="h-4 w-4 text-teal-400" /> {tripulante.nombre}{tripulante.apellido}
+                  <User className="h-4 w-4 text-teal-400" /> {tripulante.nombre} {tripulante.apellido}
                 </React.Fragment>
               ))}
             </p>

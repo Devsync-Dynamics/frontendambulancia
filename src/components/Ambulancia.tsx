@@ -37,7 +37,10 @@ const Ambulancia: React.FC = () => {
   const [formData, setFormData] = useState<AmbulanciaFormData>({
     placa: '',
     tripulacion: [],
-    estadoId: '',
+    estado: {
+      id: '',
+      estado: ''
+    },
     ubicacionActual: '',
   });
 
@@ -131,7 +134,10 @@ const Ambulancia: React.FC = () => {
     setFormData({
       placa: '',
       tripulacion: [],
-      estadoId: '',
+       estado: {
+    id: '',
+    estado: ''
+  },
       ubicacionActual: '',
     });
     setEditingAmbulance(null);
@@ -142,7 +148,7 @@ const Ambulancia: React.FC = () => {
     setFormData({
       placa: ambulance.placa,
       tripulacion: ambulance.user,
-      estadoId: ambulance.estado.id,
+      estado: ambulance.estado, // Ahora pasamos el objeto estado completo
       ubicacionActual: ambulance.ubicacionActual,
       latitude: ambulance.latitude,
       longitude: ambulance.longitude,

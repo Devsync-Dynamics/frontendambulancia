@@ -5,7 +5,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Truck } from 'lucide-react';
-import { IAmbulancia, ITripulante, AmbulanciaFormData } from '@/services/ambulancia.service';
+import { IAmbulancia, ITripulante, AmbulanciaFormData, ambulanciaService, IEstadoAmbulancia } from '@/services/ambulancia.service';
+import { useEffect, useState } from "react";
 
 interface AmbulanciaFormModalProps {
   show: boolean;
@@ -28,6 +29,27 @@ export const AmbulanciaFormModal: React.FC<AmbulanciaFormModalProps> = ({
   tripulantes,
   loading
 }) => {
+  const [estados, setEstados] = useState<IEstadoAmbulancia[]>([]);
+  const [loadingEstados, setLoadingEstados] = useState(false);
+
+  useEffect(() => {
+    const fetchEstados = async () => {
+      setLoadingEstados(true);
+      try {
+        const estadosData = await ambulanciaService.getEstadosAmbulancia();
+        setEstados(estadosData);
+      } catch (error) {
+        console.error('Error al cargar estados:', error);
+      } finally {
+        setLoadingEstados(false);
+      }
+    };
+
+    if (show) {
+      fetchEstados();
+    }
+  }, [show]);
+
   if (!show) return null;
 
   return (
@@ -84,17 +106,27 @@ export const AmbulanciaFormModal: React.FC<AmbulanciaFormModalProps> = ({
             <div className="space-y-2">
               <label className="text-sm font-medium text-teal-700">Estado</label>
               <Select
-                value={formData.estadoId}
-                onValueChange={(value) => setFormData({ ...formData, estadoId: value })}
+                value={formData.estado?.id}
+                onValueChange={(value) => {
+                  const selectedEstado = estados.find(estado => estado.id === value);
+                  if (selectedEstado) {
+                    setFormData({
+                      ...formData,
+                      estado: selectedEstado
+                    });
+                  }
+                }}
+                disabled={loadingEstados || estados.length === 0}
               >
                 <SelectTrigger className="bg-teal-50 border border-teal-200 text-teal-700">
-                  <SelectValue placeholder="Seleccione el estado" />
+                  <SelectValue placeholder={loadingEstados ? "Cargando estados..." : "Seleccione el estado"} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="DISPONIBLE">Disponible</SelectItem>
-                  <SelectItem value="EN_SERVICIO">En Servicio</SelectItem>
-                  <SelectItem value="MANTENIMIENTO">Mantenimiento</SelectItem>
-                  <SelectItem value="INACTIVO">Inactivo</SelectItem>
+                  {estados.map((estado) => (
+                    <SelectItem key={estado.id} value={estado.id}>
+                      {estado.estado}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -121,7 +153,7 @@ export const AmbulanciaFormModal: React.FC<AmbulanciaFormModalProps> = ({
               <Button
                 onClick={onSubmit}
                 className="flex-1 bg-teal-700 hover:bg-teal-600 text-white"
-                disabled={loading}
+                disabled={loading || loadingEstados}
               >
                 {loading ? 'Guardando...' : (editingAmbulance ? 'Guardar Cambios' : 'Crear Ambulancia')}
               </Button>
