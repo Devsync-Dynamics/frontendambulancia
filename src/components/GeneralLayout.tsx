@@ -13,7 +13,6 @@ const navItems = [
   { path: '/enviar-solicitud', name: 'Enviar Solicitud', icon: Send },
   { path: '/recibir-solicitud', name: 'Recibir Solicitud', icon: Inbox },
   { path: '/facturacion', name: 'Facturacion', icon: Receipt  },
-  { path: '/WalkieTalkieView', name: 'WalktoTal', icon:  Footprints },
 ];
 
 export default function GeneralLayout({ children }: LayoutProps) {
