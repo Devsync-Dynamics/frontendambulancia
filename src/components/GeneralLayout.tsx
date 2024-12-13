@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Menu, X, Home, Truck, Send, Inbox, LogOut, Receipt } from 'lucide-react';
+import { Menu, X, Home, Truck, Send, Inbox, LogOut, Receipt, Footprints } from 'lucide-react';
 
 type LayoutProps = {
   children: React.ReactNode;
