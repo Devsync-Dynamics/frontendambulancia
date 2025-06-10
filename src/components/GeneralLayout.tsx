@@ -12,8 +12,9 @@ const navItems = [
   { path: '/ambulancia', name: 'Ambulancia', icon: Truck },
   { path: '/enviar-solicitud', name: 'Enviar Solicitud', icon: Send },
   { path: '/recibir-solicitud', name: 'Recibir Solicitud', icon: Inbox },
-  { path: '/facturacion', name: 'Facturacion', icon: Receipt  },
+  // { path: '/facturacion', name: 'Facturacion', icon: Receipt  },
   { path: '/autorizacion-serv-salud', name: 'Autorizacion', icon: Receipt  },
+  { path: '/aph-digital' , name: 'Aph Digital',icon:Inbox}
 ];
 
 export default function GeneralLayout({ children }: LayoutProps) {

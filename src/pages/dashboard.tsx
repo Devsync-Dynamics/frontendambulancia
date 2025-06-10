@@ -51,7 +51,7 @@ function DashboardPage() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://backendtraslado-production-4194.up.railway.app/ambulancia', {
+      const response = await fetch('http://localhost:3001/ambulancia', {
         headers: {
           'Authorization': `Bearer ${token}`
         }

@@ -1,0 +1,30 @@
+@media print {
+  @page {
+    size: A4;
+    margin: 0.5cm;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+
+  .print\:block {
+    display: block !important;
+  }
+
+  .print\:p-2 {
+    padding: 0.5rem !important;
+  }
+
+  input[type="checkbox"] {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

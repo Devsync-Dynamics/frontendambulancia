@@ -2,6 +2,8 @@ import type { AppProps } from 'next/app';
 import type { ReactElement, ReactNode } from 'react';
 import type { NextPage } from 'next';
 import '@/styles/globals.css';
+import '@/styles/print.css';
+
 import 'leaflet/dist/leaflet.css';
 
 type NextPageWithLayout = NextPage & {
