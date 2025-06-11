@@ -5,7 +5,7 @@ import { useRouter } from "next/router"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Printer } from "lucide-react"
 import Link from "next/link"
-import { type IAphDigital, aphDigitalService }  from "@/services/aph-digital.service"
+import { type IAphDigital, aphDigitalService } from "@/services/aph-digital.service"
 
 export default function PrintAphDigitalPage() {
   const router = useRouter()
@@ -29,6 +29,11 @@ export default function PrintAphDigitalPage() {
 
   const handlePrint = () => {
     window.print()
+  }
+
+  // Función para validar si es una imagen base64 válida
+  const isValidBase64Image = (str?: string) => {
+    return str && str.startsWith("data:image/") && str.includes("base64,")
   }
 
   if (loading) {
@@ -481,17 +486,59 @@ export default function PrintAphDigitalPage() {
             </div>
           </div>
 
-          {/* Firmas */}
-          <div className="grid grid-cols-2 gap-4">
+          {/* Firmas con imágenes base64 */}
+          <div className="grid grid-cols-2 gap-4 mt-8">
             <div className="border border-black p-2 text-center">
-              <div className="mb-16">Institución responsable del paciente</div>
-              <div className="border-t border-black pt-2">{formulario.firmaSelloResponsable || "Firma y sello"}</div>
+              <div className="mb-4 font-bold">Institución responsable del paciente</div>
+              <div className="min-h-[80px] flex items-center justify-center">
+                {isValidBase64Image(formulario.firmaSelloResponsable) ? (
+                  <img
+                    src={formulario.firmaSelloResponsable || "/placeholder.svg"}
+                    alt="Firma institución responsable"
+                    className="max-w-full max-h-16 object-contain"
+                    style={{ imageRendering: "crisp-edges" }}
+                  />
+                ) : (
+                  <div className="text-gray-400 text-sm">Sin firma</div>
+                )}
+              </div>
+              <div className="border-t border-black pt-2 mt-2 text-sm">Firma y sello</div>
             </div>
             <div className="border border-black p-2 text-center">
-              <div className="mb-16">Funcionario de AMED</div>
-              <div className="border-t border-black pt-2">{formulario.funcionarioAMED || "Firma y sello"}</div>
+              <div className="mb-4 font-bold">Funcionario de AMED</div>
+              <div className="min-h-[80px] flex items-center justify-center">
+                {isValidBase64Image(formulario.funcionarioAMED) ? (
+                  <img
+                    src={formulario.funcionarioAMED || "/placeholder.svg"}
+                    alt="Firma funcionario AMED"
+                    className="max-w-full max-h-16 object-contain"
+                    style={{ imageRendering: "crisp-edges" }}
+                  />
+                ) : (
+                  <div className="text-gray-400 text-sm">Sin firma</div>
+                )}
+              </div>
+              <div className="border-t border-black pt-2 mt-2 text-sm">Firma y sello</div>
             </div>
           </div>
+
+          {/* Firma adicional si existe */}
+          {isValidBase64Image(formulario.firmaInstitucionRecibePaciente) && (
+            <div className="mt-4">
+              <div className="border border-black p-2 text-center max-w-md mx-auto">
+                <div className="mb-4 font-bold">Institución que recibe el paciente</div>
+                <div className="min-h-[80px] flex items-center justify-center">
+                  <img
+                    src={formulario.firmaInstitucionRecibePaciente || "/placeholder.svg"}
+                    alt="Firma institución receptora"
+                    className="max-w-full max-h-16 object-contain"
+                    style={{ imageRendering: "crisp-edges" }}
+                  />
+                </div>
+                <div className="border-t border-black pt-2 mt-2 text-sm">Firma y sello</div>
+              </div>
+            </div>
+          )}
 
           {/* Pie de página */}
           <div className="text-xs text-center mt-4 print:block">
