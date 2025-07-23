@@ -1,326 +1,208 @@
-import axios from "axios"
-import { toast } from "@/hooks/use-toast"
+export interface MedicamentoInsumo {
+  id: string
+  nombre: string
+  dosis: string
+  via: string
+  frecuencia: string
+}
 
-// Usar la misma configuración de API
-const API_URL = "http://localhost:3001"
-export const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-})
-
-// Interface para AphDigital basada en la entidad
-export interface IAphDigital {
-  id?: number
-  // Información básica
+export interface CreateAphDigitalDto {
   numeroFormulario: string
   placa: string
   cc: string
-  fecha: string // Date como string para el frontend
+  fecha: string
   nombrePaciente: string
+  horaLlegada?: string // Nuevo campo para hora de llegada
 
   // Tipo de servicio
   ambulanciaBasica?: boolean
   medicalizado?: boolean
   consultaMedica?: boolean
-  edad?: number
-  sexo?: "M" | "F"
-  identificacion?: string
-  estadoCivil?: "Soltero" | "Casado" | "Viudo" | "Divorciado" | "Union Libre"
-  diagnostico?: string
-  notaEvolucion?: string
 
-  // Signos Vitales
-  fc?: string // Frecuencia cardíaca
-  fr?: string // Frecuencia respiratoria
-  temp?: string // Temperatura
-  ta?: string // Tensión arterial
-  aceptadoPor?: string
-  estadoclinicopac?: string
+  // Información del paciente
+  edad?: number
+  sexo?: string
+  identificacion?: string
+  estadoCivil?: string
   eps?: string
   arl?: string
+  estadoPaciente?: string // Nuevo campo seleccionable
+  direccion?: string
+  telefono?: string
 
-  // Oxígeno y equipos
-  o2?: string
-  canulaNasal?: boolean
-  equipoVenturi?: boolean
-  porcentajeOxigeno?: string
-  mascaraReservorio?: boolean
-  via?: string
-  ccVia?: string
-  via2?: string
-  ccVia2?: string
+  // Diagnóstico y evolución
+  diagnostico?: string
+  notaEvolucion?: string
+  procedimientos?: string
 
-  // Equipos adicionales
-  equipoMultiparametro?: boolean
-  ventiladorMecanico?: boolean
-  valvulaPeep?: boolean
-  desfibrilador?: boolean
-  joules?: boolean
-  aspirador?: string
-  capnografo?: boolean
-  pulmoaire?: boolean
+  // Signos vitales
+  fc?: string
+  fr?: string
+  temp?: string
+  ta?: string
+  spo2?: string
+  glasgow?: string
+  peso?: string
+  talla?: string
 
-  // Información de transporte
-  ambulanciaSolicitada?: string
-  direccionServicio?: string
-  tel?: string
-  destinoPaciente?: string
-  estudio?: string
+  // Medicamentos
+  medicamentosInsumos: MedicamentoInsumo[]
 
-  // Horarios
-  horarioLL1?: string
-  horarioSa1?: string
-  horarioLL2?: string
-  horarioSa2?: string
-  horarioLL3?: string
-  horarioSa3?: string
-  horarioLL4?: string
-  horarioSa4?: string
-
-  // Tipo de servicio de ambulancia
-  servicioSimple?: boolean
-  redondo?: boolean
-  fallido?: boolean
-  direccionTrasladoPaciente?: string
-
-  // Responsable del paciente
-  responsablePaciente?: string
-  acompanante?: string
-  ccAcompanante?: string
-  recomendacionesTraslado?: string
-
-  // Medicamentos e insumos
-  medicamentosInsumos?: {
-    descripcion: string
-    cantidad: number
-  }[]
-
-  // Información del servicio
+  // Información del servicio (sin remisión)
   ordenServicioNo?: string
-  remision?: string
   factura?: string
-  comoParecioServicio?: "MUY_BUENA" | "BUENA" | "REGULAR" | "MALA" | "MUY_MALA"
+  lugarOcurrencia?: string
+  destinoFinal?: string
 
-  // Recomendaciones
-  definitivamenteSi?: boolean
-  probablementeSi?: boolean
-  definitivamenteNo?: boolean
-  probablementeNo?: boolean
-
-  // Firmas y funcionarios
-  firmaSelloResponsable?: string
-  funcionarioAMED?: string
-  firmaInstitucionRecibePaciente?: string
-
-  // Timestamps
-  createdAt?: string
-  updatedAt?: string
+  // Firmas
+  firmaMedico?: string
+  nombreMedico?: string
+  registroMedico?: string
+  firmaPaciente?: string
+  nombreResponsable?: string
+  parentesco?: string
 }
 
-// DTO para crear AphDigital (sin id, createdAt, updatedAt)
-export interface CreateAphDigitalDto extends Omit<IAphDigital, "id" | "createdAt" | "updatedAt"> {}
-
-// DTO para actualizar AphDigital (todos los campos opcionales excepto los requeridos)
-export interface UpdateAphDigitalDto extends Partial<CreateAphDigitalDto> {}
-
-// Interface para filtros de búsqueda
-export interface IAphDigitalFilters {
-  fechaInicio?: string
-  fechaFin?: string
-  nombrePaciente?: string
-  placa?: string
-  eps?: string
-  tipoServicio?: "ambulanciaBasica" | "medicalizado" | "consultaMedica"
+export interface AphDigitalDto extends CreateAphDigitalDto {
+  id: string
+  fechaCreacion: string
+  fechaActualizacion: string
 }
 
-// Servicio para AphDigital
-export const aphDigitalService = {
-  // Obtener todos los formularios APH o con filtros
-  getAphDigitals: async (filters?: IAphDigitalFilters): Promise<IAphDigital[]> => {
+class AphDigitalService {
+  private readonly storageKey = "aph-digital-forms"
+
+  private getStoredForms(): AphDigitalDto[] {
+    if (typeof window === "undefined") return []
+
     try {
-      const response = await api.get("/aph-digital", {
-        params: filters,
-      })
-      return response.data
+      const stored = localStorage.getItem(this.storageKey)
+      return stored ? JSON.parse(stored) : []
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudieron cargar los formularios APH",
-        variant: "destructive",
-      })
+      console.error("Error reading from localStorage:", error)
       return []
     }
-  },
+  }
 
-  // Obtener un formulario APH por ID
-  getAphDigitalById: async (id: number): Promise<IAphDigital | null> => {
+  private saveToStorage(forms: AphDigitalDto[]): void {
+    if (typeof window === "undefined") return
+
     try {
-      const response = await api.get(`/aph-digital/${id}`)
-      return response.data
+      localStorage.setItem(this.storageKey, JSON.stringify(forms))
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo cargar el formulario APH",
-        variant: "destructive",
-      })
-      return null
+      console.error("Error saving to localStorage:", error)
     }
-  },
+  }
 
-  // Obtener formulario APH por número de formulario
-  getAphDigitalByNumero: async (numeroFormulario: string): Promise<IAphDigital | null> => {
-    try {
-      const response = await api.get(`/aph-digital/numero/${numeroFormulario}`)
-      return response.data
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo encontrar el formulario APH",
-        variant: "destructive",
-      })
-      return null
+  async getAllAphDigital(): Promise<AphDigitalDto[]> {
+    // Simular delay de API
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    return this.getStoredForms()
+  }
+
+  async getAphDigitalById(id: string): Promise<AphDigitalDto | null> {
+    // Simular delay de API
+    await new Promise((resolve) => setTimeout(resolve, 300))
+
+    const forms = this.getStoredForms()
+    return forms.find((form) => form.id === id) || null
+  }
+
+  async createAphDigital(data: CreateAphDigitalDto): Promise<AphDigitalDto> {
+    // Simular delay de API
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    const forms = this.getStoredForms()
+    const newForm: AphDigitalDto = {
+      ...data,
+      id: Date.now().toString(),
+      fechaCreacion: new Date().toISOString(),
+      fechaActualizacion: new Date().toISOString(),
     }
-  },
 
-  // Obtener formularios APH por nombre de paciente
-  getAphDigitalByPaciente: async (nombrePaciente: string): Promise<IAphDigital[]> => {
-    try {
-      const response = await api.get(`/aph-digital/paciente/${nombrePaciente}`)
-      return response.data
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudieron encontrar formularios para el paciente",
-        variant: "destructive",
-      })
-      return []
+    forms.push(newForm)
+    this.saveToStorage(forms)
+
+    return newForm
+  }
+
+  async updateAphDigital(id: string, data: CreateAphDigitalDto): Promise<AphDigitalDto | null> {
+    // Simular delay de API
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    const forms = this.getStoredForms()
+    const index = forms.findIndex((form) => form.id === id)
+
+    if (index === -1) return null
+
+    const updatedForm: AphDigitalDto = {
+      ...forms[index],
+      ...data,
+      fechaActualizacion: new Date().toISOString(),
     }
-  },
 
-  // Obtener formularios APH por fecha específica
-  getAphDigitalByFecha: async (fecha: string): Promise<IAphDigital[]> => {
-    try {
-      const response = await api.get(`/aph-digital/fecha/${fecha}`)
-      return response.data
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudieron encontrar formularios para la fecha especificada",
-        variant: "destructive",
-      })
-      return []
-    }
-  },
+    forms[index] = updatedForm
+    this.saveToStorage(forms)
 
-  // Crear un nuevo formulario APH
-  createAphDigital: async (formData: CreateAphDigitalDto): Promise<IAphDigital | null> => {
-    try {
-      const response = await api.post("/aph-digital", formData)
+    return updatedForm
+  }
 
-      toast({
-        title: "Éxito",
-        description: "Formulario APH creado correctamente",
-      })
+  async deleteAphDigital(id: string): Promise<boolean> {
+    // Simular delay de API
+    await new Promise((resolve) => setTimeout(resolve, 500))
 
-      return response.data
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo crear el formulario APH",
-        variant: "destructive",
-      })
-      return null
-    }
-  },
+    const forms = this.getStoredForms()
+    const filteredForms = forms.filter((form) => form.id !== id)
 
-  // Actualizar un formulario APH existente
-  updateAphDigital: async (id: number, formData: UpdateAphDigitalDto): Promise<IAphDigital | null> => {
-    try {
-      const response = await api.patch(`/aph-digital/${id}`, formData)
+    if (filteredForms.length === forms.length) return false
 
-      toast({
-        title: "Éxito",
-        description: "Formulario APH actualizado correctamente",
-      })
+    this.saveToStorage(filteredForms)
+    return true
+  }
 
-      return response.data
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo actualizar el formulario APH",
-        variant: "destructive",
-      })
-      return null
-    }
-  },
-
-  // Eliminar un formulario APH
-  deleteAphDigital: async (id: number): Promise<boolean> => {
-    try {
-      await api.delete(`/aph-digital/${id}`)
-      toast({
-        title: "Éxito",
-        description: "Formulario APH eliminado correctamente",
-      })
-      return true
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo eliminar el formulario APH",
-        variant: "destructive",
-      })
-      return false
-    }
-  },
-
-  // Buscar con múltiples filtros (método conveniente)
-  searchAphDigitals: async (filters: IAphDigitalFilters): Promise<IAphDigital[]> => {
-    return await aphDigitalService.getAphDigitals(filters)
-  },
-
-  // Validar formulario antes de enviar
-  validateAphDigital: (formData: CreateAphDigitalDto): { isValid: boolean; errors: string[] } => {
+  validateAphDigital(data: CreateAphDigitalDto): { isValid: boolean; errors: string[] } {
     const errors: string[] = []
 
-    // Validaciones básicas requeridas
-    if (!formData.numeroFormulario?.trim()) {
+    // Validaciones requeridas
+    if (!data.numeroFormulario?.trim()) {
       errors.push("El número de formulario es requerido")
     }
-    if (!formData.placa?.trim()) {
-      errors.push("La placa de la ambulancia es requerida")
+
+    if (!data.placa?.trim()) {
+      errors.push("La placa es requerida")
     }
-    if (!formData.cc?.trim()) {
-      errors.push("La cédula es requerida")
+
+    if (!data.cc?.trim()) {
+      errors.push("La C.C. es requerida")
     }
-    if (!formData.fecha) {
+
+    if (!data.fecha?.trim()) {
       errors.push("La fecha es requerida")
     }
-    if (!formData.nombrePaciente?.trim()) {
+
+    if (!data.nombrePaciente?.trim()) {
       errors.push("El nombre del paciente es requerido")
     }
 
     // Validaciones de formato
-    if (formData.cc && !/^\d+$/.test(formData.cc)) {
-      errors.push("La cédula debe contener solo números")
-    }
-
-    if (formData.edad && (formData.edad < 0 || formData.edad > 150)) {
+    if (data.edad && (data.edad < 0 || data.edad > 150)) {
       errors.push("La edad debe estar entre 0 y 150 años")
     }
 
-    // Validar signos vitales si están presentes
-    if (formData.fc && !/^\d+$/.test(formData.fc)) {
-      errors.push("La frecuencia cardíaca debe ser un número")
-    }
-    if (formData.fr && !/^\d+$/.test(formData.fr)) {
-      errors.push("La frecuencia respiratoria debe ser un número")
+    // Validar medicamentos
+    if (data.medicamentosInsumos) {
+      data.medicamentosInsumos.forEach((med, index) => {
+        if (med.nombre && !med.dosis) {
+          errors.push(`El medicamento ${index + 1} requiere especificar la dosis`)
+        }
+      })
     }
 
     return {
       isValid: errors.length === 0,
       errors,
     }
-  },
+  }
 }
+
+export const aphDigitalService = new AphDigitalService()

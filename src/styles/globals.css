@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -27,8 +28,17 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem
+    --radius: 0.5rem;
+
+    /* Sistema de colores unificado basado en #0d9488 */
+    --medical-primary: 174 89% 29%; /* #0d9488 - Color principal */
+    --medical-primary-light: 174 89% 45%; /* Versión más clara */
+    --medical-primary-dark: 174 89% 20%; /* Versión más oscura */
+    --medical-success: 142 76% 36%; /* Verde para éxito */
+    --medical-warning: 38 92% 50%; /* Amarillo para advertencias */
+    --medical-error: 0 84% 60%; /* Rojo para errores */
   }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -53,11 +63,11 @@
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%
+    --chart-5: 340 75% 55%;
   }
 }
 
-/* From Uiverse.io by milley69 */ 
+/* Loading animation */
 .loading svg polyline {
   fill: none;
   stroke-width: 3;
@@ -67,12 +77,12 @@
 
 .loading svg polyline#back {
   fill: none;
-  stroke: #9be7e1a9;
+  stroke: hsl(var(--medical-primary) / 0.3);
 }
 
 .loading svg polyline#front {
   fill: none;
-  stroke: #0d9488;
+  stroke: hsl(var(--medical-primary));
   stroke-dasharray: 48, 144;
   stroke-dashoffset: 192;
   animation: dash_682 1.4s linear infinite;
@@ -82,7 +92,6 @@
   72.5% {
     opacity: 0;
   }
-
   to {
     stroke-dashoffset: 0;
   }
@@ -94,5 +103,220 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Componentes médicos unificados */
+  .medical-card {
+    @apply bg-card border border-border shadow-sm hover:shadow-md transition-all duration-200 rounded-lg;
+  }
+
+  .medical-header {
+    background: linear-gradient(135deg, hsl(var(--medical-primary)) 0%, hsl(var(--medical-primary-light)) 100%);
+    @apply text-white rounded-xl shadow-lg;
+  }
+
+  .medical-badge-primary {
+    background: hsl(var(--medical-primary) / 0.1);
+    color: hsl(var(--medical-primary));
+    border: 1px solid hsl(var(--medical-primary) / 0.2);
+    @apply rounded-full px-3 py-1 text-xs font-medium;
+  }
+
+  .medical-badge-success {
+    background: hsl(var(--medical-success) / 0.1);
+    color: hsl(var(--medical-success));
+    border: 1px solid hsl(var(--medical-success) / 0.2);
+    @apply rounded-full px-3 py-1 text-xs font-medium;
+  }
+
+  .medical-badge-warning {
+    background: hsl(var(--medical-warning) / 0.1);
+    color: hsl(var(--medical-warning));
+    border: 1px solid hsl(var(--medical-warning) / 0.2);
+    @apply rounded-full px-3 py-1 text-xs font-medium;
+  }
+
+  .medical-section {
+    @apply bg-card border border-border rounded-xl shadow-sm hover:shadow-md transition-all duration-200;
+  }
+
+  .medical-grid {
+    @apply grid gap-6;
+  }
+
+  .medical-button-primary {
+    background: linear-gradient(135deg, hsl(var(--medical-primary)) 0%, hsl(var(--medical-primary-light)) 100%);
+    @apply text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg px-4 py-2 font-medium;
+  }
+
+  .medical-button-primary:hover {
+    background: linear-gradient(135deg, hsl(var(--medical-primary-dark)) 0%, hsl(var(--medical-primary)) 100%);
+    transform: translateY(-1px);
+  }
+
+  .medical-button-secondary {
+    @apply bg-secondary text-secondary-foreground border border-border hover:bg-accent hover:text-accent-foreground transition-all duration-200 rounded-lg px-4 py-2 font-medium;
+  }
+
+  .medical-icon-wrapper {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center shadow-sm;
+    background: linear-gradient(135deg, hsl(var(--medical-primary)) 0%, hsl(var(--medical-primary-light)) 100%);
+    @apply text-white;
+  }
+
+  .medical-icon-small {
+    @apply w-8 h-8 rounded-lg flex items-center justify-center;
+    background: linear-gradient(135deg, hsl(var(--medical-primary)) 0%, hsl(var(--medical-primary-light)) 100%);
+    @apply text-white;
+  }
+
+  .medical-stats-card {
+    @apply bg-card border border-border rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105;
+  }
+
+  .medical-form-section {
+    @apply bg-card border border-border rounded-xl shadow-sm p-6 space-y-6;
+  }
+
+  .medical-info-field {
+    @apply bg-muted/50 border border-border rounded-lg p-3 hover:bg-muted transition-colors duration-150;
+  }
+
+  .medical-vital-card {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--medical-primary) / 0.1) 0%,
+      hsl(var(--medical-primary-light) / 0.1) 100%
+    );
+    border: 1px solid hsl(var(--medical-primary) / 0.2);
+    @apply rounded-lg p-4 text-center;
+  }
+
+  .medical-checkbox-group {
+    @apply flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors duration-150;
+  }
+
+  .signature-area {
+    @apply border-2 border-dashed border-border rounded-xl bg-muted/30 hover:bg-muted/50 transition-all duration-200;
+  }
+
+  .signature-captured {
+    background: linear-gradient(135deg, hsl(var(--medical-success) / 0.1) 0%, hsl(var(--medical-success) / 0.05) 100%);
+    border: 2px solid hsl(var(--medical-success) / 0.3);
+    @apply rounded-xl;
+  }
+
+  .medical-input-focus {
+    @apply focus:border-[#0d9488] focus:ring-[#0d9488] focus:ring-opacity-20;
+  }
+
+  .medical-select-focus {
+    @apply focus:border-[#0d9488] focus:ring-[#0d9488] focus:ring-opacity-20;
+  }
+}
+
+@layer utilities {
+  .medical-text-gradient {
+    background: linear-gradient(135deg, hsl(var(--medical-primary)) 0%, hsl(var(--medical-primary-light)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .medical-bg-gradient {
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+  }
+
+  .text-medical-primary {
+    color: hsl(var(--medical-primary));
+  }
+
+  .text-medical-success {
+    color: hsl(var(--medical-success));
+  }
+
+  .text-medical-warning {
+    color: hsl(var(--medical-warning));
+  }
+
+  .text-medical-error {
+    color: hsl(var(--medical-error));
+  }
+
+  .bg-medical-primary {
+    background-color: hsl(var(--medical-primary));
+  }
+
+  .border-medical-primary {
+    border-color: hsl(var(--medical-primary));
+  }
+}
+
+/* Animaciones */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.hover-lift {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.1), 0 10px 10px -5px rgba(13, 148, 136, 0.04);
+}
+
+/* Estilos específicos para impresión */
+@media print {
+  @page {
+    margin: 1cm;
+    size: A4;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+
+  .print\:block {
+    display: block !important;
+  }
+
+  .print\:p-4 {
+    padding: 1rem !important;
+  }
+
+  .print\:p-2 {
+    padding: 0.5rem !important;
   }
 }
