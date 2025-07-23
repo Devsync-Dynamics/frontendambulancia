@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Menu, X, Home, Truck, Send, Inbox, LogOut, Receipt, Footprints } from 'lucide-react';
+import {Menu, X, Home, Truck, Send, Inbox, LogOut, Receipt, Footprints, Activity} from 'lucide-react';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -10,11 +10,12 @@ type LayoutProps = {
 const navItems = [
   { path: '/dashboard', name: 'Dashboard', icon: Home },
   { path: '/ambulancia', name: 'Ambulancia', icon: Truck },
-  { path: '/enviar-solicitud', name: 'Enviar Solicitud', icon: Send },
-  { path: '/recibir-solicitud', name: 'Recibir Solicitud', icon: Inbox },
-  // { path: '/facturacion', name: 'Facturacion', icon: Receipt  },
-  { path: '/autorizacion-serv-salud', name: 'Autorizacion', icon: Receipt  },
-  { path: '/aph-digital' , name: 'Aph Digital',icon:Inbox}
+  //{ path: '/enviar-solicitud', name: 'Enviar Solicitud', icon: Send },
+  //{ path: '/recibir-solicitud', name: 'Recibir Solicitud', icon: Inbox },
+
+  //{ path: '/autorizacion-serv-salud', name: 'Autorizacion', icon: Receipt  },
+  { path: '/aph-digital' , name: 'Aph Digital',icon: Activity},
+  { path: '/facturacion', name: 'Facturacion', icon: Receipt  },
 ];
 
 export default function GeneralLayout({ children }: LayoutProps) {

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Search, Plus, Eye, Edit, Printer, Filter, Activity, Calendar, User, FileText, Shield } from "lucide-react"
 import Link from "next/link"
 import { type IAphDigital, type IAphDigitalFilters, aphDigitalService } from "@/services/aph-digital.service"
+import GeneralLayout from "@/components/GeneralLayout";
 
 export default function AphDigitalListPage() {
   const [formularios, setFormularios] = useState<IAphDigital[]>([])
@@ -48,6 +49,7 @@ export default function AphDigitalListPage() {
   }
 
   return (
+      <GeneralLayout>
     <div className="min-h-screen medical-bg-gradient">
       <div className="container mx-auto p-6 space-y-6">
         {/* Header */}
@@ -279,5 +281,7 @@ export default function AphDigitalListPage() {
         </div>
       </div>
     </div>
+      </GeneralLayout>
+
   )
 }
