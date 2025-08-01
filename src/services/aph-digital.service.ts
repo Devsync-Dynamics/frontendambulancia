@@ -63,20 +63,10 @@ export interface CreateAphDigitalDto {
   parentesco?: string
 }
 
-// DTO para crear AphDigital (sin id, createdAt, updatedAt)
-export interface CreateAphDigitalDto extends Omit<IAphDigital, 'id' | 'createdAt' | 'updatedAt'> {}
-
-// DTO para actualizar AphDigital (todos los campos opcionales excepto los requeridos)
-export interface UpdateAphDigitalDto extends Partial<CreateAphDigitalDto> {}
-
-// Interface para filtros de búsqueda
-export interface IAphDigitalFilters {
-  fechaInicio?: string;
-  fechaFin?: string;
-  nombrePaciente?: string;
-  placa?: string;
-  eps?: string;
-  tipoServicio?: 'ambulanciaBasica' | 'medicalizado' | 'consultaMedica';
+export interface AphDigitalDto extends CreateAphDigitalDto {
+  id: string
+  fechaCreacion: string
+  fechaActualizacion: string
 }
 
 class AphDigitalService {
@@ -85,65 +75,14 @@ class AphDigitalService {
   private getStoredForms(): AphDigitalDto[] {
     if (typeof window === "undefined") return []
 
-  // Obtener formulario APH por número de formulario
-  getAphDigitalByNumero: async (numeroFormulario: string): Promise<IAphDigital | null> => {
-    try {
-      const response = await api.get(`/aph-digital/numero/${numeroFormulario}`);
-      return response.data;
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo encontrar el formulario APH",
-        variant: "destructive",
-      });
-      return null;
-    }
-  },
-
-  // Obtener formularios APH por nombre de paciente
-  getAphDigitalByPaciente: async (nombrePaciente: string): Promise<IAphDigital[]> => {
-    try {
-      const response = await api.get(`/aph-digital/paciente/${nombrePaciente}`);
-      return response.data;
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudieron encontrar formularios para el paciente",
-        variant: "destructive",
-      });
-      return [];
-    }
-  },
-
-  // Obtener formularios APH por fecha específica
-  getAphDigitalByFecha: async (fecha: string): Promise<IAphDigital[]> => {
-    try {
-      const response = await api.get(`/aph-digital/fecha/${fecha}`);
-      return response.data;
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudieron encontrar formularios para la fecha especificada",
-        variant: "destructive",
-      });
-      return [];
-    }
-  },
-
-  // Crear un nuevo formulario APH
-  createAphDigital: async (formData: CreateAphDigitalDto): Promise<IAphDigital | null> => {
     try {
       const stored = localStorage.getItem(this.storageKey)
       return stored ? JSON.parse(stored) : []
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo crear el formulario APH",
-        variant: "destructive",
-      });
-      return null;
+      console.error("Error reading from localStorage:", error)
+      return []
     }
-  },
+  }
 
   private saveToStorage(forms: AphDigitalDto[]): void {
     if (typeof window === "undefined") return
@@ -151,58 +90,98 @@ class AphDigitalService {
     try {
       localStorage.setItem(this.storageKey, JSON.stringify(forms))
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo actualizar el formulario APH",
-        variant: "destructive",
-      });
-      return null;
+      console.error("Error saving to localStorage:", error)
     }
-  },
+  }
 
-  // Eliminar un formulario APH
-  deleteAphDigital: async (id: number): Promise<boolean> => {
-    try {
-      await api.delete(`/aph-digital/${id}`);
-      toast({
-        title: "Éxito",
-        description: "Formulario APH eliminado correctamente",
-      });
-      return true;
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo eliminar el formulario APH",
-        variant: "destructive",
-      });
-      return false;
-    }
-  },
+  async getAllAphDigital(): Promise<AphDigitalDto[]> {
+    // Simular delay de API
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    return this.getStoredForms()
+  }
 
-  // Buscar con múltiples filtros (método conveniente)
-  searchAphDigitals: async (filters: IAphDigitalFilters): Promise<IAphDigital[]> => {
-    return await aphDigitalService.getAphDigitals(filters);
-  },
+  async getAphDigitalById(id: string): Promise<AphDigitalDto | null> {
+    // Simular delay de API
+    await new Promise((resolve) => setTimeout(resolve, 300))
 
-  // Validar formulario antes de enviar
-  validateAphDigital: (formData: CreateAphDigitalDto): { isValid: boolean; errors: string[] } => {
-    const errors: string[] = [];
+    const forms = this.getStoredForms()
+    return forms.find((form) => form.id === id) || null
+  }
 
-    // Validaciones básicas requeridas
-    if (!formData.numeroFormulario?.trim()) {
-      errors.push("El número de formulario es requerido");
+  async createAphDigital(data: CreateAphDigitalDto): Promise<AphDigitalDto> {
+    // Simular delay de API
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    const forms = this.getStoredForms()
+    const newForm: AphDigitalDto = {
+      ...data,
+      id: Date.now().toString(),
+      fechaCreacion: new Date().toISOString(),
+      fechaActualizacion: new Date().toISOString(),
     }
-    if (!formData.placa?.trim()) {
-      errors.push("La placa de la ambulancia es requerida");
+
+    forms.push(newForm)
+    this.saveToStorage(forms)
+
+    return newForm
+  }
+
+  async updateAphDigital(id: string, data: CreateAphDigitalDto): Promise<AphDigitalDto | null> {
+    // Simular delay de API
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    const forms = this.getStoredForms()
+    const index = forms.findIndex((form) => form.id === id)
+
+    if (index === -1) return null
+
+    const updatedForm: AphDigitalDto = {
+      ...forms[index],
+      ...data,
+      fechaActualizacion: new Date().toISOString(),
     }
-    if (!formData.cc?.trim()) {
-      errors.push("La cédula es requerida");
+
+    forms[index] = updatedForm
+    this.saveToStorage(forms)
+
+    return updatedForm
+  }
+
+  async deleteAphDigital(id: string): Promise<boolean> {
+    // Simular delay de API
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
+    const forms = this.getStoredForms()
+    const filteredForms = forms.filter((form) => form.id !== id)
+
+    if (filteredForms.length === forms.length) return false
+
+    this.saveToStorage(filteredForms)
+    return true
+  }
+
+  validateAphDigital(data: CreateAphDigitalDto): { isValid: boolean; errors: string[] } {
+    const errors: string[] = []
+
+    // Validaciones requeridas
+    if (!data.numeroFormulario?.trim()) {
+      errors.push("El número de formulario es requerido")
     }
-    if (!formData.fecha) {
-      errors.push("La fecha es requerida");
+
+    if (!data.placa?.trim()) {
+      errors.push("La placa es requerida")
     }
-    if (!formData.nombrePaciente?.trim()) {
-      errors.push("El nombre del paciente es requerido");
+
+    if (!data.cc?.trim()) {
+      errors.push("La C.C. es requerida")
+    }
+
+    if (!data.fecha?.trim()) {
+      errors.push("La fecha es requerida")
+    }
+
+    if (!data.nombrePaciente?.trim()) {
+      errors.push("El nombre del paciente es requerido")
     }
 
     // Validaciones de formato
@@ -221,7 +200,9 @@ class AphDigitalService {
 
     return {
       isValid: errors.length === 0,
-      errors
-    };
+      errors,
+    }
   }
-};
+}
+
+export const aphDigitalService = new AphDigitalService()
