@@ -14,10 +14,15 @@ export default function PrintAphDigitalPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (id) {
+    // AGREGAR ESTA VALIDACIÓN - Esperar a que el router esté listo
+    if (router.isReady && id) {
       loadFormulario()
+    } else if (router.isReady && !id) {
+      // Si el router está listo pero no hay id, marcar como no cargando
+      setLoading(false)
     }
-  }, [id])
+  }, [router.isReady, id]) // Agregar router.isReady como dependencia
+
 
   const loadFormulario = async () => {
     if (id) {

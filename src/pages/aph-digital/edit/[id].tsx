@@ -43,11 +43,11 @@ export default function EditAphDigitalPage() {
     useEffect(() => {
         const loadFormData = async () => {
             try {
-                const data = await aphDigitalService.getAphDigitalById(id)
+                const data = await aphDigitalService.getAphDigitalById(Number(id))
                 if (data) {
                     setFormData({
                         ...data,
-                        horaLlegada: data.horaLlegada || getCurrentTime(), // Si no hay hora, usar la actual
+                        horaLlegada: data.horaLlegada || getCurrentTime(),
                     })
                 }
             } catch (error) {
