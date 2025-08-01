@@ -1,6 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  experimental: {
+    // Otras configuraciones
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/aph-digital/edit/:id',
+        destination: '/aph-digital/edit/[id]',
+      },
+      {
+        source: '/aph-digital/view/:id',
+        destination: '/aph-digital/view/[id]',
+      }
+    ];
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
