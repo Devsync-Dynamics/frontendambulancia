@@ -1,3 +1,4 @@
+
 "use client"
 
 import type React from "react"
@@ -45,9 +46,16 @@ export default function EditAphDigitalPage() {
             try {
                 const data = await aphDigitalService.getAphDigitalById(Number(id))
                 if (data) {
+                    // Ensure all medications have valid IDs
+                    const medicamentosWithIds = (data.medicamentosInsumos || []).map((med, index) => ({
+                        ...med,
+                        id: med.id || `med-${Date.now()}-${index}`
+                    }))
+
                     setFormData({
                         ...data,
                         horaLlegada: data.horaLlegada || getCurrentTime(),
+                        medicamentosInsumos: medicamentosWithIds,
                     })
                 }
             } catch (error) {
@@ -86,7 +94,7 @@ export default function EditAphDigitalPage() {
 
     const addMedicamento = () => {
         const newMedicamento = {
-            id: Date.now().toString(),
+            id: `med-${Date.now()}`,
             nombre: "",
             dosis: "",
             via: "",
@@ -98,18 +106,18 @@ export default function EditAphDigitalPage() {
         }))
     }
 
-    const removeMedicamento = (id: string) => {
+    const removeMedicamento = (medId: string | undefined) => {
         setFormData((prev) => ({
             ...prev,
-            medicamentosInsumos: (prev.medicamentosInsumos || []).filter((med) => med.id !== id),
+            medicamentosInsumos: (prev.medicamentosInsumos || []).filter((med) => med.id !== medId),
         }))
     }
 
-    const updateMedicamento = (id: string, field: string, value: string) => {
+    const updateMedicamento = (medId: string | undefined, field: string, value: string) => {
         setFormData((prev) => ({
             ...prev,
             medicamentosInsumos: (prev.medicamentosInsumos || []).map((med) =>
-                med.id === id ? {...med, [field]: value} : med
+                med.id === medId ? {...med, [field]: value} : med
             ),
         }))
     }
@@ -532,7 +540,7 @@ export default function EditAphDigitalPage() {
                                             <h5 className="font-medium text-medical-primary">Medicamento {index + 1}</h5>
                                             <Button
                                                 type="button"
-                                                onClick={() => removeMedicamento(medicamento.id || "")}
+                                                onClick={() => removeMedicamento(medicamento?.id)}
                                                 variant="outline"
                                                 size="sm"
                                                 className="text-red-600 hover:text-red-700"
@@ -547,7 +555,7 @@ export default function EditAphDigitalPage() {
                                                 <Input
                                                     id={`medicamento-${medicamento.id}`}
                                                     value={medicamento.nombre}
-                                                    onChange={(e) => updateMedicamento(medicamento.id || "", "nombre", e.target.value)}
+                                                    onChange={(e) => updateMedicamento(medicamento.id, "nombre", e.target.value)}
                                                     className="medical-input-focus"
                                                 />
                                             </div>
@@ -556,7 +564,7 @@ export default function EditAphDigitalPage() {
                                                 <Input
                                                     id={`dosis-${medicamento.id}`}
                                                     value={medicamento.dosis}
-                                                    onChange={(e) => updateMedicamento(medicamento.id || "", "nombre", e.target.value)}
+                                                    onChange={(e) => updateMedicamento(medicamento.id, "dosis", e.target.value)}
                                                     className="medical-input-focus"
                                                 />
                                             </div>
@@ -564,7 +572,7 @@ export default function EditAphDigitalPage() {
                                                 <Label htmlFor={`via-${medicamento.id}`}>Vía de Administración</Label>
                                                 <Select
                                                     value={medicamento.via || ""}
-                                                    onValueChange={(value) => updateMedicamento(medicamento.id || "", "via", value)}
+                                                    onValueChange={(value) => updateMedicamento(medicamento.id, "via", value)}
                                                 >
                                                     <SelectTrigger className="medical-select-focus">
                                                         <SelectValue placeholder="Seleccionar vía"/>
@@ -584,7 +592,7 @@ export default function EditAphDigitalPage() {
                                                 <Input
                                                     id={`frecuencia-${medicamento.id}`}
                                                     value={medicamento.frecuencia}
-                                                    onChange={(e) => updateMedicamento(medicamento.id || "", "nombre", e.target.value)}
+                                                    onChange={(e) => updateMedicamento(medicamento.id, "frecuencia", e.target.value)}
                                                     className="medical-input-focus"
                                                 />
                                             </div>
@@ -649,7 +657,6 @@ export default function EditAphDigitalPage() {
                                 </div>
                             </CardContent>
                         </Card>
-
                         {/* Firmas */}
                         <Card className="medical-section animate-fade-in">
                             <CardHeader>

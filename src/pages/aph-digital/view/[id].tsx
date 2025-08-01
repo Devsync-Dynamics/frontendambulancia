@@ -339,33 +339,35 @@ export default function ViewAphDigitalPage() {
                             <CardContent>
                                 {formData.medicamentosInsumos && formData.medicamentosInsumos.length > 0 ? (
                                     <div className="space-y-4">
-                                        {formData.medicamentosInsumos.map((medicamento, index) => (
-                                            <div key={medicamento.id} className="border rounded-lg p-4 bg-muted/20">
-                                                <h5 className="font-medium text-medical-primary mb-3">Medicamento {index + 1}</h5>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                                    <div className="space-y-2">
-                                                        <label
-                                                            className="text-sm font-medium text-muted-foreground">Nombre</label>
-                                                        <p className="font-semibold">{medicamento.nombre || "No especificado"}</p>
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <label
-                                                            className="text-sm font-medium text-muted-foreground">Dosis</label>
-                                                        <p className="font-semibold">{medicamento.dosis || "No especificada"}</p>
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <label
-                                                            className="text-sm font-medium text-muted-foreground">Vía</label>
-                                                        <p className="font-semibold">{medicamento.via || "No especificada"}</p>
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <label
-                                                            className="text-sm font-medium text-muted-foreground">Frecuencia</label>
-                                                        <p className="font-semibold">{medicamento.frecuencia || "No especificada"}</p>
+                                        {formData.medicamentosInsumos
+                                            .filter(medicamento => medicamento !== null && medicamento !== undefined)
+                                            .map((medicamento, index) => (
+                                                <div key={medicamento.id || `medicamento-${index}`} className="border rounded-lg p-4 bg-muted/20">
+                                                    <h5 className="font-medium text-medical-primary mb-3">Medicamento {index + 1}</h5>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                                        <div className="space-y-2">
+                                                            <label
+                                                                className="text-sm font-medium text-muted-foreground">Nombre</label>
+                                                            <p className="font-semibold">{medicamento.nombre || "No especificado"}</p>
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <label
+                                                                className="text-sm font-medium text-muted-foreground">Dosis</label>
+                                                            <p className="font-semibold">{medicamento.dosis || "No especificada"}</p>
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <label
+                                                                className="text-sm font-medium text-muted-foreground">Vía</label>
+                                                            <p className="font-semibold">{medicamento.via || "No especificada"}</p>
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <label
+                                                                className="text-sm font-medium text-muted-foreground">Frecuencia</label>
+                                                            <p className="font-semibold">{medicamento.frecuencia || "No especificada"}</p>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            ))}
                                     </div>
                                 ) : (
                                     <div className="text-center py-8 text-muted-foreground">
