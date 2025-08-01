@@ -1,10 +1,8 @@
-
 "use client"
 
 import type React from "react"
 
 import {useState, useEffect} from "react"
-import {useRouter, useParams} from "next/navigation"
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Input} from "@/components/ui/input"
@@ -17,11 +15,12 @@ import Link from "next/link"
 import {type CreateAphDigitalDto, aphDigitalService} from "@/services/aph-digital.service"
 import {SignatureField} from "@/components/signature-field"
 import GeneralLayout from "@/components/GeneralLayout";
+import {useRouter} from "next/router";
 
 export default function EditAphDigitalPage() {
     const router = useRouter()
-    const params = useParams()
-    const id = params.id as string
+    const {id} = router.query
+
     const [loading, setLoading] = useState(false)
     const [initialLoading, setInitialLoading] = useState(true)
 
@@ -42,33 +41,46 @@ export default function EditAphDigitalPage() {
     })
 
     useEffect(() => {
-        const loadFormData = async () => {
-            try {
-                const data = await aphDigitalService.getAphDigitalById(Number(id))
-                if (data) {
-                    // Ensure all medications have valid IDs
-                    const medicamentosWithIds = (data.medicamentosInsumos || []).map((med, index) => ({
-                        ...med,
-                        id: med.id || `med-${Date.now()}-${index}`
-                    }))
+        if (router.isReady && id) {
+            const loadFormData = async () => {
+                try {
+                    // Convertir id a número y validar que sea válido
+                    const numericId = Number(id)
 
-                    setFormData({
-                        ...data,
-                        horaLlegada: data.horaLlegada || getCurrentTime(),
-                        medicamentosInsumos: medicamentosWithIds,
-                    })
+                    // Verificar que el ID sea un número válido
+                    if (isNaN(numericId) || numericId <= 0) {
+                        console.error("ID inválido:", id)
+                        setInitialLoading(false)
+                        return
+                    }
+
+                    const data = await aphDigitalService.getAphDigitalById(numericId)
+                    if (data) {
+                        // Ensure all medications have valid IDs
+                        const medicamentosWithIds = (data.medicamentosInsumos || []).map((med, index) => ({
+                            ...med,
+                            id: med.id || `med-${Date.now()}-${index}`
+                        }))
+
+                        setFormData({
+                            ...data,
+                            horaLlegada: data.horaLlegada || getCurrentTime(),
+                            medicamentosInsumos: medicamentosWithIds,
+                        })
+                    }
+                } catch (error) {
+                    console.error("Error loading form data:", error)
+                } finally {
+                    setInitialLoading(false)
                 }
-            } catch (error) {
-                console.error("Error loading form data:", error)
-            } finally {
-                setInitialLoading(false)
             }
-        }
 
-        if (id) {
             loadFormData()
+        } else if (router.isReady && !id) {
+            // Si el router está listo pero no hay id, marcar como no cargando
+            setInitialLoading(false) // Cambié setLoading por setInitialLoading para consistencia
         }
-    }, [id])
+    }, [router.isReady, id])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()

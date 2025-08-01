@@ -286,7 +286,7 @@ export const aphDigitalService = {
   },
 
   // Actualizar un formulario APH existente
-  updateAphDigital: async (id: number | string, formData: UpdateAphDigitalDto): Promise<IAphDigital | null> => {
+  updateAphDigital: async (id: string | string[] | undefined, formData: UpdateAphDigitalDto): Promise<IAphDigital | null> => {
     try {
       // Procesar medicamentos antes de enviar
       const processedData = {

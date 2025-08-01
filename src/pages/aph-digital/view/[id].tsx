@@ -1,7 +1,6 @@
 "use client"
 
 import {useState, useEffect} from "react"
-import {useParams} from "next/navigation"
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Badge} from "@/components/ui/badge"
@@ -9,16 +8,25 @@ import {ArrowLeft, FileText, Edit, Printer, Clock} from "lucide-react"
 import Link from "next/link"
 import {type CreateAphDigitalDto, aphDigitalService} from "@/services/aph-digital.service"
 import GeneralLayout from "@/components/GeneralLayout";
+import {useRouter} from "next/router";
 
 export default function ViewAphDigitalPage() {
-    const params = useParams()
-    const id = params.id as string
+    const router = useRouter()
+    const { id } = router.query
+
     const [loading, setLoading] = useState(true)
     const [formData, setFormData] = useState<CreateAphDigitalDto | null>(null)
 
     useEffect(() => {
         const loadFormData = async () => {
             try {
+                // Validar que el ID sea válido antes de la llamada
+                if (!id || typeof id !== 'string') {
+                    console.error("ID inválido:", id)
+                    setLoading(false)
+                    return
+                }
+
                 const data = await aphDigitalService.getAphDigitalById(id)
                 if (data) {
                     setFormData(data)
@@ -30,10 +38,14 @@ export default function ViewAphDigitalPage() {
             }
         }
 
-        if (id) {
+        // Solo ejecutar si el router está listo y hay un ID válido
+        if (router.isReady && id && typeof id === 'string') {
             loadFormData()
+        } else if (router.isReady && !id) {
+            // Si el router está listo pero no hay ID, dejar de cargar
+            setLoading(false)
         }
-    }, [id])
+    }, [router.isReady, id])
 
     if (loading) {
         return (
