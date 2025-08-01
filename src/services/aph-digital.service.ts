@@ -19,8 +19,6 @@ export interface IMedicamentoInsumo {
   dosis: string;
   via: string;
   frecuencia: string;
-  descripcion: string;
-  cantidad:number;
 }
 
 // Interface principal para AphDigital ajustada a los campos del formulario

@@ -371,28 +371,28 @@ export default function PrintAphDigitalPage() {
                 <div className="font-bold">Cant.</div>
               </div>
               <div className="grid grid-cols-6 gap-2">
-                <div className="col-span-2">1. {formulario.medicamentosInsumos?.[0]?.descripcion || ""}</div>
-                <div>{formulario.medicamentosInsumos?.[0]?.cantidad || ""}</div>
-                <div className="col-span-2">3. {formulario.medicamentosInsumos?.[2]?.descripcion || ""}</div>
-                <div>{formulario.medicamentosInsumos?.[2]?.cantidad || ""}</div>
+                <div className="col-span-2">1. {formulario.medicamentosInsumos?.[0]?.nombre || ""}</div>
+                <div>{formulario.medicamentosInsumos?.[0]?.dosis || ""}</div>
+                <div className="col-span-2">3. {formulario.medicamentosInsumos?.[2]?.nombre || ""}</div>
+                <div>{formulario.medicamentosInsumos?.[2]?.dosis || ""}</div>
               </div>
               <div className="grid grid-cols-6 gap-2">
-                <div className="col-span-2">2. {formulario.medicamentosInsumos?.[1]?.descripcion || ""}</div>
-                <div>{formulario.medicamentosInsumos?.[1]?.cantidad || ""}</div>
-                <div className="col-span-2">4. {formulario.medicamentosInsumos?.[3]?.descripcion || ""}</div>
-                <div>{formulario.medicamentosInsumos?.[3]?.cantidad || ""}</div>
-              </div>
-              <div className="grid grid-cols-6 gap-2">
-                <div className="col-span-2"></div>
-                <div></div>
-                <div className="col-span-2">5. {formulario.medicamentosInsumos?.[4]?.descripcion || ""}</div>
-                <div>{formulario.medicamentosInsumos?.[4]?.cantidad || ""}</div>
+                <div className="col-span-2">2. {formulario.medicamentosInsumos?.[1]?.nombre || ""}</div>
+                <div>{formulario.medicamentosInsumos?.[1]?.dosis || ""}</div>
+                <div className="col-span-2">4. {formulario.medicamentosInsumos?.[3]?.nombre || ""}</div>
+                <div>{formulario.medicamentosInsumos?.[3]?.dosis || ""}</div>
               </div>
               <div className="grid grid-cols-6 gap-2">
                 <div className="col-span-2"></div>
                 <div></div>
-                <div className="col-span-2">6. {formulario.medicamentosInsumos?.[5]?.descripcion || ""}</div>
-                <div>{formulario.medicamentosInsumos?.[5]?.cantidad || ""}</div>
+                <div className="col-span-2">5. {formulario.medicamentosInsumos?.[4]?.nombre || ""}</div>
+                <div>{formulario.medicamentosInsumos?.[4]?.dosis || ""}</div>
+              </div>
+              <div className="grid grid-cols-6 gap-2">
+                <div className="col-span-2"></div>
+                <div></div>
+                <div className="col-span-2">6. {formulario.medicamentosInsumos?.[5]?.nombre || ""}</div>
+                <div>{formulario.medicamentosInsumos?.[5]?.dosis || ""}</div>
               </div>
             </div>
 
