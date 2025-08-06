@@ -4,6 +4,8 @@ import React, { useState, useEffect, useMemo } from "react"
 import GeneralLayout from "@/components/GeneralLayout"
 import { Loader2, ChevronDown, ChevronUp } from "lucide-react"
 import { motion } from "framer-motion"
+import { bitacoraService, IBitacoraEntry } from '@/services/bitacoras.service';
+
 
 const HEADINGS = [
   "No.",
