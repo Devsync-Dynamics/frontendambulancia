@@ -4,7 +4,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { Menu, X, Home, Truck, LogOut, Receipt, Activity, Users, PlusCircle, Edit } from "lucide-react" // Importa el icono Users y PlusCircle, Edit
+import { Menu, X, Home, Truck, LogOut, Receipt, Activity, Users, PlusCircle, Edit, FolderOpen } from "lucide-react" // Importa el icono Users y PlusCircle, Edit
 
 type LayoutProps = {
   children: React.ReactNode
@@ -15,7 +15,8 @@ const navItems = [
   { path: "/ambulancia", name: "Ambulancia", icon: Truck, roles: ["SuperAdmin", "Admin"] },
   { path: "/aph-digital", name: "Aph Digital", icon: Activity, roles: ["SuperAdmin", "Admin", "usuario"] },
   { path: "/facturacion", name: "Facturacion", icon: Receipt, roles: ["SuperAdmin", "Admin"] },
-  { path: "/users", name: "Gestión de Usuarios", icon: Users, roles: ["SuperAdmin", "Admin"] }, // Nuevo elemento de navegación
+  { path: "/users", name: "Gestión de Usuarios", icon: Users, roles: ["SuperAdmin", "Admin"] },
+  { path: "/bitacoras", name: "Bitácoras", icon: FolderOpen, roles: ["SuperAdmin", "Admin"] }, // Nuevo elemento de navegación
   { path: "/users/create", name: "Crear Usuario", icon: PlusCircle, roles: ["SuperAdmin", "Admin"], hidden: true }, // Oculto en nav, pero permitido
   { path: "/users/edit/[id]", name: "Editar Usuario", icon: Edit, roles: ["SuperAdmin", "Admin"], hidden: true }, // Oculto en nav, pero permitido
 ]
