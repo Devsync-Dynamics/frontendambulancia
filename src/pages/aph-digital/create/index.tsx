@@ -165,13 +165,14 @@ export default function CreateAphDigitalPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="horaLlegada">Hora de Llegada</Label>
+                                        <Label htmlFor="horaLlegada">Hora de Llegada *</Label>
                                         <Input
                                             id="horaLlegada"
                                             type="time"
                                             value={formData.horaLlegada || ""}
                                             onChange={(e) => updateFormData("horaLlegada", e.target.value)}
                                             className="medical-input-focus"
+                                            required
                                         />
                                         <p className="text-xs text-muted-foreground">Hora automática del sistema</p>
                                     </div>
@@ -192,7 +193,7 @@ export default function CreateAphDigitalPage() {
                         {/* Tipo de Servicio */}
                         <Card className="medical-section animate-fade-in">
                             <CardHeader>
-                                <CardTitle className="text-medical-primary">Tipo de Servicio</CardTitle>
+                                <CardTitle className="text-medical-primary">Tipo de Servicio *</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="flex gap-6">
@@ -232,17 +233,18 @@ export default function CreateAphDigitalPage() {
                             <CardContent className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="edad">Edad</Label>
+                                        <Label htmlFor="edad">Edad *</Label>
                                         <Input
                                             id="edad"
                                             type="number"
                                             value={formData.edad || ""}
                                             onChange={(e) => updateFormData("edad", Number.parseInt(e.target.value) || undefined)}
                                             className="medical-input-focus"
+                                            required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="sexo">Sexo</Label>
+                                        <Label htmlFor="sexo">Sexo *</Label>
                                         <Select value={formData.sexo}
                                                 onValueChange={(value) => updateFormData("sexo", value)}>
                                             <SelectTrigger className="medical-select-focus">
@@ -255,16 +257,17 @@ export default function CreateAphDigitalPage() {
                                         </Select>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="identificacion">Identificación</Label>
+                                        <Label htmlFor="identificacion">Identificación *</Label>
                                         <Input
                                             id="identificacion"
                                             value={formData.identificacion || ""}
                                             onChange={(e) => updateFormData("identificacion", e.target.value)}
                                             className="medical-input-focus"
+                                            required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="estadoCivil">Estado Civil</Label>
+                                        <Label htmlFor="estadoCivil">Estado Civil *</Label>
                                         <Select value={formData.estadoCivil}
                                                 onValueChange={(value) => updateFormData("estadoCivil", value)}>
                                             <SelectTrigger className="medical-select-focus">
@@ -282,25 +285,27 @@ export default function CreateAphDigitalPage() {
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="eps">EPS</Label>
+                                        <Label htmlFor="eps">EPS *</Label>
                                         <Input
                                             id="eps"
                                             value={formData.eps || ""}
                                             onChange={(e) => updateFormData("eps", e.target.value)}
                                             className="medical-input-focus"
+                                            required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="arl">ARL</Label>
+                                        <Label htmlFor="arl">ARL *</Label>
                                         <Input
                                             id="arl"
                                             value={formData.arl || ""}
                                             onChange={(e) => updateFormData("arl", e.target.value)}
                                             className="medical-input-focus"
+                                            required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="estadoPaciente">Estado del Paciente</Label>
+                                        <Label htmlFor="estadoPaciente">Estado del Paciente *</Label>
                                         <Select
                                             value={formData.estadoPaciente}
                                             onValueChange={(value) => updateFormData("estadoPaciente", value)}
@@ -320,21 +325,23 @@ export default function CreateAphDigitalPage() {
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="direccion">Dirección</Label>
+                                        <Label htmlFor="direccion">Dirección *</Label>
                                         <Input
                                             id="direccion"
                                             value={formData.direccion || ""}
                                             onChange={(e) => updateFormData("direccion", e.target.value)}
                                             className="medical-input-focus"
+                                            required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="telefono">Teléfono</Label>
+                                        <Label htmlFor="telefono">Teléfono *</Label>
                                         <Input
                                             id="telefono"
                                             value={formData.telefono || ""}
                                             onChange={(e) => updateFormData("telefono", e.target.value)}
                                             className="medical-input-focus"
+                                            required
                                         />
                                     </div>
                                 </div>
@@ -348,33 +355,36 @@ export default function CreateAphDigitalPage() {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="diagnostico">Diagnóstico</Label>
+                                    <Label htmlFor="diagnostico">Diagnóstico *</Label>
                                     <Textarea
                                         id="diagnostico"
                                         value={formData.diagnostico || ""}
                                         onChange={(e) => updateFormData("diagnostico", e.target.value)}
                                         className="medical-input-focus"
                                         rows={3}
+                                        required
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="notaEvolucion">Nota de Evolución</Label>
+                                    <Label htmlFor="notaEvolucion">Nota de Evolución *</Label>
                                     <Textarea
                                         id="notaEvolucion"
                                         value={formData.notaEvolucion || ""}
                                         onChange={(e) => updateFormData("notaEvolucion", e.target.value)}
                                         className="medical-input-focus"
                                         rows={3}
+                                        required
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="procedimientos">Procedimientos Realizados</Label>
+                                    <Label htmlFor="procedimientos">Procedimientos Realizados *</Label>
                                     <Textarea
                                         id="procedimientos"
                                         value={formData.procedimientos || ""}
                                         onChange={(e) => updateFormData("procedimientos", e.target.value)}
                                         className="medical-input-focus"
                                         rows={3}
+                                        required
                                     />
                                 </div>
                             </CardContent>
@@ -388,39 +398,43 @@ export default function CreateAphDigitalPage() {
                             <CardContent className="space-y-4">
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="fc">FC (Frecuencia Cardíaca)</Label>
+                                        <Label htmlFor="fc">FC (Frecuencia Cardíaca) *</Label>
                                         <Input
                                             id="fc"
                                             value={formData.fc || ""}
                                             onChange={(e) => updateFormData("fc", e.target.value)}
                                             className="medical-input-focus"
+                                            required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="fr">FR (Frecuencia Respiratoria)</Label>
+                                        <Label htmlFor="fr">FR (Frecuencia Respiratoria) *</Label>
                                         <Input
                                             id="fr"
                                             value={formData.fr || ""}
                                             onChange={(e) => updateFormData("fr", e.target.value)}
                                             className="medical-input-focus"
+                                            required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="temp">Temperatura</Label>
+                                        <Label htmlFor="temp">Temperatura *</Label>
                                         <Input
                                             id="temp"
                                             value={formData.temp || ""}
                                             onChange={(e) => updateFormData("temp", e.target.value)}
                                             className="medical-input-focus"
+                                            required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="ta">TA (Tensión Arterial)</Label>
+                                        <Label htmlFor="ta">TA (Tensión Arterial) *</Label>
                                         <Input
                                             id="ta"
                                             value={formData.ta || ""}
                                             onChange={(e) => updateFormData("ta", e.target.value)}
                                             className="medical-input-focus"
+                                            required
                                         />
                                     </div>
                                 </div>
