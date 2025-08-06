@@ -14,6 +14,11 @@ const navItems = [
   { path: "/dashboard", name: "Dashboard", icon: Home, roles: ["SuperAdmin", "Admin"] },
   { path: "/ambulancia", name: "Ambulancia", icon: Truck, roles: ["SuperAdmin", "Admin"] },
   { path: "/aph-digital", name: "Aph Digital", icon: Activity, roles: ["SuperAdmin", "Admin", "usuario"] },
+  { path: "/aph-digital/create", name: "Aph Digital", icon: Activity, roles: ["SuperAdmin", "Admin", "usuario"],hidden: true },
+  { path: "/aph-digital/edit/[id]", name: "Aph Digital", icon: Activity, roles: ["SuperAdmin", "Admin", "usuario"],hidden: true},
+  { path: "/aph-digital/print/[id]", name: "Aph Digital", icon: Activity, roles: ["SuperAdmin", "Admin", "usuario"],hidden: true },
+  { path: "/aph-digital/view/[id]", name: "Aph Digital", icon: Activity, roles: ["SuperAdmin", "Admin", "usuario"],hidden: true },
+
   { path: "/facturacion", name: "Facturacion", icon: Receipt, roles: ["SuperAdmin", "Admin"] },
   { path: "/users", name: "Gestión de Usuarios", icon: Users, roles: ["SuperAdmin", "Admin"] },
   { path: "/bitacoras", name: "Bitácoras", icon: FolderOpen, roles: ["SuperAdmin", "Admin"] }, // Nuevo elemento de navegación
