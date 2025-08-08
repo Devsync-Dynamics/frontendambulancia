@@ -87,7 +87,7 @@ export interface IAphDigital {
   valvulaPeep?: boolean;
   desfibrilador?: boolean;
   joules?: boolean;
-  aspirador?: string;
+  aspirador?: boolean;
   capnografo?: boolean;
   pulmoaire?: boolean;
 
