@@ -2,9 +2,9 @@ import axios from 'axios';
 import { toast } from '@/hooks/use-toast';
 
 // Usar la misma configuración de API
-const API_URL = 'https://backendamed-production.up.railway.app';
+//const API_URL = 'https://backendamed-production.up.railway.app';
 
-//const API_URL = 'http://localhost:3001';
+const API_URL = 'http://localhost:3001';
 export const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -266,7 +266,7 @@ export const aphDigitalService = {
           frecuencia: med.frecuencia || ''
         })) || []
       };
-
+console.log("DATA A GUARDAR",processedData)
       const response = await api.post('/aph-digital', processedData);
 
       toast({
@@ -346,9 +346,6 @@ export const aphDigitalService = {
     const errors: string[] = [];
 
     // Validaciones básicas requeridas
-    if (!formData.numeroFormulario?.trim()) {
-      errors.push("El número de formulario es requerido");
-    }
     if (!formData.placa?.trim()) {
       errors.push("La placa de la ambulancia es requerida");
     }
@@ -396,4 +393,6 @@ export const aphDigitalService = {
       errors
     };
   }
+
+
 };

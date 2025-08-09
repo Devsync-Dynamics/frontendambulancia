@@ -16,6 +16,7 @@ import Link from "next/link"
 import {type CreateAphDigitalDto, aphDigitalService} from "@/services/aph-digital.service"
 import {SignatureField} from "@/components/signature-field"
 import GeneralLayout from "@/components/GeneralLayout";
+import {DiagnosticoCombobox} from "@/components/ui/diagnostico-combobox";
 
 export default function CreateAphDigitalPage() {
     const router = useRouter()
@@ -36,6 +37,7 @@ export default function CreateAphDigitalPage() {
         horaLlegada: getCurrentTime(),
         medicamentosInsumos: [],
         estadoPaciente: "",
+        diagnostico: "",
     })
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -288,15 +290,14 @@ export default function CreateAphDigitalPage() {
                                         </Select>
                                     </div>
                                     <div className="space-y-2 md:col-span-4">
-                                        <Label htmlFor="diagnostico">Diagnóstico *</Label>
-                                        <Textarea
-                                            id="diagnostico"
+                                        <DiagnosticoCombobox
+                                            name="diagnostico"
+                                            label="Diagnóstico *"
+                                            placeholder="Buscar o ingresar diagnóstico"
                                             value={formData.diagnostico || ""}
-                                            onChange={(e) => updateFormData("diagnostico", e.target.value)}
-                                            className="medical-input-focus"
-                                            rows={3}
-                                            placeholder="Ingrese el diagnóstico relacionado con el paciente"
+                                            onChange={(value) => updateFormData("diagnostico", value)}
                                             required
+                                            className="md:col-span-4"
                                         />
                                     </div>
                                     <div className="space-y-2 md:col-span-4">
