@@ -77,7 +77,7 @@ export interface IAphDigital {
   numeroFormulario: string;
   placa: string;
   cc: string;
-  tipoDocumento?: string;
+  //tipoDocumento?: string;
   fecha: string; // Date como string para el frontend
   nombrePaciente: string;
 
@@ -93,6 +93,7 @@ export interface IAphDigital {
   // Información del paciente
   edad?: number;
   sexo?: 'M' | 'F';
+  tipoDocumento?: 'CC' | 'TI' | 'CE' | 'PA' | 'RC';
   identificacion?: string;
   estadoCivil?: 'Soltero' | 'Casado' | 'Viudo' | 'Divorciado' | 'Union Libre';
   eps?: string;

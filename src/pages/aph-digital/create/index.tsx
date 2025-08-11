@@ -252,13 +252,30 @@ export default function CreateAphDigitalPage() {
                                     <div className="space-y-2">
                                         <Label htmlFor="sexo">Sexo *</Label>
                                         <Select value={formData.sexo}
-                                                onValueChange={(value) => updateFormData("sexo", value)}>
+                                                onValueChange={(value) => updateFormData("sexo", value)} required>
                                             <SelectTrigger className="medical-select-focus">
                                                 <SelectValue placeholder="Seleccionar"/>
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="M">Masculino</SelectItem>
                                                 <SelectItem value="F">Femenino</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="tipoDocumento">Tipo de documento *</Label >
+                                        <Select
+                                            value={formData.tipoDocumento}
+                                            onValueChange={(value) => updateFormData("tipoDocumento", value)} required>
+                                            <SelectTrigger className="medical-select-focus">
+                                                <SelectValue placeholder="Seleccionar" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                            <SelectItem value="CC">Cédula de ciudadanía</SelectItem>
+                                            <SelectItem value="TI">Tarjeta de identidad</SelectItem>
+                                            <SelectItem value="CE">Cédula de extranjería</SelectItem>
+                                            <SelectItem value="PA">Pasaporte</SelectItem>
+                                            <SelectItem value="RC">Registro civil</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -273,10 +290,10 @@ export default function CreateAphDigitalPage() {
                                             required
                                         />
                                     </div>
-                                    <div className="space-y-2">
+                                    <div className="space-y-2 md:col-span-1">
                                         <Label htmlFor="estadoCivil">Estado Civil *</Label>
                                         <Select value={formData.estadoCivil}
-                                                onValueChange={(value) => updateFormData("estadoCivil", value)}>
+                                                onValueChange={(value) => updateFormData("estadoCivil", value)} required>
                                             <SelectTrigger className="medical-select-focus">
                                                 <SelectValue placeholder="Seleccionar"/>
                                             </SelectTrigger>
@@ -289,7 +306,7 @@ export default function CreateAphDigitalPage() {
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                    <div className="space-y-2 md:col-span-4">
+                                    <div className="space-y-2 md:col-span-3">
                                         <DiagnosticoCombobox
                                             name="diagnostico"
                                             label="Diagnóstico *"
