@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect, useMemo } from "react"
 import GeneralLayout from "@/components/GeneralLayout"
-import { Loader2, ChevronDown, ChevronUp } from "lucide-react"
+import { Loader2, ChevronDown, ChevronUp, Download } from "lucide-react"
 import { motion } from "framer-motion"
 import { bitacoraService, IBitacoraEntry } from '@/services/bitacoras.service';
+import * as XLSX from 'xlsx';
 
 const HEADINGS = [
   "No.",
@@ -40,6 +41,7 @@ export default function BitacoraPage() {
   const [sortKey, setSortKey] = useState("fechaTraslado")
   const [page, setPage] = useState(1)
   const [openRows, setOpenRows] = useState<{[key: number]: boolean}>({})
+  const [exporting, setExporting] = useState(false)
 
   const pageSize = 5
 
@@ -124,6 +126,91 @@ export default function BitacoraPage() {
   const toggleRow = (no: number) =>
       setOpenRows(prev => ({ ...prev, [no]: !prev[no] }))
 
+  // Función para exportar a Excel
+  const exportToExcel = async () => {
+    try {
+      setExporting(true)
+      
+      // Preparar los datos para exportar
+      const dataToExport = sorted.map(entry => ({
+        'No.': entry.no || 'N/A',
+        'Radio Operador': entry.radioOperador || 'N/A',
+        'Entidad': entry.entidad || 'N/A',
+        'Contacto': entry.contacto || 'N/A',
+        'Nombre Completo del Paciente': entry.nombrePaciente || 'N/A',
+        'Tipo Documento': entry.tipoDocumento || 'N/A',
+        'Documento': entry.documento || 'N/A',
+        'Nombre del Acompañante': entry.nombreAcompanante || 'N/A',
+        'Fecha de Traslado': entry.fechaTraslado || 'N/A',
+        'Hora de Traslado': entry.horaTraslado || 'N/A',
+        'Origen del Traslado': entry.origen || 'N/A',
+        'Destino del Servicio': entry.destino || 'N/A',
+        'Tipo Traslado': entry.tipoTraslado || 'N/A',
+        'Conductor': entry.conductor || 'N/A',
+        'Paramédico': entry.paramedico || 'N/A',
+        'Diagnóstico': entry.diagnostico || 'N/A',
+        'Evolución y Procedimientos Durante el Traslado': entry.evolucion || 'N/A',
+        'Código': entry.codigo || 'N/A',
+        'MV': entry.mv || 'N/A',
+        'Médico': entry.medico || 'N/A',
+        'Observación': entry.observacion || 'N/A',
+        'Valor': entry.valor || 'N/A',
+        'No. Planilla': entry.noPlanilla || 'N/A'
+      }))
+
+      // Crear el libro de trabajo
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport)
+      const workbook = XLSX.utils.book_new()
+      
+      // Ajustar el ancho de las columnas
+      const colWidths = [
+        { width: 8 },   // No.
+        { width: 15 },  // Radio Operador
+        { width: 20 },  // Entidad
+        { width: 15 },  // Contacto
+        { width: 30 },  // Nombre Completo del Paciente
+        { width: 15 },  // Tipo Documento
+        { width: 15 },  // Documento
+        { width: 25 },  // Nombre del Acompañante
+        { width: 15 },  // Fecha de Traslado
+        { width: 15 },  // Hora de Traslado
+        { width: 25 },  // Origen del Traslado
+        { width: 25 },  // Destino del Servicio
+        { width: 15 },  // Tipo Traslado
+        { width: 20 },  // Conductor
+        { width: 20 },  // Paramédico
+        { width: 30 },  // Diagnóstico
+        { width: 40 },  // Evolución y Procedimientos
+        { width: 10 },  // Código
+        { width: 10 },  // MV
+        { width: 20 },  // Médico
+        { width: 30 },  // Observación
+        { width: 12 },  // Valor
+        { width: 12 }   // No. Planilla
+      ]
+      
+      worksheet['!cols'] = colWidths
+
+      // Agregar la hoja al libro
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Bitácora de Traslados')
+
+      // Generar el nombre del archivo con fecha actual
+      const now = new Date()
+      const dateStr = now.toISOString().split('T')[0] // YYYY-MM-DD
+      const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-') // HH-MM-SS
+      const fileName = `bitacora-traslados-${dateStr}-${timeStr}.xlsx`
+
+      // Descargar el archivo
+      XLSX.writeFile(workbook, fileName)
+
+    } catch (error) {
+      console.error('Error al exportar a Excel:', error)
+      setError('Error al exportar los datos a Excel')
+    } finally {
+      setExporting(false)
+    }
+  }
+
   if (loading) {
     return (
         <div className="flex justify-center items-center h-full">
@@ -152,7 +239,28 @@ export default function BitacoraPage() {
 
   return (
       <div className="container mx-auto px-4 py-8 bg-background">
-        <h2 className="text-3xl font-bold text-teal-800 mb-6">Bitácora de Traslados</h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold text-teal-800">Bitácora de Traslados</h2>
+          
+          {/* Botón de exportar */}
+          <button
+            onClick={exportToExcel}
+            disabled={exporting || !entries || entries.length === 0}
+            className="flex items-center space-x-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
+          >
+            {exporting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Exportando...</span>
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4" />
+                <span>Exportar a Excel</span>
+              </>
+            )}
+          </button>
+        </div>
 
         {/* filtros */}
         <div className="flex flex-col text-black md:flex-row justify-between items-center mb-4 space-y-2 md:space-y-0 md:space-x-4">
@@ -271,24 +379,33 @@ export default function BitacoraPage() {
               </div>
 
               {/* paginación */}
-              <div className="flex justify-end mt-4 space-x-2">
-                <button
-                    disabled={page === 1}
-                    onClick={() => setPage(p => Math.max(p-1,1))}
-                    className="bitacora-btn-page disabled:opacity-50"
-                >
-                  Anterior
-                </button>
-                <span className="px-3 py-1 text-sm text-gray-600">
-              Página {page} de {totalPages}
-            </span>
-                <button
-                    disabled={page === totalPages}
-                    onClick={() => setPage(p => Math.min(p+1,totalPages))}
-                    className="bitacora-btn-page disabled:opacity-50"
-                >
-                  Siguiente
-                </button>
+              <div className="flex justify-between items-center mt-4">
+                {/* Información de registros */}
+                <div className="text-sm text-gray-600">
+                  Mostrando {((page - 1) * pageSize) + 1} - {Math.min(page * pageSize, sorted.length)} de {sorted.length} registros
+                  {search && ` (filtrados de ${entries.length} total)`}
+                </div>
+                
+                {/* Controles de paginación */}
+                <div className="flex space-x-2">
+                  <button
+                      disabled={page === 1}
+                      onClick={() => setPage(p => Math.max(p-1,1))}
+                      className="bitacora-btn-page disabled:opacity-50"
+                  >
+                    Anterior
+                  </button>
+                  <span className="px-3 py-1 text-sm text-gray-600">
+                    Página {page} de {totalPages}
+                  </span>
+                  <button
+                      disabled={page === totalPages}
+                      onClick={() => setPage(p => Math.min(p+1,totalPages))}
+                      className="bitacora-btn-page disabled:opacity-50"
+                  >
+                    Siguiente
+                  </button>
+                </div>
               </div>
             </>
         )}
