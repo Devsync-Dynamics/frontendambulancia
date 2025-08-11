@@ -5,12 +5,52 @@ import { toast } from '@/hooks/use-toast';
 //const API_URL = 'https://backendamed-production.up.railway.app';
 
 const API_URL = 'http://localhost:3001';
+
+// Función auxiliar para obtener el token de autenticación
+const getAuthToken = (): string | null => {
+  return localStorage.getItem('token');
+};
+
+// Crear instancia de axios con interceptor para token
 export const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+// Interceptor para agregar automáticamente el token a todas las solicitudes
+api.interceptors.request.use(
+    (config) => {
+      const token = getAuthToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+);
+
+// Interceptor para manejar errores de autenticación
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response?.status === 401) {
+        // Token expirado o inválido
+        localStorage.removeItem('token');
+        toast({
+          title: "Sesión expirada",
+          description: "Por favor, inicie sesión nuevamente",
+          variant: "destructive",
+        });
+        // Aquí podrías redirigir al login
+        window.location.href = '/login';
+      }
+      return Promise.reject(error);
+    }
+);
 
 // Interface para medicamentos e insumos
 export interface IMedicamentoInsumo {
@@ -25,10 +65,19 @@ export interface IMedicamentoInsumo {
 export interface IAphDigital {
   id?: number;
 
+  // Información del usuario que crea el formulario (agregado)
+  creadoPor?: {
+    id: string;
+    nombre: string;
+    apellido: string;
+    email: string;
+  };
+
   // Información básica (requeridos)
   numeroFormulario: string;
   placa: string;
   cc: string;
+  tipoDocumento?: string;
   fecha: string; // Date como string para el frontend
   nombrePaciente: string;
 
@@ -155,10 +204,15 @@ export interface IAphDigital {
   // Timestamps
   createdAt?: string;
   updatedAt?: string;
+
+  idUsuarioCreador?: string;
+  evidencia?: string;
+
+
 }
 
-// DTO para crear AphDigital (sin id, createdAt, updatedAt)
-export interface CreateAphDigitalDto extends Omit<IAphDigital, 'id' | 'createdAt' | 'updatedAt'> {}
+// DTO para crear AphDigital (sin id, createdAt, updatedAt, creadoPor)
+export interface CreateAphDigitalDto extends Omit<IAphDigital, 'id' | 'createdAt' | 'updatedAt' | 'creadoPor'> {}
 
 // DTO para actualizar AphDigital (todos los campos opcionales excepto los requeridos)
 export interface UpdateAphDigitalDto extends Partial<CreateAphDigitalDto> {}
@@ -171,14 +225,31 @@ export interface IAphDigitalFilters {
   placa?: string;
   eps?: string;
   tipoServicio?: 'ambulanciaBasica' | 'medicalizado' | 'consultaMedica';
+  creadoPor?: string; // Filtrar por usuario que creó el formulario
 }
 
 // Servicio para AphDigital
 export const aphDigitalService = {
 
+  // Verificar autenticación antes de operaciones
+  checkAuth: (): boolean => {
+    const token = getAuthToken();
+    if (!token) {
+      toast({
+        title: "Error de autenticación",
+        description: "Debe iniciar sesión para realizar esta operación",
+        variant: "destructive",
+      });
+      return false;
+    }
+    return true;
+  },
+
   // Obtener todos los formularios APH o con filtros
   getAphDigitals: async (filters?: IAphDigitalFilters): Promise<IAphDigital[]> => {
     try {
+      if (!aphDigitalService.checkAuth()) return [];
+
       const response = await api.get('/aph-digital', {
         params: filters
       });
@@ -196,6 +267,8 @@ export const aphDigitalService = {
   // Obtener un formulario APH por ID
   getAphDigitalById: async (id: number | string): Promise<IAphDigital | null> => {
     try {
+      if (!aphDigitalService.checkAuth()) return null;
+
       const response = await api.get(`/aph-digital/${id}`);
       return response.data;
     } catch (error) {
@@ -211,6 +284,8 @@ export const aphDigitalService = {
   // Obtener formulario APH por número de formulario
   getAphDigitalByNumero: async (numeroFormulario: string): Promise<IAphDigital | null> => {
     try {
+      if (!aphDigitalService.checkAuth()) return null;
+
       const response = await api.get(`/aph-digital/numero/${numeroFormulario}`);
       return response.data;
     } catch (error) {
@@ -226,6 +301,8 @@ export const aphDigitalService = {
   // Obtener formularios APH por nombre de paciente
   getAphDigitalByPaciente: async (nombrePaciente: string): Promise<IAphDigital[]> => {
     try {
+      if (!aphDigitalService.checkAuth()) return [];
+
       const response = await api.get(`/aph-digital/paciente/${nombrePaciente}`);
       return response.data;
     } catch (error) {
@@ -241,6 +318,8 @@ export const aphDigitalService = {
   // Obtener formularios APH por fecha específica
   getAphDigitalByFecha: async (fecha: string): Promise<IAphDigital[]> => {
     try {
+      if (!aphDigitalService.checkAuth()) return [];
+
       const response = await api.get(`/aph-digital/fecha/${fecha}`);
       return response.data;
     } catch (error) {
@@ -256,6 +335,8 @@ export const aphDigitalService = {
   // Crear un nuevo formulario APH
   createAphDigital: async (formData: CreateAphDigitalDto): Promise<IAphDigital | null> => {
     try {
+      if (!aphDigitalService.checkAuth()) return null;
+
       // Procesar medicamentos antes de enviar
       const processedData = {
         ...formData,
@@ -266,7 +347,10 @@ export const aphDigitalService = {
           frecuencia: med.frecuencia || ''
         })) || []
       };
-console.log("DATA A GUARDAR",processedData)
+
+      console.log("DATA A GUARDAR CON USUARIO AUTENTICADO", processedData);
+
+      // El token se agrega automáticamente por el interceptor
       const response = await api.post('/aph-digital', processedData);
 
       toast({
@@ -275,10 +359,11 @@ console.log("DATA A GUARDAR",processedData)
       });
 
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "No se pudo crear el formulario APH";
       toast({
         title: "Error",
-        description: "No se pudo crear el formulario APH",
+        description: errorMessage,
         variant: "destructive",
       });
       return null;
@@ -288,6 +373,8 @@ console.log("DATA A GUARDAR",processedData)
   // Actualizar un formulario APH existente
   updateAphDigital: async (id: string | string[] | undefined, formData: UpdateAphDigitalDto): Promise<IAphDigital | null> => {
     try {
+      if (!aphDigitalService.checkAuth()) return null;
+
       // Procesar medicamentos antes de enviar
       const processedData = {
         ...formData,
@@ -307,10 +394,11 @@ console.log("DATA A GUARDAR",processedData)
       });
 
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "No se pudo actualizar el formulario APH";
       toast({
         title: "Error",
-        description: "No se pudo actualizar el formulario APH",
+        description: errorMessage,
         variant: "destructive",
       });
       return null;
@@ -320,19 +408,41 @@ console.log("DATA A GUARDAR",processedData)
   // Eliminar un formulario APH
   deleteAphDigital: async (id: number): Promise<boolean> => {
     try {
+      if (!aphDigitalService.checkAuth()) return false;
+
       await api.delete(`/aph-digital/${id}`);
       toast({
         title: "Éxito",
         description: "Formulario APH eliminado correctamente",
       });
       return true;
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "No se pudo eliminar el formulario APH";
       toast({
         title: "Error",
-        description: "No se pudo eliminar el formulario APH",
+        description: errorMessage,
         variant: "destructive",
       });
       return false;
+    }
+  },
+
+  // Obtener formularios APH creados por el usuario autenticado
+  getMyAphDigitals: async (filters?: Omit<IAphDigitalFilters, 'creadoPor'>): Promise<IAphDigital[]> => {
+    try {
+      if (!aphDigitalService.checkAuth()) return [];
+
+      const response = await api.get('/aph-digital/my-forms', {
+        params: filters
+      });
+      return response.data;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar sus formularios APH",
+        variant: "destructive",
+      });
+      return [];
     }
   },
 
@@ -344,6 +454,12 @@ console.log("DATA A GUARDAR",processedData)
   // Validar formulario antes de enviar
   validateAphDigital: (formData: CreateAphDigitalDto): { isValid: boolean; errors: string[] } => {
     const errors: string[] = [];
+
+    // Validación de autenticación
+    if (!getAuthToken()) {
+      errors.push("Debe iniciar sesión para crear un formulario APH");
+      return { isValid: false, errors };
+    }
 
     // Validaciones básicas requeridas
     if (!formData.placa?.trim()) {
@@ -393,6 +509,4 @@ console.log("DATA A GUARDAR",processedData)
       errors
     };
   }
-
-
 };

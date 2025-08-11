@@ -1,6 +1,6 @@
 'use client'
 
-import type React from "react"
+import React, {useEffect} from "react"
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Save, Settings } from 'lucide-react'
 import { SignatureField } from "@/components/signature-field"
 import GeneralLayout from "@/components/GeneralLayout"
+import {userService} from "../services/users.service";
 
 interface FirmaConfiguracion {
     firmaMedico?: string
@@ -28,21 +29,37 @@ export default function ConfiguracionFirma() {
         setFirmaData((prev) => ({ ...prev, [field]: value }))
     }
 
+    useEffect(() => {
+        const loadUserData = async () => {
+            try {
+                const userData = await userService.getMySignature()
+
+                setFirmaData({
+                    firmaMedico: userData.firma || "",
+                  //  nombreMedico: userData.nombre || "",
+                 //   registroMedico: userData.apellido || "", // O cualquier campo que uses para el registro
+                })
+            } catch (error) {
+                console.error('Error al cargar datos del usuario:', error)
+                // Podrías mostrar un toast o mensaje de error aquí
+            }
+        }
+
+        loadUserData()
+    }, [])
     const handleGuardarFirma = async () => {
         setLoading(true)
-        
+
         try {
-            // Aquí puedes agregar la lógica para guardar la configuración
-            // Por ejemplo, enviarla a un servicio o localStorage
-            console.log('Guardando configuración de firma:', firmaData)
-            
-            // Simular guardado
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            
+            // Guardar la firma usando el servicio
+            await userService.saveMySignature({
+                firma: firmaData.firmaMedico || ""
+            })
+
             alert('Configuración de firma guardada correctamente')
         } catch (error) {
             console.error('Error al guardar:', error)
-            alert('Error al guardar la configuración')
+            alert('Error al guardar la configuración: ' + (error instanceof Error ? error.message : 'Error desconocido'))
         } finally {
             setLoading(false)
         }

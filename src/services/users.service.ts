@@ -34,6 +34,11 @@ interface ChangePasswordPayload {
     newPassword: string
 }
 
+interface SaveFirmaPayload {
+    firma: string
+}
+
+
 //const API_BASE_URL = "https://backendamed-production.up.railway.app" // Ajusta esta URL a tu API de NestJS
 const API_BASE_URL = "http://localhost:3001"
 
@@ -107,6 +112,19 @@ export const userService = {
             method: "DELETE",
         })
     },
+
+    saveMySignature: async (firmaData: SaveFirmaPayload): Promise<User> => {
+        return authenticatedFetch(`${API_BASE_URL}/users/me/signature`, {
+            method: "PATCH",
+            body: JSON.stringify(firmaData),
+        })
+    },
+
+    // Método para obtener solo la firma del usuario autenticado
+    getMySignature: async (): Promise<{firma: string}> => {
+        return authenticatedFetch(`${API_BASE_URL}/users/me/signature`)
+    },
+
 }
 
 // Funciones de servicio para Roles
