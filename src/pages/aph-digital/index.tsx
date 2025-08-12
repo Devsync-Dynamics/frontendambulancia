@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Search, Plus, Eye, Edit, Printer, Filter, Activity, Calendar, User, FileText, Shield } from "lucide-react"
+import { Search, Plus, Eye, Edit, Printer, Filter, Activity, Calendar, User, FileText, Shield, Pill, Ambulance, Clipboard } from "lucide-react"
 import Link from "next/link"
 import { type IAphDigital, type IAphDigitalFilters, aphDigitalService } from "@/services/aph-digital.service"
 import GeneralLayout from "@/components/GeneralLayout";
@@ -97,7 +97,7 @@ export default function AphDigitalListPage() {
                   </p>
                 </div>
                 <div className="medical-icon-small">
-                  <Activity className="h-4 w-4" />
+                  <Ambulance className="h-4 w-4" />
                 </div>
               </div>
             </CardContent>
@@ -113,7 +113,7 @@ export default function AphDigitalListPage() {
                   </p>
                 </div>
                 <div className="medical-icon-small">
-                  <Activity className="h-4 w-4" />
+                  <Pill className="h-4 w-4" />
                 </div>
               </div>
             </CardContent>
@@ -220,7 +220,7 @@ export default function AphDigitalListPage() {
 
                         <div className="medical-info-field">
                           <div className="flex items-center gap-2 mb-1">
-                            <Activity className="h-3 w-3 text-medical-primary" />
+                            <Clipboard className="h-3 w-3 text-medical-primary" />
                             <span className="text-xs font-medium text-muted-foreground">Placa</span>
                           </div>
                           <p className="text-sm font-semibold text-foreground">{formulario.placa}</p>

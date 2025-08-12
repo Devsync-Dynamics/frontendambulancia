@@ -4,7 +4,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { Menu, X, Home, Truck, LogOut, Receipt, Activity, Users, PlusCircle, Edit, FolderOpen, Settings } from "lucide-react" // Importa el icono Users y PlusCircle, Edit
+import { Menu, X, Home, Truck, LogOut, Receipt, Activity, Users, PlusCircle, Edit, FolderOpen, Settings, Ambulance } from "lucide-react" // Importa el icono Users y PlusCircle, Edit
 
 type LayoutProps = {
   children: React.ReactNode
@@ -12,7 +12,7 @@ type LayoutProps = {
 
 const navItems = [
   { path: "/dashboard", name: "Dashboard", icon: Home, roles: ["SuperAdmin", "Admin"] },
-  { path: "/ambulancia", name: "Ambulancia", icon: Truck, roles: ["SuperAdmin", "Admin"] },
+  { path: "/ambulancia", name: "Ambulancia", icon: Ambulance, roles: ["SuperAdmin", "Admin"] },
   { path: "/aph-digital", name: "Aph Digital", icon: Activity, roles: ["SuperAdmin", "Admin", "usuario"] },
   { path: "/aph-digital/create", name: "Aph Digital", icon: Activity, roles: ["SuperAdmin", "Admin", "usuario"],hidden: true },
   { path: "/aph-digital/edit/[id]", name: "Aph Digital", icon: Activity, roles: ["SuperAdmin", "Admin", "usuario"],hidden: true},
