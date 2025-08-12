@@ -2,9 +2,9 @@ import axios from 'axios';
 import { toast } from '@/hooks/use-toast';
 
 // Usar la misma configuración de API
-//const API_URL = 'https://backendamed-production.up.railway.app';
+const API_URL = 'https://backendamed-production.up.railway.app';
 
-const API_URL = 'http://localhost:3001';
+//const API_URL = 'http://localhost:3001';
 
 // Función auxiliar para obtener el token de autenticación
 const getAuthToken = (): string | null => {

@@ -8,8 +8,8 @@ type Diagnostico = {
 }
 
 // Base del backend NestJS (por defecto tu producción actual)
-//const BASE = (process.env.CIE10_API_BASE_URL || "https://backendamed-production.up.railway.app").replace(/\/$/, "")
-const BASE = (process.env.CIE10_API_BASE_URL || "http://localhost:3001").replace(/\/$/, "")
+const BASE = (process.env.CIE10_API_BASE_URL || "https://backendamed-production.up.railway.app").replace(/\/$/, "")
+//const BASE = (process.env.CIE10_API_BASE_URL || "http://localhost:3001").replace(/\/$/, "")
 
 // Helpers para mapear distintas formas de respuesta
 function mapList(raw: any): any[] {

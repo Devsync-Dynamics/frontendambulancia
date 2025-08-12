@@ -39,8 +39,8 @@ interface SaveFirmaPayload {
 }
 
 
-//const API_BASE_URL = "https://backendamed-production.up.railway.app" // Ajusta esta URL a tu API de NestJS
-const API_BASE_URL = "http://localhost:3001"
+const API_BASE_URL = "https://backendamed-production.up.railway.app" // Ajusta esta URL a tu API de NestJS
+//const API_BASE_URL = "http://localhost:3001"
 
 // Función auxiliar para manejar las solicitudes fetch
 async function authenticatedFetch(url: string, options?: RequestInit) {
