@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useMemo } from "react"
+import React, {useState, useEffect, useMemo, ReactElement} from "react"
 import GeneralLayout from "@/components/GeneralLayout"
 import { Loader2, ChevronDown, ChevronUp, Download } from "lucide-react"
 import { motion } from "framer-motion"
@@ -413,4 +413,4 @@ export default function BitacoraPage() {
   )
 }
 
-BitacoraPage.getLayout = page => <GeneralLayout>{page}</GeneralLayout>
+BitacoraPage.getLayout = (page: ReactElement) => <GeneralLayout>{page}</GeneralLayout>
