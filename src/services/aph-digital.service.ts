@@ -65,19 +65,10 @@ export interface IMedicamentoInsumo {
 export interface IAphDigital {
   id?: number;
 
-  // Información del usuario que crea el formulario (agregado)
-  creadoPor?: {
-    id: string;
-    nombre: string;
-    apellido: string;
-    email: string;
-  };
-
   // Información básica (requeridos)
   numeroFormulario: string;
   placa: string;
   cc: string;
-  //tipoDocumento?: string;
   fecha: string; // Date como string para el frontend
   nombrePaciente: string;
 
