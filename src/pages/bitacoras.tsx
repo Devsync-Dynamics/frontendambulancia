@@ -24,13 +24,13 @@ const HEADINGS = [
   "Conductor",
   "Paramédico",
   "Diagnóstico",
-  "Evolución y Procedimientos Durante el Traslado",
+  //"Evolución y Procedimientos Durante el Traslado",
   "Código",
   "MV",
   "Médico",
   "Observación",
   "Valor",
-  "No. Planilla",
+  //"No. Planilla",
 ]
 
 export default function BitacoraPage() {
@@ -149,13 +149,13 @@ export default function BitacoraPage() {
         'Conductor': entry.conductor || 'N/A',
         'Paramédico': entry.paramedico || 'N/A',
         'Diagnóstico': entry.diagnostico || 'N/A',
-        'Evolución y Procedimientos Durante el Traslado': entry.evolucion || 'N/A',
+      //  'Evolución y Procedimientos Durante el Traslado': entry.evolucion || 'N/A',
         'Código': entry.codigo || 'N/A',
         'MV': entry.mv || 'N/A',
         'Médico': entry.medico || 'N/A',
         'Observación': entry.observacion || 'N/A',
         'Valor': entry.valor || 'N/A',
-        'No. Planilla': entry.noPlanilla || 'N/A'
+       // 'No. Planilla': entry.noPlanilla || 'N/A'
       }))
 
       // Crear el libro de trabajo
@@ -180,13 +180,13 @@ export default function BitacoraPage() {
         { width: 20 },  // Conductor
         { width: 20 },  // Paramédico
         { width: 30 },  // Diagnóstico
-        { width: 40 },  // Evolución y Procedimientos
+       // { width: 40 },  // Evolución y Procedimientos
         { width: 10 },  // Código
         { width: 10 },  // MV
         { width: 20 },  // Médico
         { width: 30 },  // Observación
         { width: 12 },  // Valor
-        { width: 12 }   // No. Planilla
+       // { width: 12 }   // No. Planilla
       ]
       
       worksheet['!cols'] = colWidths
@@ -346,9 +346,9 @@ export default function BitacoraPage() {
                             ].map((cell, idx) => (
                                 <td key={idx} className="bitacora-td">{cell || 'N/A'}</td>
                             ))}
-                            <td className="bitacora-td truncate max-w-xs">
+                            {/* <td className="bitacora-td truncate max-w-xs">
                               {row.evolucion || 'N/A'}
-                            </td>
+                            </td> */}
                             <td className="bitacora-td">{row.codigo || 'N/A'}</td>
                             <td className="bitacora-td">{row.mv || 'N/A'}</td>
                             <td className="bitacora-td">{row.medico || 'N/A'}</td>
@@ -356,21 +356,21 @@ export default function BitacoraPage() {
                               {row.observacion || 'N/A'}
                             </td>
                             <td className="bitacora-td">{row.valor || 'N/A'}</td>
-                            <td className="bitacora-td">{row.noPlanilla || 'N/A'}</td>
+                            {/* <td className="bitacora-td">{row.noPlanilla || 'N/A'}</td> */}
                             <td className="px-4">
                               {isOpen
                                   ? <ChevronUp className="h-5 w-5 text-teal-600"/>
                                   : <ChevronDown className="h-5 w-5 text-teal-600"/>}
                             </td>
                           </motion.tr>
-                          {isOpen && (
+                          {/* {isOpen && (
                               <tr>
                                 <td colSpan={HEADINGS.length+1} className="bg-muted p-4">
                                   <strong>Evolución y Procedimientos:</strong>
                                   <p className="mt-2">{row.evolucion || 'No hay información disponible'}</p>
                                 </td>
                               </tr>
-                          )}
+                          )} */}
                         </React.Fragment>
                     )
                   })}

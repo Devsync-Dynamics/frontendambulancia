@@ -29,13 +29,13 @@ export interface IBitacoraEntry {
     conductor: string;
     paramedico: string;
     diagnostico: string;
-    evolucion: string;
+    //evolucion: string;
     codigo: string;
     mv: string;
     medico: string;
     observacion: string;
     valor: string;
-    noPlanilla: string;
+    //noPlanilla: string;
 }
 
 // DTO para crear un registro (omitimos el campo 'no' si se autogenera)
