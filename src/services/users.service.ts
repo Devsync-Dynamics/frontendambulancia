@@ -8,7 +8,7 @@ interface User {
     id: string
     nombre: string
     apellido: string
-    email: string
+    username: string
     telefono?: string
     rol: Rol
 }
@@ -16,7 +16,7 @@ interface User {
 interface CreateUserPayload {
     nombre: string
     apellido: string
-    email: string
+    username: string
     password?: string // La contraseña es opcional para la edición, pero requerida para la creación
     telefono?: string
     rolId: number
@@ -25,7 +25,7 @@ interface CreateUserPayload {
 interface UpdateUserPayload {
     nombre?: string
     apellido?: string
-    email?: string
+    username?: string
     telefono?: string
     rolId?: number
 }

@@ -19,7 +19,7 @@ interface User {
     id: string
     nombre: string
     apellido: string
-    email: string
+    username: string
     telefono?: string
     rol: Rol
 }
@@ -128,7 +128,7 @@ function UsersPage() {
                                 Apellido
                             </th>
                             <th className="py-3 px-4 text-left text-sm font-medium text-teal-700 uppercase tracking-wider border-b">
-                                Email
+                                Username
                             </th>
                             <th className="py-3 px-4 text-left text-sm font-medium text-teal-700 uppercase tracking-wider border-b">
                                 Rol
@@ -146,7 +146,7 @@ function UsersPage() {
                             <tr key={user.id} className="hover:bg-gray-50">
                                 <td className="py-3 px-4 whitespace-nowrap text-gray-800">{user.nombre}</td>
                                 <td className="py-3 px-4 whitespace-nowrap text-gray-800">{user.apellido}</td>
-                                <td className="py-3 px-4 whitespace-nowrap text-gray-800">{user.email}</td>
+                                <td className="py-3 px-4 whitespace-nowrap text-gray-800">{user.username}</td>
                                 <td className="py-3 px-4 whitespace-nowrap text-gray-800">{user.rol?.nombre || "N/A"}</td>
                                 <td className="py-3 px-4 whitespace-nowrap text-gray-800">{user.telefono || "N/A"}</td>
                                 <td className="py-3 px-4 whitespace-nowrap">

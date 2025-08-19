@@ -17,7 +17,7 @@ export interface ITripulante {
   nombre: string;
   apellido: string;
   idrol: 'PARAMEDICO' | 'CONDUCTOR' | 'ENFERMERO' | 'MEDICO';
-  email: string;
+  username: string;
   ambulancia: {
     id: number;
   }
@@ -124,7 +124,7 @@ export const ambulanciaService = {
       
       if (storedTripulanteId) {
         // Buscar el tripulante basándose en el ID almacenado
-        const foundTripulante = allTripulantes.find(tripulante => tripulante.email === storedTripulanteId);
+        const foundTripulante = allTripulantes.find(tripulante => tripulante.username === storedTripulanteId);
         console.log('Tripulante encontrado:', foundTripulante);
         return foundTripulante?.ambulancia.id || null;  // Si no se encuentra, devuelve `null`
       } else {

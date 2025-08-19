@@ -18,7 +18,7 @@ interface User {
     id: string
     nombre: string
     apellido: string
-    email: string
+    username: string
     telefono?: string
     rol?: Rol // Hacemos 'rol' opcional aquí por si el backend no lo envía
 }
@@ -30,7 +30,7 @@ function EditUserPage() {
     const [formData, setFormData] = useState({
         nombre: "",
         apellido: "",
-        email: "",
+        username: "",
         telefono: "",
         rolId: "",
     })
@@ -80,14 +80,14 @@ function EditUserPage() {
                 setFormData({
                     nombre: user.nombre || "",
                     apellido: user.apellido || "",
-                    email: user.email || "",
+                    username: user.username || "",
                     telefono: user.telefono || "",
                     rolId: String(user.rol?.id || ""), // Asegúrate de que el rolId se establezca correctamente
                 })
                 console.log("FormData set to:", {
                     nombre: user.nombre || "",
                     apellido: user.apellido || "",
-                    email: user.email || "",
+                    username: user.username || "",
                     telefono: user.telefono || "",
                     rolId: String(user.rol?.id || ""),
                 })
@@ -251,14 +251,14 @@ function EditUserPage() {
                     />
                 </div>
                 <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                        Email
+                    <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                        Username
                     </label>
                     <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
+                        type="username"
+                        id="username"
+                        name="username"
+                        value={formData.username}
                         onChange={handleChange}
                         required
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 text-gray-900"

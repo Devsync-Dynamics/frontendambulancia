@@ -478,11 +478,7 @@ export default function ViewAphDigitalPage() {
                                                 Responsable</label>
                                             <p className="font-semibold">{formData.nombreResponsable || "No especificado"}</p>
                                         </div>
-                                        <div className="space-y-2">
-                                            <label
-                                                className="text-sm font-medium text-muted-foreground">Parentesco</label>
-                                            <p className="font-semibold">{formData.parentesco || "No especificado"}</p>
-                                        </div>
+                                       
                                     </div>
                                 </div>
                             </CardContent>

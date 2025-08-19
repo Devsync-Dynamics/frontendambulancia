@@ -1149,26 +1149,7 @@ export default function EditAphDigitalPage() {
                                                 className="medical-input-focus"
                                             />
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="parentesco">Parentesco</Label>
-                                            <Select
-                                                value={formData.parentesco}
-                                                onValueChange={(value) => updateFormData("parentesco", value)}
-                                            >
-                                                <SelectTrigger className="medical-select-focus">
-                                                    <SelectValue placeholder="Seleccionar parentesco"/>
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="Paciente">Paciente</SelectItem>
-                                                    <SelectItem value="Padre">Padre</SelectItem>
-                                                    <SelectItem value="Madre">Madre</SelectItem>
-                                                    <SelectItem value="Cónyuge">Cónyuge</SelectItem>
-                                                    <SelectItem value="Hijo/a">Hijo/a</SelectItem>
-                                                    <SelectItem value="Hermano/a">Hermano/a</SelectItem>
-                                                    <SelectItem value="Otro">Otro</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
+                                       
                                     </div>
                                 </div>
                             </CardContent>

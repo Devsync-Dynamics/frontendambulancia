@@ -7,7 +7,7 @@ import { useRouter } from "next/router" // Importación corregida para Pages Rou
 import { Ambulance, Lock, User, Heart } from "lucide-react"
 
 export default function Home() {
-  const [email, setEmail] = useState("")
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -26,7 +26,7 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
       })
 
       const data = await response.json()
@@ -36,7 +36,7 @@ export default function Home() {
       }
 
       localStorage.setItem("token", data.access_token)
-      localStorage.setItem("user", email)
+      localStorage.setItem("user", username)
 
       // Asumiendo que el backend devuelve el rol del usuario en `data.role`
       const userRole = data.role
@@ -76,17 +76,17 @@ export default function Home() {
             {error && <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">{error}</div>}
             <form onSubmit={handleLogin} className="space-y-6">
               <div className="space-y-2">
-                <label htmlFor="email" className="block text-teal-700">
-                  Email
+                <label htmlFor="username" className="block text-teal-700">
+                  Username
                 </label>
                 <div className="relative group">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-teal-600 group-hover:text-teal-500 transition-colors duration-200" />
                   <input
-                      id="email"
-                      type="email"
-                      placeholder="Ingrese su email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      id="username"
+                      type="username"
+                      placeholder="Ingrese su username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                       className="w-full pl-10 py-2 bg-white bg-opacity-70 border border-teal-200 text-teal-600 placeholder-teal-600 focus:border-teal-400 focus:ring-2 focus:ring-teal-400 rounded-lg transition-all duration-200"
                       required
                       disabled={loading}
