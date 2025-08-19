@@ -274,7 +274,7 @@ export default function CreateAphDigitalPage() {
                                             <SelectItem value="CC">Cédula de ciudadanía</SelectItem>
                                             <SelectItem value="TI">Tarjeta de identidad</SelectItem>
                                             <SelectItem value="CE">Cédula de extranjería</SelectItem>
-                                            <SelectItem value="PA">Pasaporte</SelectItem>
+                                            <SelectItem value="PT">Perismiso de trabajo</SelectItem>
                                             <SelectItem value="RC">Registro civil</SelectItem>
                                             </SelectContent>
                                         </Select>
@@ -440,7 +440,7 @@ export default function CreateAphDigitalPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="spo2">O2 *</Label>
+                                        <Label htmlFor="spo2">O2 </Label>
                                         <div className="flex items-center">
                                             <Input
                                                 id="spo2"
@@ -986,51 +986,17 @@ export default function CreateAphDigitalPage() {
                         <Card className="medical-section animate-fade-in">
                             <CardHeader>
                                 <CardTitle className="text-medical-primary">Firmas y Autorización</CardTitle>
-                                <CardDescription>Firmas del personal médico y del paciente/responsable</CardDescription>
+                                <CardDescription>Firmas de institución responsable y que recibe</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
 
 
-                                <div className="mt-3 flex gap-2">
-                                    <Button
-                                        type="button"
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => {
-                                            console.log('=== ESTADO COMPLETO DEL FORMULARIO ===');
-                                            console.log('formData completo:', formData);
-                                            console.log('firmaMedico:', formData.firmaMedico);
-                                            console.log('firmaPaciente:', formData.firmaPaciente);
-                                        }}
-                                    >
-                                        Log Estado
-                                    </Button>
-
-                                    <Button
-                                        type="button"
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => {
-                                            const testSignature = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
-
-                                            console.log('=== PRUEBA MANUAL DE updateFormData ===');
-                                            console.log('Antes - firmaMedico:', formData.firmaMedico ? 'PRESENTE' : 'AUSENTE');
-                                            updateFormData("firmaMedico", testSignature);
-
-                                            setTimeout(() => {
-                                                console.log('Después - firmaMedico:', formData.firmaMedico ? 'PRESENTE' : 'AUSENTE');
-                                            }, 100);
-                                        }}
-                                    >
-                                        Test Manual
-                                    </Button>
-                                </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-4">
 
                                         <SignatureField
-                                            label="Firma del Médico/Paramédico"
+                                            label="Institución responsable del paciente"
                                             onChange={(signature) => {
 
                                                 updateFormData("firmaMedico", signature);
@@ -1039,7 +1005,7 @@ export default function CreateAphDigitalPage() {
                                                     console.log('Estado DESPUÉS de updateFormData:', formData.firmaMedico ? 'PRESENTE' : 'AUSENTE');
                                                 }, 0);
                                             }}
-                                            placeholder="Firma del médico o paramédico responsable"
+                                            placeholder="Firma de institución responsable del paciente"
                                             value={formData.firmaMedico}
                                         />
 
@@ -1067,7 +1033,7 @@ export default function CreateAphDigitalPage() {
 
 
                                         <SignatureField
-                                            label="Firma del Paciente/Responsable"
+                                            label="Institución que recibe paciente"
                                             onChange={(signature) => {
                                                 console.log('=== onChange PACIENTE EJECUTADO ===');
                                                 console.log('Signature recibida:', signature ? 'SÍ' : 'NO');
@@ -1079,7 +1045,7 @@ export default function CreateAphDigitalPage() {
                                                     console.log('Estado DESPUÉS de updateFormData:', formData.firmaPaciente ? 'PRESENTE' : 'AUSENTE');
                                                 }, 0);
                                             }}
-                                            placeholder="Firma del paciente o responsable legal"
+                                            placeholder="Firma de institución que recibe al paciente"
                                             value={formData.firmaPaciente}
                                         />
 
@@ -1092,26 +1058,7 @@ export default function CreateAphDigitalPage() {
                                                 className="medical-input-focus"
                                             />
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="parentesco">Parentesco</Label>
-                                            <Select
-                                                value={formData.parentesco}
-                                                onValueChange={(value) => updateFormData("parentesco", value)}
-                                            >
-                                                <SelectTrigger className="medical-select-focus">
-                                                    <SelectValue placeholder="Seleccionar parentesco"/>
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="Paciente">Paciente</SelectItem>
-                                                    <SelectItem value="Padre">Padre</SelectItem>
-                                                    <SelectItem value="Madre">Madre</SelectItem>
-                                                    <SelectItem value="Cónyuge">Cónyuge</SelectItem>
-                                                    <SelectItem value="Hijo/a">Hijo/a</SelectItem>
-                                                    <SelectItem value="Hermano/a">Hermano/a</SelectItem>
-                                                    <SelectItem value="Otro">Otro</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
+                                       
                                     </div>
                                 </div>
                             </CardContent>

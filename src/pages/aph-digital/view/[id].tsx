@@ -425,13 +425,12 @@ export default function ViewAphDigitalPage() {
                         <Card className="medical-section animate-fade-in">
                             <CardHeader>
                                 <CardTitle className="text-medical-primary">Firmas y Autorización</CardTitle>
-                                <CardDescription>Firmas del personal médico y del paciente/responsable</CardDescription>
+                                <CardDescription>Firmas de institución responsable y que recibe</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-4">
-                                        <label className="text-sm font-medium text-muted-foreground">Firma del
-                                            Médico/Paramédico</label>
+                                        <label className="text-sm font-medium text-muted-foreground">Institución responsable del paciente</label>
                                         {formData.firmaMedico ? (
                                             <div className="border rounded-lg p-4 bg-muted/20">
                                                 <img
@@ -459,8 +458,7 @@ export default function ViewAphDigitalPage() {
                                     </div>
 
                                     <div className="space-y-4">
-                                        <label className="text-sm font-medium text-muted-foreground">Firma del
-                                            Paciente/Responsable</label>
+                                        <label className="text-sm font-medium text-muted-foreground">Institución que recibe paciente</label>
                                         {formData.firmaPaciente ? (
                                             <div className="border rounded-lg p-4 bg-muted/20">
                                                 <img

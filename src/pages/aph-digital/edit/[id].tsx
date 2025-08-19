@@ -331,7 +331,7 @@ export default function EditAphDigitalPage() {
                                            <SelectItem value="CC">Cédula de ciudadanía</SelectItem>
                                            <SelectItem value="TI">Tarjeta de identidad</SelectItem>
                                            <SelectItem value="CE">Cédula de extranjería</SelectItem>
-                                           <SelectItem value="PA">Pasaporte</SelectItem>
+                                           <SelectItem value="PT">Permiso de trabajo</SelectItem>
                                            <SelectItem value="RC">Registro civil</SelectItem>
                                            </SelectContent>
                                        </Select>
@@ -497,7 +497,7 @@ export default function EditAphDigitalPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="spo2">O2 *</Label>
+                                        <Label htmlFor="spo2">O2 </Label>
                                         <div className="flex items-center">
                                             <Input
                                                 id="spo2"
@@ -1043,7 +1043,7 @@ export default function EditAphDigitalPage() {
                         <Card className="medical-section animate-fade-in">
                             <CardHeader>
                                 <CardTitle className="text-medical-primary">Firmas y Autorización</CardTitle>
-                                <CardDescription>Firmas del personal médico y del paciente/responsable</CardDescription>
+                                <CardDescription>Firmas de institución responsable y que recibe</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
 
@@ -1087,7 +1087,7 @@ export default function EditAphDigitalPage() {
                                     <div className="space-y-4">
 
                                         <SignatureField
-                                            label="Firma del Médico/Paramédico"
+                                            label="Institución responsable del paciente"
                                             onChange={(signature) => {
 
                                                 updateFormData("firmaMedico", signature);
@@ -1096,7 +1096,7 @@ export default function EditAphDigitalPage() {
                                                     console.log('Estado DESPUÉS de updateFormData:', formData.firmaMedico ? 'PRESENTE' : 'AUSENTE');
                                                 }, 0);
                                             }}
-                                            placeholder="Firma del médico o paramédico responsable"
+                                            placeholder="Firma de institución responsable del paciente"
                                             value={formData.firmaMedico}
                                         />
 
@@ -1124,7 +1124,7 @@ export default function EditAphDigitalPage() {
 
 
                                         <SignatureField
-                                            label="Firma del Paciente/Responsable"
+                                            label="Institución que recibe paciente"
                                             onChange={(signature) => {
                                                 console.log('=== onChange PACIENTE EJECUTADO ===');
                                                 console.log('Signature recibida:', signature ? 'SÍ' : 'NO');
@@ -1136,7 +1136,7 @@ export default function EditAphDigitalPage() {
                                                     console.log('Estado DESPUÉS de updateFormData:', formData.firmaPaciente ? 'PRESENTE' : 'AUSENTE');
                                                 }, 0);
                                             }}
-                                            placeholder="Firma del paciente o responsable legal"
+                                            placeholder="Firma de institución que recibe al paciente"
                                             value={formData.firmaPaciente}
                                         />
 
