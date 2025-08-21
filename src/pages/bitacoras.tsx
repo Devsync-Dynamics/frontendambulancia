@@ -11,6 +11,7 @@ const HEADINGS = [
   "No.",
   "Radio Operador",
   "Entidad",
+  "ARL",
   "Contacto",
   "Nombre Completo del Paciente",
   "Tipo Documento",
@@ -136,6 +137,7 @@ export default function BitacoraPage() {
         'No.': entry.no || 'N/A',
         'Radio Operador': entry.radioOperador || 'N/A',
         'Entidad': entry.entidad || 'N/A',
+        'ARL': entry.arl || 'N/A',
         'Contacto': entry.contacto || 'N/A',
         'Nombre Completo del Paciente': entry.nombrePaciente || 'N/A',
         'Tipo Documento': entry.tipoDocumento || 'N/A',
@@ -167,6 +169,7 @@ export default function BitacoraPage() {
         { width: 8 },   // No.
         { width: 15 },  // Radio Operador
         { width: 20 },  // Entidad
+        { width: 20 },  // ARL
         { width: 15 },  // Contacto
         { width: 30 },  // Nombre Completo del Paciente
         { width: 15 },  // Tipo Documento
@@ -282,8 +285,8 @@ export default function BitacoraPage() {
                 onChange={e => setSortKey(e.target.value)}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
             >
-              <option value="fechaTraslado">Fecha de Traslado</option>
               <option value="no">Número</option>
+              <option value="fechaTraslado">Fecha de Traslado</option>
               <option value="nombrePaciente">Nombre Paciente</option>
               <option value="entidad">Entidad</option>
               <option value="tipoTraslado">Tipo Traslado</option>
@@ -330,6 +333,7 @@ export default function BitacoraPage() {
                               row.no,
                               row.radioOperador,
                               row.entidad,
+                              row.arl,
                               row.contacto,
                               row.nombrePaciente,
                               row.tipoDocumento,

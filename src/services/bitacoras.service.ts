@@ -2,8 +2,8 @@ import axios from 'axios';
 import {toast} from '@/hooks/use-toast';
 
 // Usar la misma configuración de API
-const API_URL = 'https://backendamed-production.up.railway.app';
-//const API_URL = 'http://localhost:3001';
+//const API_URL = 'https://backendamed-production.up.railway.app';
+const API_URL = 'http://localhost:3001';
 export const api = axios.create({
     baseURL: API_URL,
     headers: {
@@ -16,6 +16,7 @@ export interface IBitacoraEntry {
     no: number;
     radioOperador: string;
     entidad: string;
+    arl: string;
     contacto: string;
     nombrePaciente: string;
     tipoDocumento: string;
@@ -51,6 +52,7 @@ export interface UpdateBitacoraDto extends Partial<CreateBitacoraDto> {
 export interface IBitacoraFilters {
     nombrePaciente?: string;
     entidad?: string;
+    arl?: string;
     tipoTraslado?: string;
     fechaInicio?: string;
     fechaFin?: string;
