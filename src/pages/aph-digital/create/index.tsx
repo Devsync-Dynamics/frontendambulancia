@@ -891,51 +891,24 @@ export default function CreateAphDigitalPage() {
                                             </Button>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                            <div className="space-y-2">
-                                                <Label htmlFor={`medicamento-${medicamento.id}`}>Nombre del
-                                                    Medicamento</Label>
+                                            <div className="space-y-2 md:col-span-2">
+                                                <Label htmlFor={`medicamento-${medicamento.id}`}>Descripción</Label>
                                                 <Input
                                                     id={`medicamento-${medicamento.id}`}
                                                     value={medicamento.nombre || ""}
                                                     onChange={(e) => updateMedicamento(medicamento.id || "", "nombre", e.target.value)}
                                                     className="medical-input-focus"
+                                                    placeholder="Nombre del Medicamento"
                                                 />
                                             </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor={`dosis-${medicamento.id}`}>Dosis</Label>
+                                            <div className="space-y-2 md:col-span-2">
+                                                <Label htmlFor={`dosis-${medicamento.id}`}>Cantidad</Label>
                                                 <Input
                                                     id={`dosis-${medicamento.id}`}
                                                     value={medicamento.dosis || ""}
                                                     onChange={(e) => updateMedicamento(medicamento.id || "", "dosis", e.target.value)}
                                                     className="medical-input-focus"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor={`via-${medicamento.id}`}>Vía de Administración</Label>
-                                                <Select
-                                                    value={medicamento.via || ""}
-                                                    onValueChange={(value) => updateMedicamento(medicamento.id || "", "via", value)}
-                                                >
-                                                    <SelectTrigger className="medical-select-focus">
-                                                        <SelectValue placeholder="Seleccionar vía"/>
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="Oral">Oral</SelectItem>
-                                                        <SelectItem value="Intravenosa">Intravenosa</SelectItem>
-                                                        <SelectItem value="Intramuscular">Intramuscular</SelectItem>
-                                                        <SelectItem value="Subcutánea">Subcutánea</SelectItem>
-                                                        <SelectItem value="Tópica">Tópica</SelectItem>
-                                                        <SelectItem value="Inhalatoria">Inhalatoria</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor={`frecuencia-${medicamento.id}`}>Frecuencia</Label>
-                                                <Input
-                                                    id={`frecuencia-${medicamento.id}`}
-                                                    value={medicamento.frecuencia || ""}
-                                                    onChange={(e) => updateMedicamento(medicamento.id || "", "frecuencia", e.target.value)}
-                                                    className="medical-input-focus"
+                                                    placeholder="Cantidad del Medicamento"
                                                 />
                                             </div>
                                         </div>

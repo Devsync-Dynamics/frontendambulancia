@@ -57,8 +57,6 @@ export interface IMedicamentoInsumo {
   id?: string; // Para manejo en frontend
   nombre: string;
   dosis: string;
-  via: string;
-  frecuencia: string;
 }
 
 // Interface principal para AphDigital ajustada a los campos del formulario
@@ -334,9 +332,7 @@ export const aphDigitalService = {
         ...formData,
         medicamentosInsumos: formData.medicamentosInsumos?.map(med => ({
           nombre: med.nombre || '',
-          dosis: med.dosis || '',
-          via: med.via || '',
-          frecuencia: med.frecuencia || ''
+          dosis: med.dosis || ''
         })) || []
       };
 
@@ -372,9 +368,7 @@ export const aphDigitalService = {
         ...formData,
         medicamentosInsumos: formData.medicamentosInsumos?.map(med => ({
           nombre: med.nombre || '',
-          dosis: med.dosis || '',
-          via: med.via || '',
-          frecuencia: med.frecuencia || ''
+          dosis: med.dosis || ''
         })) || []
       };
 
@@ -489,9 +483,6 @@ export const aphDigitalService = {
       formData.medicamentosInsumos.forEach((med, index) => {
         if (med.nombre && med.nombre.trim() && !med.dosis?.trim()) {
           errors.push(`El medicamento ${index + 1} requiere especificar la dosis`);
-        }
-        if (med.nombre && med.nombre.trim() && !med.via?.trim()) {
-          errors.push(`El medicamento ${index + 1} requiere especificar la vía de administración`);
         }
       });
     }

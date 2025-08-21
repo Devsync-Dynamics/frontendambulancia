@@ -359,23 +359,13 @@ export default function ViewAphDigitalPage() {
                                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                                         <div className="space-y-2">
                                                             <label
-                                                                className="text-sm font-medium text-muted-foreground">Nombre</label>
+                                                                className="text-sm font-medium text-muted-foreground">Descripción</label>
                                                             <p className="font-semibold">{medicamento.nombre || "No especificado"}</p>
                                                         </div>
                                                         <div className="space-y-2">
                                                             <label
-                                                                className="text-sm font-medium text-muted-foreground">Dosis</label>
+                                                                className="text-sm font-medium text-muted-foreground">Cantidad</label>
                                                             <p className="font-semibold">{medicamento.dosis || "No especificada"}</p>
-                                                        </div>
-                                                        <div className="space-y-2">
-                                                            <label
-                                                                className="text-sm font-medium text-muted-foreground">Vía</label>
-                                                            <p className="font-semibold">{medicamento.via || "No especificada"}</p>
-                                                        </div>
-                                                        <div className="space-y-2">
-                                                            <label
-                                                                className="text-sm font-medium text-muted-foreground">Frecuencia</label>
-                                                            <p className="font-semibold">{medicamento.frecuencia || "No especificada"}</p>
                                                         </div>
                                                     </div>
                                                 </div>
