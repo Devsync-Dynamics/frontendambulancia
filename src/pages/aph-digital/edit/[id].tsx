@@ -215,39 +215,51 @@ export default function EditAphDigitalPage() {
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="space-y-2">
-                                       <Label htmlFor="fecha">Fecha *</Label>
-                                       <Input
-                                           id="fecha"
-                                           type="date"
-                                           value={formData.fecha}
-                                           onChange={(e) => updateFormData("fecha", e.target.value)}
-                                           className="medical-input-focus"
-                                           required
-                                       />
-                                   </div>
-                                   <div className="space-y-2">
-                                       <Label htmlFor="horaLlegada">Hora de Llegada *</Label>
-                                       <Input
-                                           id="horaLlegada"
-                                           type="time"
-                                           value={formData.horaLlegada || ""}
-                                           onChange={(e) => updateFormData("horaLlegada", e.target.value)}
-                                           className="medical-input-focus"
-                                           required
-                                       />
-                                       <p className="text-xs text-muted-foreground">Hora automática del sistema</p>
-                                   </div>
-                                   <div className="space-y-2">
-                                       <Label htmlFor="nombrePaciente">Nombre del Paciente *</Label>
-                                       <Input
-                                           id="nombrePaciente"
-                                           value={formData.nombrePaciente}
-                                           onChange={(e) => updateFormData("nombrePaciente", e.target.value)}
-                                           className="medical-input-focus"
-                                           placeholder="Nombre del paciente"
-                                           required
-                                       />
-                                   </div>
+                                        <Label htmlFor="fecha">Fecha *</Label>
+                                        <Input
+                                            id="fecha"
+                                            type="date"
+                                            value={formData.fecha}
+                                            onChange={(e) => updateFormData("fecha", e.target.value)}
+                                            className="medical-input-focus"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="horaLlegada">Hora de Llegada *</Label>
+                                        <Input
+                                            id="horaLlegada"
+                                            type="time"
+                                            value={formData.horaLlegada || ""}
+                                            onChange={(e) => updateFormData("horaLlegada", e.target.value)}
+                                            className="medical-input-focus"
+                                            required
+                                        />
+                                        <p className="text-xs text-muted-foreground">Hora automática del sistema</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="nombrePaciente">Nombre del Paciente *</Label>
+                                        <Input
+                                            id="nombrePaciente"
+                                            value={formData.nombrePaciente}
+                                            onChange={(e) => updateFormData("nombrePaciente", e.target.value)}
+                                            className="medical-input-focus"
+                                            placeholder="Nombre del paciente"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="nombreConductor">Conductor. *</Label>
+                                        <Input
+                                            id="nombreConductor"
+                                            value={formData.nombreConductor}
+                                            onChange={(e) => updateFormData("nombreConductor", e.target.value)}
+                                            className="medical-input-focus"
+                                            placeholder="Ingrese el Nombre del Conductor"
+                                            required
+                                        />
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>

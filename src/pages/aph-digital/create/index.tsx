@@ -38,6 +38,7 @@ export default function CreateAphDigitalPage() {
         medicamentosInsumos: [],
         estadoPaciente: "",
         diagnostico: "",
+        nombreConductor:"",
     })
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -188,6 +189,17 @@ export default function CreateAphDigitalPage() {
                                             onChange={(e) => updateFormData("nombrePaciente", e.target.value)}
                                             className="medical-input-focus"
                                             placeholder="Nombre del paciente"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="nombreConductor">Conductor. *</Label>
+                                        <Input
+                                            id="nombreConductor"
+                                            value={formData.nombreConductor}
+                                            onChange={(e) => updateFormData("nombreConductor", e.target.value)}
+                                            className="medical-input-focus"
+                                            placeholder="Ingrese el Nombre del Conductor"
                                             required
                                         />
                                     </div>
