@@ -1049,6 +1049,127 @@ export default function CreateAphDigitalPage() {
                             </CardContent>
                         </Card>
 
+                        <Card className="medical-section animate-fade-in">
+                            <CardHeader>
+                                <CardTitle className="text-medical-primary">Encuesta de Satisfacción</CardTitle>
+                                <CardDescription>Evaluación del servicio prestado</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-4">
+                                    <div className="space-y-3">
+                                        <Label className="text-base font-medium">Cómo le pareció el servicio:</Label>
+                                        <div className="flex flex-wrap gap-6">
+                                            <div className="medical-radio-group">
+                                                <input
+                                                    type="radio"
+                                                    id="muyBuena"
+                                                    name="servicioCalidad"
+                                                    value="muyBuena"
+                                                    checked={formData.servicioCalidad === "muyBuena"}
+                                                    onChange={(e) => updateFormData("servicioCalidad", e.target.value)}
+                                                />
+                                                <Label htmlFor="muyBuena">MUY BUENA</Label>
+                                            </div>
+                                            <div className="medical-radio-group">
+                                                <input
+                                                    type="radio"
+                                                    id="buena"
+                                                    name="servicioCalidad"
+                                                    value="buena"
+                                                    checked={formData.servicioCalidad === "buena"}
+                                                    onChange={(e) => updateFormData("servicioCalidad", e.target.value)}
+                                                />
+                                                <Label htmlFor="buena">BUENA</Label>
+                                            </div>
+                                            <div className="medical-radio-group">
+                                                <input
+                                                    type="radio"
+                                                    id="regular"
+                                                    name="servicioCalidad"
+                                                    value="regular"
+                                                    checked={formData.servicioCalidad === "regular"}
+                                                    onChange={(e) => updateFormData("servicioCalidad", e.target.value)}
+                                                />
+                                                <Label htmlFor="regular">REGULAR</Label>
+                                            </div>
+                                            <div className="medical-radio-group">
+                                                <input
+                                                    type="radio"
+                                                    id="mala"
+                                                    name="servicioCalidad"
+                                                    value="mala"
+                                                    checked={formData.servicioCalidad === "mala"}
+                                                    onChange={(e) => updateFormData("servicioCalidad", e.target.value)}
+                                                />
+                                                <Label htmlFor="mala">MALA</Label>
+                                            </div>
+                                            <div className="medical-radio-group">
+                                                <input
+                                                    type="radio"
+                                                    id="muyMala"
+                                                    name="servicioCalidad"
+                                                    value="muyMala"
+                                                    checked={formData.servicioCalidad === "muyMala"}
+                                                    onChange={(e) => updateFormData("servicioCalidad", e.target.value)}
+                                                />
+                                                <Label htmlFor="muyMala">MUY MALA</Label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <Label className="text-base font-medium">Recomendaría a Familiares y Amigos:</Label>
+                                        <div className="flex flex-wrap gap-6">
+                                            <div className="medical-radio-group">
+                                                <input
+                                                    type="radio"
+                                                    id="definitivamenteSi"
+                                                    name="recomendacion"
+                                                    value="definitivamenteSi"
+                                                    checked={formData.recomendacion === "definitivamenteSi"}
+                                                    onChange={(e) => updateFormData("recomendacion", e.target.value)}
+                                                />
+                                                <Label htmlFor="definitivamenteSi">Definitivamente Sí</Label>
+                                            </div>
+                                            <div className="medical-radio-group">
+                                                <input
+                                                    type="radio"
+                                                    id="probablementeSi"
+                                                    name="recomendacion"
+                                                    value="probablementeSi"
+                                                    checked={formData.recomendacion === "probablementeSi"}
+                                                    onChange={(e) => updateFormData("recomendacion", e.target.value)}
+                                                />
+                                                <Label htmlFor="probablementeSi">Probablemente Sí</Label>
+                                            </div>
+                                            <div className="medical-radio-group">
+                                                <input
+                                                    type="radio"
+                                                    id="definitivamenteNo"
+                                                    name="recomendacion"
+                                                    value="definitivamenteNo"
+                                                    checked={formData.recomendacion === "definitivamenteNo"}
+                                                    onChange={(e) => updateFormData("recomendacion", e.target.value)}
+                                                />
+                                                <Label htmlFor="definitivamenteNo">Definitivamente No</Label>
+                                            </div>
+                                            <div className="medical-radio-group">
+                                                <input
+                                                    type="radio"
+                                                    id="probablementeNo"
+                                                    name="recomendacion"
+                                                    value="probablementeNo"
+                                                    checked={formData.recomendacion === "probablementeNo"}
+                                                    onChange={(e) => updateFormData("recomendacion", e.target.value)}
+                                                />
+                                                <Label htmlFor="probablementeNo">Probablemente No</Label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
                         <div className="flex justify-end gap-4">
                             <Link href="/aph-digital">
                                 <Button variant="outline" type="button"

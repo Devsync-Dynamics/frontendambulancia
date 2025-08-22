@@ -59,6 +59,10 @@ export interface IMedicamentoInsumo {
   dosis: string;
 }
 
+// Tipos para la encuesta de satisfacción
+export type ServicioCalidad = 'muyBuena' | 'buena' | 'regular' | 'mala' | 'muyMala';
+export type Recomendacion = 'definitivamenteSi' | 'probablementeSi' | 'definitivamenteNo' | 'probablementeNo';
+
 // Interface principal para AphDigital ajustada a los campos del formulario
 export interface IAphDigital {
   id?: number;
@@ -169,10 +173,12 @@ export interface IAphDigital {
   lugarOcurrencia?: string;
   destinoFinal?: string;
 
-  // Evaluación del servicio (del DTO original)
-  comoParecioServicio?: 'MUY_BUENA' | 'BUENA' | 'REGULAR' | 'MALA' | 'MUY_MALA';
+  // ENCUESTA DE SATISFACCIÓN - NUEVOS CAMPOS
+  servicioCalidad?: ServicioCalidad; // Reemplaza comoParecioServicio
+  recomendacion?: Recomendacion; // Nuevo campo unificado
 
-  // Recomendaciones (del DTO original)
+  // CAMPOS ANTIGUOS DE LA ENCUESTA (para mantener compatibilidad)
+  comoParecioServicio?: 'MUY_BUENA' | 'BUENA' | 'REGULAR' | 'MALA' | 'MUY_MALA';
   definitivamenteSi?: boolean;
   probablementeSi?: boolean;
   definitivamenteNo?: boolean;
@@ -197,8 +203,6 @@ export interface IAphDigital {
 
   idUsuarioCreador?: string;
   evidencia?: string;
-
-
 }
 
 // DTO para crear AphDigital (sin id, createdAt, updatedAt, creadoPor)
@@ -235,6 +239,79 @@ export const aphDigitalService = {
     return true;
   },
 
+  // Función para procesar los datos de la encuesta antes de enviar
+  processEncuestaData: (formData: CreateAphDigitalDto | UpdateAphDigitalDto): CreateAphDigitalDto | UpdateAphDigitalDto => {
+    const processedData = { ...formData };
+
+    // Mapear servicioCalidad a comoParecioServicio para compatibilidad con backend
+    if (processedData.servicioCalidad) {
+      const mapeoCalidad: Record<ServicioCalidad, 'MUY_BUENA' | 'BUENA' | 'REGULAR' | 'MALA' | 'MUY_MALA'> = {
+        'muyBuena': 'MUY_BUENA',
+        'buena': 'BUENA',
+        'regular': 'REGULAR',
+        'mala': 'MALA',
+        'muyMala': 'MUY_MALA'
+      };
+      processedData.comoParecioServicio = mapeoCalidad[processedData.servicioCalidad];
+    }
+
+    // Resetear campos booleanos de recomendación
+    processedData.definitivamenteSi = false;
+    processedData.probablementeSi = false;
+    processedData.definitivamenteNo = false;
+    processedData.probablementeNo = false;
+
+    // Establecer el campo correspondiente según la recomendación seleccionada
+    if (processedData.recomendacion) {
+      switch (processedData.recomendacion) {
+        case 'definitivamenteSi':
+          processedData.definitivamenteSi = true;
+          break;
+        case 'probablementeSi':
+          processedData.probablementeSi = true;
+          break;
+        case 'definitivamenteNo':
+          processedData.definitivamenteNo = true;
+          break;
+        case 'probablementeNo':
+          processedData.probablementeNo = true;
+          break;
+      }
+    }
+
+    return processedData;
+  },
+
+  // Función para procesar datos recibidos del backend
+  processReceivedData: (data: IAphDigital): IAphDigital => {
+    const processedData = { ...data };
+
+    // Mapear comoParecioServicio a servicioCalidad
+    if (processedData.comoParecioServicio) {
+      const mapeoInverso: Record<'MUY_BUENA' | 'BUENA' | 'REGULAR' | 'MALA' | 'MUY_MALA', ServicioCalidad> = {
+        'MUY_BUENA': 'muyBuena',
+        'BUENA': 'buena',
+        'REGULAR': 'regular',
+        'MALA': 'mala',
+        'MUY_MALA': 'muyMala'
+      };
+      processedData.servicioCalidad = mapeoInverso[processedData.comoParecioServicio];
+    }
+
+    // Determinar recomendación basado en los campos booleanos
+    if (processedData.definitivamenteSi) {
+      processedData.recomendacion = 'definitivamenteSi';
+    } else if (processedData.probablementeSi) {
+      processedData.recomendacion = 'probablementeSi';
+    } else if (processedData.definitivamenteNo) {
+      processedData.recomendacion = 'definitivamenteNo';
+    } else if (processedData.probablementeNo) {
+      processedData.recomendacion = 'probablementeNo';
+    }
+
+    return processedData;
+  },
+
   // Obtener todos los formularios APH o con filtros
   getAphDigitals: async (filters?: IAphDigitalFilters): Promise<IAphDigital[]> => {
     try {
@@ -243,7 +320,9 @@ export const aphDigitalService = {
       const response = await api.get('/aph-digital', {
         params: filters
       });
-      return response.data;
+      
+      // Procesar los datos recibidos
+      return response.data.map((item: IAphDigital) => aphDigitalService.processReceivedData(item));
     } catch (error) {
       toast({
         title: "Error",
@@ -260,7 +339,7 @@ export const aphDigitalService = {
       if (!aphDigitalService.checkAuth()) return null;
 
       const response = await api.get(`/aph-digital/${id}`);
-      return response.data;
+      return aphDigitalService.processReceivedData(response.data);
     } catch (error) {
       toast({
         title: "Error",
@@ -277,7 +356,7 @@ export const aphDigitalService = {
       if (!aphDigitalService.checkAuth()) return null;
 
       const response = await api.get(`/aph-digital/numero/${numeroFormulario}`);
-      return response.data;
+      return aphDigitalService.processReceivedData(response.data);
     } catch (error) {
       toast({
         title: "Error",
@@ -294,7 +373,7 @@ export const aphDigitalService = {
       if (!aphDigitalService.checkAuth()) return [];
 
       const response = await api.get(`/aph-digital/paciente/${nombrePaciente}`);
-      return response.data;
+      return response.data.map((item: IAphDigital) => aphDigitalService.processReceivedData(item));
     } catch (error) {
       toast({
         title: "Error",
@@ -311,7 +390,7 @@ export const aphDigitalService = {
       if (!aphDigitalService.checkAuth()) return [];
 
       const response = await api.get(`/aph-digital/fecha/${fecha}`);
-      return response.data;
+      return response.data.map((item: IAphDigital) => aphDigitalService.processReceivedData(item));
     } catch (error) {
       toast({
         title: "Error",
@@ -327,18 +406,17 @@ export const aphDigitalService = {
     try {
       if (!aphDigitalService.checkAuth()) return null;
 
-      // Procesar medicamentos antes de enviar
-      const processedData = {
+      // Procesar datos de la encuesta y medicamentos
+      const processedData = aphDigitalService.processEncuestaData({
         ...formData,
         medicamentosInsumos: formData.medicamentosInsumos?.map(med => ({
           nombre: med.nombre || '',
           dosis: med.dosis || ''
         })) || []
-      };
+      });
 
-      console.log("DATA A GUARDAR CON USUARIO AUTENTICADO", processedData);
+      console.log("DATA A GUARDAR CON ENCUESTA PROCESADA", processedData);
 
-      // El token se agrega automáticamente por el interceptor
       const response = await api.post('/aph-digital', processedData);
 
       toast({
@@ -346,7 +424,7 @@ export const aphDigitalService = {
         description: "Formulario APH creado correctamente",
       });
 
-      return response.data;
+      return aphDigitalService.processReceivedData(response.data);
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || "No se pudo crear el formulario APH";
       toast({
@@ -363,14 +441,14 @@ export const aphDigitalService = {
     try {
       if (!aphDigitalService.checkAuth()) return null;
 
-      // Procesar medicamentos antes de enviar
-      const processedData = {
+      // Procesar datos de la encuesta y medicamentos
+      const processedData = aphDigitalService.processEncuestaData({
         ...formData,
         medicamentosInsumos: formData.medicamentosInsumos?.map(med => ({
           nombre: med.nombre || '',
           dosis: med.dosis || ''
         })) || []
-      };
+      });
 
       const response = await api.patch(`/aph-digital/${id}`, processedData);
 
@@ -379,7 +457,7 @@ export const aphDigitalService = {
         description: "Formulario APH actualizado correctamente",
       });
 
-      return response.data;
+      return aphDigitalService.processReceivedData(response.data);
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || "No se pudo actualizar el formulario APH";
       toast({
@@ -421,7 +499,7 @@ export const aphDigitalService = {
       const response = await api.get('/aph-digital/my-forms', {
         params: filters
       });
-      return response.data;
+      return response.data.map((item: IAphDigital) => aphDigitalService.processReceivedData(item));
     } catch (error) {
       toast({
         title: "Error",
