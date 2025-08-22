@@ -539,10 +539,6 @@ export const aphDigitalService = {
       errors.push("El nombre del paciente es requerido");
     }
 
-    // Validaciones de formato
-    if (formData.cc && !/^\d+$/.test(formData.cc)) {
-      errors.push("La cédula debe contener solo números");
-    }
 
     if (formData.edad && (formData.edad < 0 || formData.edad > 150)) {
       errors.push("La edad debe estar entre 0 y 150 años");
@@ -560,7 +556,7 @@ export const aphDigitalService = {
     if (formData.medicamentosInsumos && formData.medicamentosInsumos.length > 0) {
       formData.medicamentosInsumos.forEach((med, index) => {
         if (med.nombre && med.nombre.trim() && !med.dosis?.trim()) {
-          errors.push(`El medicamento ${index + 1} requiere especificar la dosis`);
+          errors.push(`El medicamento ${index + 1} requiere especificar una cantidad`);
         }
       });
     }
