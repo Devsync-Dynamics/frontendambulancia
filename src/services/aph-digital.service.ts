@@ -194,7 +194,7 @@ export interface IAphDigital {
 
   // Firmas y funcionarios (del DTO original)
   firmaSelloResponsable?: string;
-  funcionarioAMED?: string;
+  firmaFuncionarioAmed?: string;
   firmaInstitucionRecibePaciente?: string;
 
   // Timestamps

@@ -14,15 +14,12 @@ export default function PrintAphDigitalPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // AGREGAR ESTA VALIDACIÓN - Esperar a que el router esté listo
     if (router.isReady && id) {
       loadFormulario()
     } else if (router.isReady && !id) {
-      // Si el router está listo pero no hay id, marcar como no cargando
       setLoading(false)
     }
-  }, [router.isReady, id]) // Agregar router.isReady como dependencia
-
+  }, [router.isReady, id])
 
   const loadFormulario = async () => {
     if (id) {
@@ -36,7 +33,6 @@ export default function PrintAphDigitalPage() {
     window.print()
   }
 
-  // Función para validar si es una imagen base64 válida
   const isValidBase64Image = (str?: string) => {
     return str && str.startsWith("data:image/") && str.includes("base64,")
   }
@@ -64,7 +60,7 @@ export default function PrintAphDigitalPage() {
 
   return (
       <div className="min-h-screen bg-white">
-        {/* Controles de impresión - se ocultan al imprimir */}
+        {/* Controles de impresión */}
         <div className="print:hidden bg-gray-50 p-4 border-b">
           <div className="container mx-auto flex justify-between items-center">
             <Link href={`/aph-digital/view/${formulario.id}`}>
@@ -80,10 +76,10 @@ export default function PrintAphDigitalPage() {
           </div>
         </div>
 
-        {/* Contenido del formulario para impresión */}
+        {/* Contenido del formulario */}
         <div className="container mx-auto p-4 print:p-2 max-w-[210mm]">
           <div className="border border-black p-4 print:p-2">
-            {/* Encabezado con logo */}
+            {/* Encabezado */}
             <div className="flex justify-between items-start border-b-2 border-black pb-2 mb-4">
               <div className="w-1/6">
                 <div className="bg-gray-200 p-2 text-center font-bold border border-black">AMED</div>
@@ -97,11 +93,11 @@ export default function PrintAphDigitalPage() {
               <div className="w-1/6"></div>
             </div>
 
-            {/* Título del formulario */}
+            {/* Título */}
             <div className="text-center font-bold text-lg mb-4">HOJA PRE-HOSPITALARIA</div>
 
-            {/* Primera fila: Placa, CC, Fecha */}
-            <div className="grid grid-cols-3 gap-2 mb-2">
+            {/* Información básica */}
+            <div className="grid grid-cols-4 gap-2 mb-2">
               <div className="border border-black p-1">
                 <span className="font-bold">Placa:</span> {formulario.placa || ""}
               </div>
@@ -112,11 +108,19 @@ export default function PrintAphDigitalPage() {
                 <span className="font-bold">Fecha:</span>{" "}
                 {formulario.fecha ? new Date(formulario.fecha).toLocaleDateString() : ""}
               </div>
+              <div className="border border-black p-1">
+                <span className="font-bold">Hora:</span> {formulario.horaLlegada || ""}
+              </div>
             </div>
 
-            {/* Nombre del paciente */}
-            <div className="border border-black p-1 mb-2">
-              <span className="font-bold">Nombre del paciente:</span> {formulario.nombrePaciente || ""}
+            {/* Nombre del paciente y conductor */}
+            <div className="grid grid-cols-2 gap-2 mb-2">
+              <div className="border border-black p-1">
+                <span className="font-bold">Nombre del paciente:</span> {formulario.nombrePaciente || ""}
+              </div>
+              <div className="border border-black p-1">
+                <span className="font-bold">Conductor:</span> {formulario.nombreConductor || ""}
+              </div>
             </div>
 
             {/* Tipo de servicio */}
@@ -139,13 +143,16 @@ export default function PrintAphDigitalPage() {
             </div>
 
             {/* Información del paciente */}
-            <div className="grid grid-cols-4 gap-2 mb-2">
+            <div className="grid grid-cols-5 gap-2 mb-2">
               <div className="border border-black p-1">
                 <span className="font-bold">Edad:</span> {formulario.edad || ""}
               </div>
               <div className="border border-black p-1">
                 <span className="font-bold">Sexo:</span> M_{formulario.sexo === "M" ? "X" : "_"} F_
                 {formulario.sexo === "F" ? "X" : "_"}
+              </div>
+              <div className="border border-black p-1">
+                <span className="font-bold">Tipo Doc.:</span> {formulario.tipoDocumento || ""}
               </div>
               <div className="border border-black p-1">
                 <span className="font-bold">Identificación:</span> {formulario.identificacion || ""}
@@ -171,25 +178,26 @@ export default function PrintAphDigitalPage() {
             <div className="border border-black p-1 mb-2">
               <div className="font-bold">Signos Vitales:</div>
               <div className="grid grid-cols-4 gap-2">
-                <div>Fc: {formulario.fc || ""}</div>
-                <div>Fr: {formulario.fr || ""}</div>
+                <div>FC: {formulario.fc || ""}</div>
+                <div>FR: {formulario.fr || ""}</div>
                 <div>Temp: {formulario.temp || ""}</div>
-                <div>Ta: {formulario.ta || ""}</div>
+                <div>TA: {formulario.ta || ""}</div>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2 mt-2">
                 <div>Aceptado por: {formulario.aceptadoPor || ""}</div>
-                <div>A.R.L.: {formulario.arl || ""}</div>
+                <div>Estado del Paciente: {formulario.estadoPaciente || ""}</div>
+                <div>SPO2: {formulario.spo2 || ""}</div>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>Estado Clínico del Paciente: {formulario.estadoclinicopac || ""}</div>
+              <div className="grid grid-cols-2 gap-2 mt-2">
                 <div>E.P.S.: {formulario.eps || ""}</div>
+                <div>A.R.L.: {formulario.arl || ""}</div>
               </div>
             </div>
 
             {/* Oxígeno y equipos */}
             <div className="border border-black p-1 mb-2">
               <div className="grid grid-cols-3 gap-2">
-                <div>O2 a {formulario.o2 || ""} LXMT.</div>
+                <div>O2 a {formulario.spo2 || ""} LXMT.</div>
                 <div className="col-span-2">
                   <span className="font-bold">Tipo de equipo de Oxígeno</span>
                   <div className="flex gap-4">
@@ -199,91 +207,73 @@ export default function PrintAphDigitalPage() {
                     </label>
                     <label className="flex items-center">
                       <input type="checkbox" checked={formulario.equipoVenturi || false} readOnly className="mr-1" />
-                      Equipo Venturi {formulario.porcentajeOxigeno || ""}%
+                      Equipo Venturi
+                    </label>
+                    <label className="flex items-center">
+                      <input type="checkbox" checked={formulario.mascaraReservorio || false} readOnly className="mr-1" />
+                      Máscara con Reservorio
                     </label>
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <label className="flex items-center">
-                    <input type="checkbox" checked={formulario.mascaraReservorio || false} readOnly className="mr-1" />
-                    Máscara con Reservorio
-                  </label>
-                </div>
-                <div className="col-span-2">
-                  <span className="font-bold">Equipos Biomecánicos:</span>
-                  <div className="flex gap-4">
+
+              {/* Equipos Biomecánicos */}
+              <div className="mt-2">
+                <span className="font-bold">Equipos Biomecánicos:</span>
+                <div className="grid grid-cols-2 gap-4 mt-1">
+                  <div>
                     <div>Bomba de Infusión:</div>
-                    <div>
-                      1. Vía {formulario.via || ""} C.C. {formulario.ccVia || ""}
-                    </div>
+                    <div>1. Vía {formulario.via || ""} C.C. {formulario.ccVia || ""}</div>
+                    <div>2. Vía {formulario.via2 || ""} C.C. {formulario.ccVia2 || ""}</div>
                   </div>
-                  <div className="flex gap-4 ml-[120px]">
-                    <div>
-                      2. Vía {formulario.via2 || ""} C.C. {formulario.ccVia2 || ""}
-                    </div>
+                  <div className="space-y-1">
+                    <label className="flex items-center">
+                      <input type="checkbox" checked={formulario.equipoMultiparametro || false} readOnly className="mr-1" />
+                      Equipo Multiparámetro
+                    </label>
+                    <label className="flex items-center">
+                      <input type="checkbox" checked={formulario.ventiladorMecanico || false} readOnly className="mr-1" />
+                      Ventilador Mecánico
+                    </label>
+                    <label className="flex items-center">
+                      <input type="checkbox" checked={formulario.valvulaPeep || false} readOnly className="mr-1" />
+                      Válvula Peep
+                    </label>
                   </div>
                 </div>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <label className="flex items-center">
-                    <input type="checkbox" checked={formulario.equipoMultiparametro || false} readOnly className="mr-1" />
-                    Equipo Multiparámetro
-                  </label>
-                </div>
-                <div>
-                  <label className="flex items-center">
-                    <input type="checkbox" checked={formulario.ventiladorMecanico || false} readOnly className="mr-1" />
-                    Ventilador Mecánico o Respirador
-                  </label>
-                </div>
-                <div></div>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <label className="flex items-center">
-                    <input type="checkbox" checked={formulario.valvulaPeep || false} readOnly className="mr-1" />
-                    Válvula Peep.O
-                  </label>
-                </div>
-                <div>
+                <div className="grid grid-cols-4 gap-2 mt-2">
                   <label className="flex items-center">
                     <input type="checkbox" checked={formulario.desfibrilador || false} readOnly className="mr-1" />
-                    Desfibrilador {formulario.joules ? "Joules" : ""}
+                    Desfibrilador
                   </label>
-                </div>
-                <div>
                   <label className="flex items-center">
-                    <input type="checkbox" checked={!!formulario.aspirador} readOnly className="mr-1" />
+                    <input type="checkbox" checked={formulario.aspirador || false} readOnly className="mr-1" />
                     Aspirador
                   </label>
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div>
                   <label className="flex items-center">
                     <input type="checkbox" checked={formulario.capnografo || false} readOnly className="mr-1" />
                     Capnógrafo
                   </label>
-                </div>
-                <div>
                   <label className="flex items-center">
                     <input type="checkbox" checked={formulario.pulmoaire || false} readOnly className="mr-1" />
                     Pulmoaire
                   </label>
                 </div>
-                <div>Ambulancia solicitada por: {formulario.ambulanciaSolicitada || ""}</div>
               </div>
             </div>
 
-            {/* Dirección y destino */}
+            {/* Información del servicio */}
             <div className="border border-black p-1 mb-2">
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <span className="font-bold">Ambulancia solicitada por:</span> {formulario.ambulanciaSolicitada || ""}
+                </div>
+                <div>
+                  <span className="font-bold">Tel.:</span> {formulario.tel || ""}
+                </div>
+              </div>
               <div>
-                <span className="font-bold">Dirección del servicio de ambulancia:</span>{" "}
-                {formulario.direccionServicio || ""}
-                <span className="font-bold ml-2">Tel.:</span> {formulario.tel || ""}
+                <span className="font-bold">Dirección del servicio:</span> {formulario.direccionServicio || ""}
               </div>
               <div>
                 <span className="font-bold">Destino del paciente:</span> {formulario.destinoPaciente || ""}
@@ -318,7 +308,7 @@ export default function PrintAphDigitalPage() {
               </div>
             </div>
 
-            {/* Tipo de servicio de ambulancia */}
+            {/* Servicio de ambulancia */}
             <div className="border border-black p-1 mb-2">
               <div className="flex gap-4">
                 <span className="font-bold">Servicio de ambulancia</span>
@@ -339,9 +329,13 @@ export default function PrintAphDigitalPage() {
 
             {/* Dirección del paciente */}
             <div className="border border-black p-1 mb-2">
-              <div>
-                <span className="font-bold">Dirección y teléfono del paciente:</span>{" "}
-                {formulario.direccionTrasladoPaciente || ""}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <span className="font-bold">Dirección del paciente:</span> {formulario.direccion || ""}
+                </div>
+                <div>
+                  <span className="font-bold">Teléfono:</span> {formulario.telefono || ""}
+                </div>
               </div>
             </div>
 
@@ -378,24 +372,18 @@ export default function PrintAphDigitalPage() {
               <div className="grid grid-cols-6 gap-2">
                 <div className="col-span-2">1. {formulario.medicamentosInsumos?.[0]?.nombre || ""}</div>
                 <div>{formulario.medicamentosInsumos?.[0]?.dosis || ""}</div>
-                <div className="col-span-2">3. {formulario.medicamentosInsumos?.[2]?.nombre || ""}</div>
-                <div>{formulario.medicamentosInsumos?.[2]?.dosis || ""}</div>
-              </div>
-              <div className="grid grid-cols-6 gap-2">
-                <div className="col-span-2">2. {formulario.medicamentosInsumos?.[1]?.nombre || ""}</div>
-                <div>{formulario.medicamentosInsumos?.[1]?.dosis || ""}</div>
                 <div className="col-span-2">4. {formulario.medicamentosInsumos?.[3]?.nombre || ""}</div>
                 <div>{formulario.medicamentosInsumos?.[3]?.dosis || ""}</div>
               </div>
               <div className="grid grid-cols-6 gap-2">
-                <div className="col-span-2"></div>
-                <div></div>
+                <div className="col-span-2">2. {formulario.medicamentosInsumos?.[1]?.nombre || ""}</div>
+                <div>{formulario.medicamentosInsumos?.[1]?.dosis || ""}</div>
                 <div className="col-span-2">5. {formulario.medicamentosInsumos?.[4]?.nombre || ""}</div>
                 <div>{formulario.medicamentosInsumos?.[4]?.dosis || ""}</div>
               </div>
               <div className="grid grid-cols-6 gap-2">
-                <div className="col-span-2"></div>
-                <div></div>
+                <div className="col-span-2">3. {formulario.medicamentosInsumos?.[2]?.nombre || ""}</div>
+                <div>{formulario.medicamentosInsumos?.[2]?.dosis || ""}</div>
                 <div className="col-span-2">6. {formulario.medicamentosInsumos?.[5]?.nombre || ""}</div>
                 <div>{formulario.medicamentosInsumos?.[5]?.dosis || ""}</div>
               </div>
@@ -403,12 +391,9 @@ export default function PrintAphDigitalPage() {
 
             {/* Información del servicio */}
             <div className="border border-black p-1 mb-2">
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <div>
                   <span className="font-bold">Orden del servicio No.:</span> {formulario.ordenServicioNo || ""}
-                </div>
-                <div>
-                  <span className="font-bold">Remisión:</span> {formulario.remision || ""}
                 </div>
                 <div>
                   <span className="font-bold">Factura:</span> {formulario.factura || ""}
@@ -424,7 +409,7 @@ export default function PrintAphDigitalPage() {
                   <label className="flex items-center">
                     <input
                         type="checkbox"
-                        checked={formulario.comoParecioServicio === "MUY_BUENA"}
+                        checked={formulario.servicioCalidad === "muyBuena"}
                         readOnly
                         className="mr-1"
                     />
@@ -433,7 +418,7 @@ export default function PrintAphDigitalPage() {
                   <label className="flex items-center">
                     <input
                         type="checkbox"
-                        checked={formulario.comoParecioServicio === "BUENA"}
+                        checked={formulario.servicioCalidad === "buena"}
                         readOnly
                         className="mr-1"
                     />
@@ -442,7 +427,7 @@ export default function PrintAphDigitalPage() {
                   <label className="flex items-center">
                     <input
                         type="checkbox"
-                        checked={formulario.comoParecioServicio === "REGULAR"}
+                        checked={formulario.servicioCalidad === "regular"}
                         readOnly
                         className="mr-1"
                     />
@@ -451,7 +436,7 @@ export default function PrintAphDigitalPage() {
                   <label className="flex items-center">
                     <input
                         type="checkbox"
-                        checked={formulario.comoParecioServicio === "MALA"}
+                        checked={formulario.servicioCalidad === "mala"}
                         readOnly
                         className="mr-1"
                     />
@@ -460,7 +445,7 @@ export default function PrintAphDigitalPage() {
                   <label className="flex items-center">
                     <input
                         type="checkbox"
-                        checked={formulario.comoParecioServicio === "MUY_MALA"}
+                        checked={formulario.servicioCalidad === "muyMala"}
                         readOnly
                         className="mr-1"
                     />
@@ -472,33 +457,53 @@ export default function PrintAphDigitalPage() {
                 <span className="font-bold">Recomendaría a Familiares y Amigos:</span>
                 <div className="flex gap-4 mt-1">
                   <label className="flex items-center">
-                    <input type="checkbox" checked={formulario.definitivamenteSi || false} readOnly className="mr-1" />
+                    <input
+                        type="checkbox"
+                        checked={formulario.recomendacion === "definitivamenteSi"}
+                        readOnly
+                        className="mr-1"
+                    />
                     Definitivamente Si
                   </label>
                   <label className="flex items-center">
-                    <input type="checkbox" checked={formulario.probablementeSi || false} readOnly className="mr-1" />
+                    <input
+                        type="checkbox"
+                        checked={formulario.recomendacion === "probablementeSi"}
+                        readOnly
+                        className="mr-1"
+                    />
                     Probablemente Si
                   </label>
                   <label className="flex items-center">
-                    <input type="checkbox" checked={formulario.definitivamenteNo || false} readOnly className="mr-1" />
+                    <input
+                        type="checkbox"
+                        checked={formulario.recomendacion === "definitivamenteNo"}
+                        readOnly
+                        className="mr-1"
+                    />
                     Definitivamente No
                   </label>
                   <label className="flex items-center">
-                    <input type="checkbox" checked={formulario.probablementeNo || false} readOnly className="mr-1" />
+                    <input
+                        type="checkbox"
+                        checked={formulario.recomendacion === "probablementeNo"}
+                        readOnly
+                        className="mr-1"
+                    />
                     Probablemente No
                   </label>
                 </div>
               </div>
             </div>
 
-            {/* Firmas con imágenes base64 */}
+            {/* Firmas */}
             <div className="grid grid-cols-2 gap-4 mt-8">
               <div className="border border-black p-2 text-center">
                 <div className="mb-4 font-bold">Institución responsable del paciente</div>
                 <div className="min-h-[80px] flex items-center justify-center">
-                  {isValidBase64Image(formulario.firmaSelloResponsable) ? (
+                  {isValidBase64Image(formulario.firmaMedico) ? (
                       <img
-                          src={formulario.firmaSelloResponsable || "/placeholder.svg"}
+                          src={formulario.firmaMedico || "/placeholder.svg"}
                           alt="Firma institución responsable"
                           className="max-w-full max-h-16 object-contain"
                           style={{imageRendering: "crisp-edges"}}
@@ -507,60 +512,51 @@ export default function PrintAphDigitalPage() {
                       <div className="text-gray-400 text-sm">Sin firma</div>
                   )}
                 </div>
-                <div className="border-t border-black pt-2 mt-2 text-sm">Firma y sello</div>
+                <div className="border-t border-black pt-2 mt-2 text-sm">
+                  <div>Nombre: {formulario.nombreMedico || ""}</div>
+                  <div>Registro: {formulario.registroMedico || ""}</div>
+                  <div>Firma y sello</div>
+                </div>
               </div>
               <div className="border border-black p-2 text-center">
-                <div className="mb-4 font-bold">Funcionario de AMED</div>
+                <div className="mb-4 font-bold">Funcionario AMED</div>
                 <div className="min-h-[80px] flex items-center justify-center">
-                  {isValidBase64Image(formulario.funcionarioAMED) ? (
+                  {isValidBase64Image(formulario?.firmaFuncionarioAmed) ? (
                       <img
-                          src={formulario.funcionarioAMED || "/placeholder.svg"}
-                          alt="Firma funcionario AMED"
-                          className="max-w-full max-h-16 object-contain"
-                          style={{imageRendering: "crisp-edges"}}
-                      />
-                  ) : (
-                      <div className="text-gray-400 text-sm">Sin firma</div>
-                  )}
-                </div>
-                <div className="border-t border-black pt-2 mt-2 text-sm">Firma y sello</div>
-              </div>
-
-              <div className="border border-black p-2 text-center">
-                <div className="mb-4 font-bold">PACIENTE</div>
-                <div className="min-h-[80px] flex items-center justify-center">
-                  {isValidBase64Image(formulario.firmaPaciente) ? (
-                      <img
-                          src={formulario?.firmaPaciente || "/placeholder.svg"}
-                          alt="Firma paciente o responsable"
-                          className="max-w-full max-h-16 object-contain"
-                          style={{imageRendering: "crisp-edges"}}
-                      />
-                  ) : (
-                      <div className="text-gray-400 text-sm">Sin firma</div>
-                  )}
-                </div>
-                <div className="border-t border-black pt-2 mt-2 text-sm">Firma </div>
-              </div>
-            </div>
-
-            {/* Firma adicional si existe */}
-            {isValidBase64Image(formulario?.firmaMedico) && (
-                <div className="mt-4">
-                  <div className="border border-black p-2 text-center max-w-md mx-auto">
-                    <div className="mb-4 font-bold">Institución que recibe el paciente</div>
-                    <div className="min-h-[80px] flex items-center justify-center">
-                      <img
-                          src={formulario.firmaMedico || "/placeholder.svg"}
+                          src={formulario.firmaFuncionarioAmed || "/placeholder.svg"}
                           alt="Firma institución receptora"
                           className="max-w-full max-h-16 object-contain"
                           style={{imageRendering: "crisp-edges"}}
                       />
-                    </div>
-                    <div className="border-t border-black pt-2 mt-2 text-sm">Firma y sello</div>
-                  </div>
+                  ) : (
+                      <div className="text-gray-400 text-sm">Sin firma</div>
+                  )}
                 </div>
-            )}
+                <div className="border-t border-black pt-2 mt-2 text-sm">
+                  <div>Responsable: {formulario?.nombreConductor || ""}</div>
+                  <div>Firma y sello</div>
+                </div>
+              </div>
+              <div className="border border-black p-2 text-center">
+                <div className="mb-4 font-bold">Institución que recibe al paciente</div>
+                <div className="min-h-[80px] flex items-center justify-center">
+                  {isValidBase64Image(formulario.firmaPaciente) ? (
+                      <img
+                          src={formulario.firmaPaciente || "/placeholder.svg"}
+                          alt="Firma institución receptora"
+                          className="max-w-full max-h-16 object-contain"
+                          style={{imageRendering: "crisp-edges"}}
+                      />
+                  ) : (
+                      <div className="text-gray-400 text-sm">Sin firma</div>
+                  )}
+                </div>
+                <div className="border-t border-black pt-2 mt-2 text-sm">
+                  <div>Responsable: {formulario.nombreResponsable || ""}</div>
+                  <div>Firma y sello</div>
+                </div>
+              </div>
+            </div>
 
             {/* Pie de página */}
             <div className="text-xs text-center mt-4 print:block">
