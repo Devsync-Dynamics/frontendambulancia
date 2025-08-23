@@ -11,7 +11,8 @@ import {Label} from "@/components/ui/label"
 import {Textarea} from "@/components/ui/textarea"
 import {Checkbox} from "@/components/ui/checkbox"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
-import {ArrowLeft, Save, FileText, Plus, Trash2} from 'lucide-react'
+import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from '@/components/ui/dialog'
+import {ArrowLeft, Save, FileText, Plus, Trash2, CheckCircle} from 'lucide-react'
 import Link from "next/link"
 import {type CreateAphDigitalDto, aphDigitalService} from "@/services/aph-digital.service"
 import {SignatureField} from "@/components/signature-field"
@@ -21,6 +22,15 @@ import {DiagnosticoCombobox} from "@/components/ui/diagnostico-combobox";
 export default function CreateAphDigitalPage() {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
+
+    // Estado del consentimiento
+    const [consentimiento, setConsentimiento] = useState({
+        autorizado: false,
+        fecha: null
+    });
+
+    const [modalOpen, setModalOpen] = useState(false);
+    const [tempConsent, setTempConsent] = useState(false);
 
     // Obtener hora actual del sistema
     const getCurrentTime = () => {
@@ -62,6 +72,23 @@ export default function CreateAphDigitalPage() {
     const updateFormData = (field: keyof CreateAphDigitalDto, value: any) => {
         setFormData((prev) => ({...prev, [field]: value}))
     }
+
+    // Funciones del consentimiento
+    const handleConsentSubmit = () => {
+        if (tempConsent) {
+            setConsentimiento({
+                autorizado: true,
+                fecha: new Date().toLocaleString()
+            });
+            setModalOpen(false);
+            setTempConsent(false);
+        }
+    };
+
+    const handleModalClose = () => {
+        setModalOpen(false);
+        setTempConsent(false);
+    };
 
     const addMedicamento = () => {
         const newMedicamento = {
@@ -119,8 +146,104 @@ export default function CreateAphDigitalPage() {
                         {/* Información Básica */}
                         <Card className="medical-section animate-fade-in">
                             <CardHeader>
-                                <CardTitle className="text-medical-primary">Información Básica</CardTitle>
-                                <CardDescription>Datos principales del formulario y paciente</CardDescription>
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <CardTitle className="text-medical-primary flex items-center gap-2">
+                                            <FileText className="w-5 h-5" />
+                                            Información Básica
+                                        </CardTitle>
+                                        <CardDescription>Datos principales del formulario y paciente</CardDescription>
+                                    </div>
+                                    <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+                                        <DialogTrigger asChild>
+                                            <Button 
+                                                type="button"
+                                                variant={consentimiento.autorizado ? "default" : "outline"}
+                                                className={`flex items-center gap-2 ${
+                                                    consentimiento.autorizado 
+                                                        ? "bg-green-600 hover:bg-green-700 text-white" 
+                                                        : "border-cian-500 text-medical-primary hover:bg-blue-50"
+                                                }`}
+                                            >
+                                                {consentimiento.autorizado ? (
+                                                    <CheckCircle className="w-4 h-4" />
+                                                ) : (
+                                                    <FileText className="w-4 h-4" />
+                                                )}
+                                                {consentimiento.autorizado ? 'Consentimiento Autorizado' : 'Autorizar Consentimiento'}
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                                            <DialogHeader>
+                                                <DialogTitle className="text-center text-xl font-bold text-medical-primary mb-4">
+                                                FORMATO DE CONSENTIMIENTO INFORMADO
+                                                </DialogTitle>
+                                            
+                                            </DialogHeader>
+                                            
+                                            <div className="space-y-6">
+                                                <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                                                    <p className="text-gray-700 leading-relaxed text-justify">
+                                                        Declaro, libre de apremio o constreñimiento, que he sido explicado en forma 
+                                                        detallada y clara en que consiste el procedimiento de traslado en ambulancia y 
+                                                        además, que he comprendido totalmente la naturaleza y propósito del referido 
+                                                        procedimiento. En consecuencia, reconozco, admito las posibles implicaciones y 
+                                                        riesgos que se pueden derivar del mismo, así como también autorizo, 
+                                                        exonero de cualquier tipo de responsabilidad, tanto a la 
+                                                        persona que presta el servicio, como al establecimiento de traslado asistencial que 
+                                                        representa y el sistema que manejan.
+                                                    </p>
+                                                </div>
+
+                                                {consentimiento.autorizado && (
+                                                    <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                                                        <p className="text-green-700 text-sm">
+                                                            <strong>Consentimiento autorizado el:</strong> {consentimiento.fecha}
+                                                        </p>
+                                                    </div>
+                                                )}
+
+                                                <div className="border-t pt-6">
+                                                    <div className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
+                                                        <Checkbox
+                                                            id="consent-checkbox"
+                                                            checked={tempConsent}
+                                                            onCheckedChange={setTempConsent}
+                                                            className="mt-1"
+                                                        />
+                                                        <label 
+                                                            htmlFor="consent-checkbox" 
+                                                            className="text-sm font-medium leading-relaxed cursor-pointer"
+                                                        >
+                                                            <strong>Autorizar Consentimiento:</strong> He leído y comprendido completamente 
+                                                            la información proporcionada sobre el procedimiento de traslado en ambulancia. 
+                                                            Acepto voluntariamente el traslado y eximo de responsabilidad al personal y 
+                                                            establecimiento médico.
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex justify-end space-x-3 pt-4 border-t">
+                                                    <Button 
+                                                        type="button"
+                                                        variant="outline" 
+                                                        onClick={handleModalClose}
+                                                    >
+                                                        Cancelar
+                                                    </Button>
+                                                    <Button 
+                                                        type="button"
+                                                        onClick={handleConsentSubmit}
+                                                        disabled={!tempConsent}
+                                                        className="bg-teal-600 hover:bg-teal-900"
+                                                    >
+                                                        Confirmar Consentimiento
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
+                                </div>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
