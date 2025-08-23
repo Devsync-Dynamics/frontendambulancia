@@ -22,10 +22,12 @@ export default function CreateAphDigitalPage() {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
 
-    // Obtener hora actual del sistema
+    // Obtener hora actual del sistema en formato 24h
     const getCurrentTime = () => {
         const now = new Date()
-        return now.toTimeString().slice(0, 5) // HH:MM format
+        const hours = now.getHours().toString().padStart(2, '0')
+        const minutes = now.getMinutes().toString().padStart(2, '0')
+        return `${hours}:${minutes}` // Formato HH:MM en 24h
     }
 
     const [formData, setFormData] = useState<CreateAphDigitalDto>({
@@ -62,6 +64,187 @@ export default function CreateAphDigitalPage() {
     const updateFormData = (field: keyof CreateAphDigitalDto, value: any) => {
         setFormData((prev) => ({...prev, [field]: value}))
     }
+
+    // Función para validar formato de hora 24h
+    const validateTimeFormat = (time: string): boolean => {
+        const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/
+        return timeRegex.test(time)
+    }
+
+    // Función para formatear hora a 24h
+    const formatTo24Hour = (time: string): string => {
+        if (!time) return ""
+
+        // Si ya está en formato correcto, retornarlo
+        if (validateTimeFormat(time)) return time
+
+        // Intentar parsear y formatear
+        try {
+            const [hours, minutes] = time.split(':')
+            const h = parseInt(hours, 10)
+            const m = parseInt(minutes, 10)
+
+            if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
+                return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`
+            }
+        } catch (error) {
+            console.error('Error formatting time:', error)
+        }
+
+        return time
+    }
+
+    // BUSCA ESTA SECCIÓN EN TU CÓDIGO (líneas aproximadamente 98-160):
+// Componente personalizado para input de tiempo 24h
+    const TimeInput24 = ({
+                             id,
+                             value,
+                             onChange,
+                             className,
+                             required = false,
+                             placeholder = "HH:MM"
+                         }: {
+        id: string
+        value: string
+        onChange: (value: string) => void
+        className?: string
+        required?: boolean
+        placeholder?: string
+    }) => {
+        // ====== REEMPLAZA TODO ESTE BLOQUE CON EL CÓDIGO DE ABAJO ======
+
+        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            let newValue = e.target.value;
+
+            // Remover caracteres que no sean números o ':'
+            newValue = newValue.replace(/[^0-9:]/g, '');
+
+            // Si el usuario está escribiendo y llegó al carácter 2, agregar ':' automáticamente
+            if (newValue.length === 2 && !newValue.includes(':') && /^\d{2}$/.test(newValue)) {
+                // Validar que las horas sean válidas (00-23)
+                const hours = parseInt(newValue, 10);
+                if (hours <= 23) {
+                    newValue = newValue + ':';
+                } else {
+                    newValue = '23:';
+                }
+            }
+
+            // Limitar la longitud máxima
+            if (newValue.length > 5) {
+                newValue = newValue.substring(0, 5);
+            }
+
+            // Si está completo (HH:MM), validar minutos
+            if (newValue.length === 5 && newValue.includes(':')) {
+                const parts = newValue.split(':');
+                if (parts.length === 2) {
+                    let hours = parseInt(parts[0], 10);
+                    let minutes = parseInt(parts[1], 10);
+
+                    // Validar y corregir horas
+                    if (isNaN(hours) || hours > 23) {
+                        hours = 23;
+                    }
+
+                    // Validar y corregir minutos
+                    if (isNaN(minutes) || minutes > 59) {
+                        minutes = 59;
+                    }
+
+                    // Formatear con ceros a la izquierda solo si está completo
+                    if (!isNaN(hours) && !isNaN(minutes)) {
+                        newValue = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                    }
+                }
+            }
+
+            onChange(newValue);
+        };
+
+        const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+            // Permitir teclas de navegación y control
+            const allowedKeys = [
+                'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
+                'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+                'Home', 'End'
+            ];
+
+            // Permitir Ctrl+A, Ctrl+C, Ctrl+V, etc.
+            if (e.ctrlKey || e.metaKey) {
+                return;
+            }
+
+            // Si es una tecla permitida, dejar pasar
+            if (allowedKeys.includes(e.key)) {
+                return;
+            }
+
+            // Solo permitir números y ':'
+            if (!/[0-9:]/.test(e.key)) {
+                e.preventDefault();
+            }
+        };
+
+        const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+            let finalValue = e.target.value;
+
+            // Si hay algo escrito pero está incompleto, intentar completarlo
+            if (finalValue && finalValue.length > 0) {
+                // Si solo tiene 1 dígito, asumir que son las horas y completar
+                if (finalValue.length === 1 && /^\d$/.test(finalValue)) {
+                    finalValue = `0${finalValue}:00`;
+                }
+                // Si tiene 2 dígitos, agregar :00
+                else if (finalValue.length === 2 && /^\d{2}$/.test(finalValue)) {
+                    const hours = parseInt(finalValue, 10);
+                    if (hours <= 23) {
+                        finalValue = `${finalValue}:00`;
+                    } else {
+                        finalValue = `23:00`;
+                    }
+                }
+                // Si tiene HH:M (4 caracteres), completar minutos
+                else if (finalValue.length === 4 && finalValue.includes(':')) {
+                    const parts = finalValue.split(':');
+                    if (parts.length === 2 && parts[1].length === 1) {
+                        const minutes = parseInt(parts[1], 10);
+                        if (minutes <= 5) {
+                            finalValue = `${parts[0]}:0${parts[1]}`;
+                        } else {
+                            finalValue = `${parts[0]}:${parts[1]}0`;
+                        }
+                    }
+                }
+
+                // Validación final
+                const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+                if (timeRegex.test(finalValue)) {
+                    const parts = finalValue.split(':');
+                    const formattedTime = `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+                    if (formattedTime !== value) {
+                        onChange(formattedTime);
+                    }
+                }
+            }
+        };
+
+        return (
+            <Input
+                id={id}
+                type="text"
+                value={value || ""}
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+                onBlur={handleBlur}
+                className={className}
+                placeholder={placeholder}
+                maxLength={5}
+                title="Formato: HH:MM (24 horas). Ejemplo: 14:30"
+                required={required}
+            />
+        );
+    };
 
     const addMedicamento = () => {
         const newMedicamento = {
@@ -170,16 +353,16 @@ export default function CreateAphDigitalPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="horaLlegada">Hora de Llegada *</Label>
-                                        <Input
+                                        <Label htmlFor="horaLlegada">Hora de Llegada (24h) *</Label>
+                                        <TimeInput24
                                             id="horaLlegada"
-                                            type="time"
                                             value={formData.horaLlegada || ""}
-                                            onChange={(e) => updateFormData("horaLlegada", e.target.value)}
+                                            onChange={(value) => updateFormData("horaLlegada", value)}
                                             className="medical-input-focus"
                                             required
+                                            placeholder="HH:MM"
                                         />
-                                        <p className="text-xs text-muted-foreground">Hora automática del sistema</p>
+                                        <p className="text-xs text-muted-foreground">Formato 24h (ej: 14:30 para 2:30 PM)</p>
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="nombrePaciente">Nombre del Paciente *</Label>
@@ -283,11 +466,11 @@ export default function CreateAphDigitalPage() {
                                                 <SelectValue placeholder="Seleccionar" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                            <SelectItem value="CC">Cédula de ciudadanía</SelectItem>
-                                            <SelectItem value="TI">Tarjeta de identidad</SelectItem>
-                                            <SelectItem value="CE">Cédula de extranjería</SelectItem>
-                                            <SelectItem value="PT">Perismiso de trabajo</SelectItem>
-                                            <SelectItem value="RC">Registro civil</SelectItem>
+                                                <SelectItem value="CC">Cédula de ciudadanía</SelectItem>
+                                                <SelectItem value="TI">Tarjeta de identidad</SelectItem>
+                                                <SelectItem value="CE">Cédula de extranjería</SelectItem>
+                                                <SelectItem value="PT">Perismiso de trabajo</SelectItem>
+                                                <SelectItem value="RC">Registro civil</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -511,37 +694,37 @@ export default function CreateAphDigitalPage() {
                                     <div className="flex items-center gap-6">
                                         <span>1. Vía</span>
                                         <Input
-                                        id="via"
-                                        type="text"
-                                        className="w-16"
-                                        value={formData.via || ""}
-                                        onChange={(e) => updateFormData("via", e.target.value)}
+                                            id="via"
+                                            type="text"
+                                            className="w-16"
+                                            value={formData.via || ""}
+                                            onChange={(e) => updateFormData("via", e.target.value)}
                                         />
                                         <span>C.C.</span>
                                         <Input
-                                        id="ccVia"
-                                        type="text"
-                                        className="w-20"
-                                        value={formData.ccVia || ""}
-                                        onChange={(e) => updateFormData("ccVia", e.target.value)}
+                                            id="ccVia"
+                                            type="text"
+                                            className="w-20"
+                                            value={formData.ccVia || ""}
+                                            onChange={(e) => updateFormData("ccVia", e.target.value)}
                                         />
                                     </div>
                                     <div className="flex items-center gap-6">
                                         <span>2. Vía</span>
                                         <Input
-                                        id="via2"
-                                        type="text"
-                                        className="w-16"
-                                        value={formData.via2 || ""}
-                                        onChange={(e) => updateFormData("via2", e.target.value)}
+                                            id="via2"
+                                            type="text"
+                                            className="w-16"
+                                            value={formData.via2 || ""}
+                                            onChange={(e) => updateFormData("via2", e.target.value)}
                                         />
                                         <span>C.C.</span>
                                         <Input
-                                        id="ccVia2"
-                                        type="text"
-                                        className="w-20"
-                                        value={formData.ccVia2 || ""}
-                                        onChange={(e) => updateFormData("ccVia2", e.target.value)}
+                                            id="ccVia2"
+                                            type="text"
+                                            className="w-20"
+                                            value={formData.ccVia2 || ""}
+                                            onChange={(e) => updateFormData("ccVia2", e.target.value)}
                                         />
                                     </div>
                                 </div>
@@ -607,164 +790,168 @@ export default function CreateAphDigitalPage() {
                                 </div>
                             </CardContent>
                         </Card>
-                        
+
                         {/* Información del servicio */}
                         <Card className="medical-section animate-fade-in">
                             <CardHeader>
                                 <CardTitle className="text-medical-primary">Información del servicio</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="ambulanciaSolicitada">Ambulancia solicitada por *</Label>
-                                            <Input
-                                                id="ambulanciaSolicitada"
-                                                value={formData.ambulanciaSolicitada || ""}
-                                                onChange={(e) => updateFormData("ambulanciaSolicitada", e.target.value)}
-                                                className="medical-input-focus"
-                                                placeholder="Nombre de quien solicito la ambulancia"
-                                                required
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="direccionServicio">Dirección del servicio de ambulancia *</Label>
-                                            <Input
-                                                id="direccionServicio"
-                                                value={formData.direccionServicio || ""}
-                                                onChange={(e) => updateFormData("direccionServicio", e.target.value)}
-                                                className="medical-input-focus"
-                                                placeholder="Dirección del servicio"
-                                                required
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="tel">Teléfono *</Label>
-                                            <Input
-                                                id="tel"
-                                                value={formData.tel || ""}
-                                                onChange={(e) => updateFormData("tel", e.target.value)}
-                                                className="medical-input-focus"
-                                                placeholder="Ingrese el teléfono"
-                                                required
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="destinoPaciente">Destino del paciente *</Label>
-                                            <Input
-                                                id="destinoPaciente"
-                                                value={formData.destinoPaciente || ""}
-                                                onChange={(e) => updateFormData("destinoPaciente", e.target.value)}
-                                                className="medical-input-focus"
-                                                placeholder="Destino del paciente"
-                                                required
-                                            />
-                                        </div>
-                                        <div className="space-y-2 md:col-span-2">
-                                            <Label htmlFor="estudio">Estudio *</Label>
-                                            <Input
-                                                id="estudio"
-                                                value={formData.estudio || ""}
-                                                onChange={(e) => updateFormData("estudio", e.target.value)}
-                                                className="medical-input-focus"
-                                                placeholder="Estudio"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                            </CardContent>
-
-                            {/* Horario */}
-                            <CardHeader>
-                                <CardTitle className="text-medical-primary">Horario</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="horarioLL1">H. LL:</Label>
+                                        <Label htmlFor="ambulanciaSolicitada">Ambulancia solicitada por *</Label>
                                         <Input
-                                            id="horarioLL1"
-                                            type="time"
-                                            value={formData.horarioLL1 || ""}
-                                            onChange={(e) => updateFormData("horarioLL1", e.target.value)}
+                                            id="ambulanciaSolicitada"
+                                            value={formData.ambulanciaSolicitada || ""}
+                                            onChange={(e) => updateFormData("ambulanciaSolicitada", e.target.value)}
                                             className="medical-input-focus"
+                                            placeholder="Nombre de quien solicito la ambulancia"
+                                            required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="horarioSa1">H. S:</Label>
+                                        <Label htmlFor="direccionServicio">Dirección del servicio de ambulancia *</Label>
                                         <Input
-                                            id="horarioSa1"
-                                            type="time"
-                                            value={formData.horarioSa1 || ""}
-                                            onChange={(e) => updateFormData("horarioSa1", e.target.value)}
+                                            id="direccionServicio"
+                                            value={formData.direccionServicio || ""}
+                                            onChange={(e) => updateFormData("direccionServicio", e.target.value)}
                                             className="medical-input-focus"
+                                            placeholder="Dirección del servicio"
+                                            required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="horarioLL2">H. LL:</Label>
+                                        <Label htmlFor="tel">Teléfono *</Label>
                                         <Input
-                                            id="horarioLL2"
-                                            type="time"
-                                            value={formData.horarioLL2 || ""}
-                                            onChange={(e) => updateFormData("horarioLL2", e.target.value)}
+                                            id="tel"
+                                            value={formData.tel || ""}
+                                            onChange={(e) => updateFormData("tel", e.target.value)}
                                             className="medical-input-focus"
+                                            placeholder="Ingrese el teléfono"
+                                            required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="horarioSa2">H. S:</Label>
+                                        <Label htmlFor="destinoPaciente">Destino del paciente *</Label>
                                         <Input
-                                            id="horarioSa2"
-                                            type="time"
-                                            value={formData.horarioSa2 || ""}
-                                            onChange={(e) => updateFormData("horarioSa2", e.target.value)}
+                                            id="destinoPaciente"
+                                            value={formData.destinoPaciente || ""}
+                                            onChange={(e) => updateFormData("destinoPaciente", e.target.value)}
                                             className="medical-input-focus"
+                                            placeholder="Destino del paciente"
+                                            required
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="horarioLL3">H. LL:</Label>
+                                    <div className="space-y-2 md:col-span-2">
+                                        <Label htmlFor="estudio">Estudio *</Label>
                                         <Input
-                                            id="horarioLL3"
-                                            type="time"
-                                            value={formData.horarioLL3 || ""}
-                                            onChange={(e) => updateFormData("horarioLL3", e.target.value)}
+                                            id="estudio"
+                                            value={formData.estudio || ""}
+                                            onChange={(e) => updateFormData("estudio", e.target.value)}
                                             className="medical-input-focus"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="horarioSa3">H. S:</Label>
-                                        <Input
-                                            id="horarioSa3"
-                                            type="time"
-                                            value={formData.horarioSa3 || ""}
-                                            onChange={(e) => updateFormData("horarioSa3", e.target.value)}
-                                            className="medical-input-focus"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="horarioLL4">H. LL:</Label>
-                                        <Input
-                                            id="horarioLL4"
-                                            type="time"
-                                            value={formData.horarioLL4 || ""}
-                                            onChange={(e) => updateFormData("horarioLL4", e.target.value)}
-                                            className="medical-input-focus"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="horarioSa4">H. S:</Label>
-                                        <Input
-                                            id="horarioSa4"
-                                            type="time"
-                                            value={formData.horarioSa4 || ""}
-                                            onChange={(e) => updateFormData("horarioSa4", e.target.value)}
-                                            className="medical-input-focus"
+                                            placeholder="Estudio"
+                                            required
                                         />
                                     </div>
                                 </div>
                             </CardContent>
 
+                            {/* Horario */}
+                            <CardHeader>
+                                <CardTitle className="text-medical-primary">Horario (Formato 24h)</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="horarioLL1">H. LL:</Label>
+                                        <TimeInput24
+                                            id="horarioLL1"
+                                            value={formData.horarioLL1 || ""}
+                                            onChange={(value) => updateFormData("horarioLL1", value)}
+                                            className="medical-input-focus"
+                                            placeholder="HH:MM"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="horarioSa1">H. S:</Label>
+                                        <TimeInput24
+                                            id="horarioSa1"
+                                            value={formData.horarioSa1 || ""}
+                                            onChange={(value) => updateFormData("horarioSa1", value)}
+                                            className="medical-input-focus"
+                                            placeholder="HH:MM"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="horarioLL2">H. LL:</Label>
+                                        <TimeInput24
+                                            id="horarioLL2"
+                                            value={formData.horarioLL2 || ""}
+                                            onChange={(value) => updateFormData("horarioLL2", value)}
+                                            className="medical-input-focus"
+                                            placeholder="HH:MM"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="horarioSa2">H. S:</Label>
+                                        <TimeInput24
+                                            id="horarioSa2"
+                                            value={formData.horarioSa2 || ""}
+                                            onChange={(value) => updateFormData("horarioSa2", value)}
+                                            className="medical-input-focus"
+                                            placeholder="HH:MM"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="horarioLL3">H. LL:</Label>
+                                        <TimeInput24
+                                            id="horarioLL3"
+                                            value={formData.horarioLL3 || ""}
+                                            onChange={(value) => updateFormData("horarioLL3", value)}
+                                            className="medical-input-focus"
+                                            placeholder="HH:MM"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="horarioSa3">H. S:</Label>
+                                        <TimeInput24
+                                            id="horarioSa3"
+                                            value={formData.horarioSa3 || ""}
+                                            onChange={(value) => updateFormData("horarioSa3", value)}
+                                            className="medical-input-focus"
+                                            placeholder="HH:MM"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="horarioLL4">H. LL:</Label>
+                                        <TimeInput24
+                                            id="horarioLL4"
+                                            value={formData.horarioLL4 || ""}
+                                            onChange={(value) => updateFormData("horarioLL4", value)}
+                                            className="medical-input-focus"
+                                            placeholder="HH:MM"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="horarioSa4">H. S:</Label>
+                                        <TimeInput24
+                                            id="horarioSa4"
+                                            value={formData.horarioSa4 || ""}
+                                            onChange={(value) => updateFormData("horarioSa4", value)}
+                                            className="medical-input-focus"
+                                            placeholder="HH:MM"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                    <p>H. LL = Hora de Llegada | H. S = Hora de Salida</p>
+                                    <p>Formato 24h (ej: 14:30 para 2:30 PM, 09:15 para 9:15 AM)</p>
+                                </div>
+                            </CardContent>
+
                             {/* Servicio de ambulancia */}
                             <CardHeader>
-                            <CardTitle className="text-medical-primary">Servicio de ambulancia</CardTitle>
+                                <CardTitle className="text-medical-primary">Servicio de ambulancia</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="flex gap-6">
@@ -794,28 +981,28 @@ export default function CreateAphDigitalPage() {
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="direccion">Dirección del paciente *</Label>
-                                            <Input
-                                                id="direccion"
-                                                value={formData.direccion || ""}
-                                                onChange={(e) => updateFormData("direccion", e.target.value)}
-                                                className="medical-input-focus"
-                                                placeholder="Dirección del paciente"
-                                                required
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="telefono">Teléfono del paciente *</Label>
-                                            <Input
-                                                id="telefono"
-                                                value={formData.telefono || ""}
-                                                onChange={(e) => updateFormData("telefono", e.target.value)}
-                                                className="medical-input-focus"
-                                                placeholder="Teléfono del paciente"
-                                                required
-                                            />
-                                        </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="direccion">Dirección del paciente *</Label>
+                                        <Input
+                                            id="direccion"
+                                            value={formData.direccion || ""}
+                                            onChange={(e) => updateFormData("direccion", e.target.value)}
+                                            className="medical-input-focus"
+                                            placeholder="Dirección del paciente"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="telefono">Teléfono del paciente *</Label>
+                                        <Input
+                                            id="telefono"
+                                            value={formData.telefono || ""}
+                                            onChange={(e) => updateFormData("telefono", e.target.value)}
+                                            className="medical-input-focus"
+                                            placeholder="Teléfono del paciente"
+                                            required
+                                        />
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-1 gap-4">
                                     <div className="space-y-2">
@@ -828,7 +1015,7 @@ export default function CreateAphDigitalPage() {
                                             placeholder="Nombre completo del responsable"
                                         />
                                     </div>
-                                    
+
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div className="space-y-2 md:col-span-2">
                                             <Label htmlFor="acompanante">Acompañante *</Label>
@@ -974,18 +1161,12 @@ export default function CreateAphDigitalPage() {
                                 <CardDescription>Firmas de institución responsable y que recibe</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
-
-
-
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-4">
-
                                         <SignatureField
                                             label="Institución responsable del paciente"
                                             onChange={(signature) => {
-
                                                 updateFormData("firmaMedico", signature);
-
                                                 setTimeout(() => {
                                                     console.log('Estado DESPUÉS de updateFormData:', formData.firmaMedico ? 'PRESENTE' : 'AUSENTE');
                                                 }, 0);
@@ -1015,8 +1196,6 @@ export default function CreateAphDigitalPage() {
                                     </div>
 
                                     <div className="space-y-4">
-
-
                                         <SignatureField
                                             label="Institución que recibe paciente"
                                             onChange={(signature) => {
@@ -1043,7 +1222,6 @@ export default function CreateAphDigitalPage() {
                                                 className="medical-input-focus"
                                             />
                                         </div>
-                                       
                                     </div>
                                 </div>
                             </CardContent>
