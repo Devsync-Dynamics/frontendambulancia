@@ -205,12 +205,12 @@ export default function CreateAphDigitalPage() {
 
                                                 <div className="border-t pt-6">
                                                     <div className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
-                                                        <Checkbox
-                                                            id="consent-checkbox"
-                                                            checked={tempConsent}
-                                                            onCheckedChange={setTempConsent}
-                                                            className="mt-1"
-                                                        />
+                                                    <Checkbox
+                                                    id="consent-checkbox"
+                                                    checked={tempConsent}
+                                                    onCheckedChange={(checked) => setTempConsent(checked === true)}
+                                                    className="mt-1"
+                                                />
                                                         <label 
                                                             htmlFor="consent-checkbox" 
                                                             className="text-sm font-medium leading-relaxed cursor-pointer"
