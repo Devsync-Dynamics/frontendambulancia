@@ -24,7 +24,10 @@ export default function CreateAphDigitalPage() {
     const [loading, setLoading] = useState(false)
 
     // Estado del consentimiento
-    const [consentimiento, setConsentimiento] = useState({
+    const [consentimiento, setConsentimiento] = useState<{
+        autorizado: boolean;
+        fecha: string | null;
+    }>({
         autorizado: false,
         fecha: null
     });
@@ -78,12 +81,16 @@ export default function CreateAphDigitalPage() {
         if (tempConsent) {
             setConsentimiento({
                 autorizado: true,
-                fecha: new Date().toLocaleString()
+                fecha: new Date().toLocaleString("es-CO", {
+                    dateStyle: "short",
+                    timeStyle: "short"
+                }) // Fecha formateada en español
             });
             setModalOpen(false);
             setTempConsent(false);
         }
     };
+
 
     const handleModalClose = () => {
         setModalOpen(false);
