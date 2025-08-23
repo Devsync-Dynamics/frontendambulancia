@@ -730,7 +730,7 @@ export default function CreateAphDigitalPage() {
                                 </div>
                             </CardContent>
                         </Card>
-                        
+
                         {/* Información del servicio */}
                         <Card className="medical-section animate-fade-in">
                             <CardHeader>
@@ -951,7 +951,7 @@ export default function CreateAphDigitalPage() {
                                             placeholder="Nombre completo del responsable"
                                         />
                                     </div>
-                                    
+
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div className="space-y-2 md:col-span-2">
                                             <Label htmlFor="acompanante">Acompañante *</Label>
@@ -1166,7 +1166,7 @@ export default function CreateAphDigitalPage() {
                                                 className="medical-input-focus"
                                             />
                                         </div>
-                                       
+
                                     </div>
                                 </div>
                             </CardContent>
