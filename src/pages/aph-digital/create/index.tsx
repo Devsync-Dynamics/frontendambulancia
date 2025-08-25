@@ -1197,6 +1197,7 @@ export default function CreateAphDigitalPage() {
                                                     value="muyBuena"
                                                     checked={formData.servicioCalidad === "muyBuena"}
                                                     onChange={(e) => updateFormData("servicioCalidad", e.target.value)}
+                                                    required
                                                 />
                                                 <Label htmlFor="muyBuena">MUY BUENA</Label>
                                             </div>
@@ -1258,6 +1259,7 @@ export default function CreateAphDigitalPage() {
                                                     value="definitivamenteSi"
                                                     checked={formData.recomendacion === "definitivamenteSi"}
                                                     onChange={(e) => updateFormData("recomendacion", e.target.value)}
+                                                    required
                                                 />
                                                 <Label htmlFor="definitivamenteSi">Definitivamente Sí</Label>
                                             </div>
