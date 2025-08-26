@@ -11,7 +11,7 @@ const HEADINGS = [
   "No.",
   "Radio Operador",
   "Entidad",
-  "ARL",
+  //"ARL",
   "Contacto",
   "Nombre Completo del Paciente",
   "Tipo Documento",
@@ -137,7 +137,7 @@ export default function BitacoraPage() {
         'No.': entry.no || 'N/A',
         'Radio Operador': entry.radioOperador || 'N/A',
         'Entidad': entry.entidad || 'N/A',
-        'ARL': entry.arl || 'N/A',
+       // 'ARL': entry.arl || 'N/A',
         'Contacto': entry.contacto || 'N/A',
         'Nombre Completo del Paciente': entry.nombrePaciente || 'N/A',
         'Tipo Documento': entry.tipoDocumento || 'N/A',
@@ -169,7 +169,7 @@ export default function BitacoraPage() {
         { width: 8 },   // No.
         { width: 15 },  // Radio Operador
         { width: 20 },  // Entidad
-        { width: 20 },  // ARL
+       // { width: 20 },  // ARL
         { width: 15 },  // Contacto
         { width: 30 },  // Nombre Completo del Paciente
         { width: 15 },  // Tipo Documento
@@ -333,7 +333,7 @@ export default function BitacoraPage() {
                               row.no,
                               row.radioOperador,
                               row.entidad,
-                              row.arl,
+                             // row.arl,
                               row.contacto,
                               row.nombrePaciente,
                               row.tipoDocumento,

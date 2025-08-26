@@ -16,7 +16,7 @@ export interface IBitacoraEntry {
     no: number;
     radioOperador: string;
     entidad: string;
-    arl: string;
+   // arl: string;
     contacto: string;
     nombrePaciente: string;
     tipoDocumento: string;
@@ -52,7 +52,7 @@ export interface UpdateBitacoraDto extends Partial<CreateBitacoraDto> {
 export interface IBitacoraFilters {
     nombrePaciente?: string;
     entidad?: string;
-    arl?: string;
+   // arl?: string;
     tipoTraslado?: string;
     fechaInicio?: string;
     fechaFin?: string;
