@@ -27,13 +27,16 @@ export default function CreateAphDigitalPage() {
     const [consentimiento, setConsentimiento] = useState<{
         autorizado: boolean;
         fecha: string | null;
+        firma: string | undefined; // Agregar este campo
+
     }>({
         autorizado: false,
-        fecha: null
+        fecha: null,
+        firma: undefined // Agregar este campo
+
     });
 
     const [modalOpen, setModalOpen] = useState(false);
-    const [tempConsent, setTempConsent] = useState(false);
 
     // Obtener hora actual del sistema
     const getCurrentTime = () => {
@@ -52,11 +55,19 @@ export default function CreateAphDigitalPage() {
         estadoPaciente: "",
         diagnostico: "",
         nombreConductor:"",
+        consentimientoFirma: ""
+
     })
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
+
+        if (!consentimiento.autorizado || !consentimiento.firma) {
+            alert("El consentimiento informado con firma es obligatorio para proceder.")
+            setLoading(false)
+            return
+        }
 
         const validation = aphDigitalService.validateAphDigital(formData)
         if (!validation.isValid) {
@@ -78,23 +89,39 @@ export default function CreateAphDigitalPage() {
 
     // Funciones del consentimiento
     const handleConsentSubmit = () => {
-        if (tempConsent) {
+        if (consentimiento.firma) { // Validar que la firma exista
             setConsentimiento({
                 autorizado: true,
                 fecha: new Date().toLocaleString("es-CO", {
                     dateStyle: "short",
                     timeStyle: "short"
-                }) // Fecha formateada en español
+                }),
+                firma: consentimiento.firma
             });
+
+            // Agregar la firma del consentimiento al formData
+            updateFormData("consentimientoFirma", consentimiento.firma);
+
             setModalOpen(false);
-            setTempConsent(false);
         }
     };
 
 
     const handleModalClose = () => {
         setModalOpen(false);
-        setTempConsent(false);
+        if (!consentimiento.autorizado) {
+            setConsentimiento(prev => ({
+                ...prev,
+                firma: undefined
+            }));
+        }
+    };
+
+    const handleConsentSignatureChange = (signature: string | undefined) => {
+        setConsentimiento(prev => ({
+            ...prev,
+            firma: signature
+        }));
     };
 
     const addMedicamento = () => {
@@ -211,22 +238,23 @@ export default function CreateAphDigitalPage() {
                                                 )}
 
                                                 <div className="border-t pt-6">
-                                                    <div className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
-                                                    <Checkbox
-                                                    id="consent-checkbox"
-                                                    checked={tempConsent}
-                                                    onCheckedChange={(checked) => setTempConsent(checked === true)}
-                                                    className="mt-1"
-                                                />
-                                                        <label 
-                                                            htmlFor="consent-checkbox" 
-                                                            className="text-sm font-medium leading-relaxed cursor-pointer"
-                                                        >
-                                                            <strong>Autorizar Consentimiento:</strong> He leído y comprendido completamente 
-                                                            la información proporcionada sobre el procedimiento de traslado en ambulancia. 
-                                                            Acepto voluntariamente el traslado y eximo de responsabilidad al personal y 
+                                                    <div className="space-y-4">
+                                                        <Label className="text-base font-medium">
+                                                            Firma del Consentimiento Informado
+                                                        </Label>
+                                                        <SignatureField
+                                                            label="Autorizar Consentimiento"
+                                                            onChange={handleConsentSignatureChange}
+                                                            placeholder="Firma para autorizar el consentimiento informado"
+                                                            value={consentimiento.firma}
+
+                                                        />
+                                                        <p className="text-sm text-gray-600">
+                                                            Al firmar, declaro que he leído y comprendido completamente la información
+                                                            proporcionada sobre el procedimiento de traslado en ambulancia. Acepto
+                                                            voluntariamente el traslado y eximo de responsabilidad al personal y
                                                             establecimiento médico.
-                                                        </label>
+                                                        </p>
                                                     </div>
                                                 </div>
 
@@ -241,7 +269,7 @@ export default function CreateAphDigitalPage() {
                                                     <Button 
                                                         type="button"
                                                         onClick={handleConsentSubmit}
-                                                        disabled={!tempConsent}
+                                                        disabled={!consentimiento.firma}
                                                         className="bg-teal-600 hover:bg-teal-900"
                                                     >
                                                         Confirmar Consentimiento

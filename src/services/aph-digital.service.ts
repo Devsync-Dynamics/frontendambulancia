@@ -196,7 +196,7 @@ export interface IAphDigital {
   firmaSelloResponsable?: string;
   firmaFuncionarioAmed?: string;
   firmaInstitucionRecibePaciente?: string;
-
+  consentimientoFirma:string;
   // Timestamps
   createdAt?: string;
   updatedAt?: string;
