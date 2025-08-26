@@ -1215,9 +1215,9 @@ export default function CreateAphDigitalPage() {
                             <CardContent className="space-y-6">
                                 <div className="space-y-4">
                                     <div className="space-y-3">
-                                        <Label className="text-base font-medium">Cómo le pareció el servicio:</Label>
+                                        <Label className="text-base font-medium">Cómo le pareció el servicio *</Label>
                                         <div className="flex flex-wrap gap-6">
-                                            <div className="medical-radio-group">
+                                            <div className="medical-radio-group flex items-center gap-2">
                                                 <input
                                                     type="radio"
                                                     id="muyBuena"
@@ -1227,9 +1227,9 @@ export default function CreateAphDigitalPage() {
                                                     onChange={(e) => updateFormData("servicioCalidad", e.target.value)}
                                                     required
                                                 />
-                                                <Label htmlFor="muyBuena">MUY BUENA</Label>
+                                                <Label htmlFor="muyBuena" className="font-normal">Muy buena</Label>
                                             </div>
-                                            <div className="medical-radio-group">
+                                            <div className="medical-radio-group flex items-center gap-2">
                                                 <input
                                                     type="radio"
                                                     id="buena"
@@ -1238,9 +1238,9 @@ export default function CreateAphDigitalPage() {
                                                     checked={formData.servicioCalidad === "buena"}
                                                     onChange={(e) => updateFormData("servicioCalidad", e.target.value)}
                                                 />
-                                                <Label htmlFor="buena">BUENA</Label>
+                                                <Label htmlFor="buena" className="font-normal">Buena</Label>
                                             </div>
-                                            <div className="medical-radio-group">
+                                            <div className="medical-radio-group flex items-center gap-2">
                                                 <input
                                                     type="radio"
                                                     id="regular"
@@ -1249,9 +1249,9 @@ export default function CreateAphDigitalPage() {
                                                     checked={formData.servicioCalidad === "regular"}
                                                     onChange={(e) => updateFormData("servicioCalidad", e.target.value)}
                                                 />
-                                                <Label htmlFor="regular">REGULAR</Label>
+                                                <Label htmlFor="regular" className="font-normal">Regular</Label>
                                             </div>
-                                            <div className="medical-radio-group">
+                                            <div className="medical-radio-group flex items-center gap-2">
                                                 <input
                                                     type="radio"
                                                     id="mala"
@@ -1260,9 +1260,9 @@ export default function CreateAphDigitalPage() {
                                                     checked={formData.servicioCalidad === "mala"}
                                                     onChange={(e) => updateFormData("servicioCalidad", e.target.value)}
                                                 />
-                                                <Label htmlFor="mala">MALA</Label>
+                                                <Label htmlFor="mala" className="font-normal">Mala</Label>
                                             </div>
-                                            <div className="medical-radio-group">
+                                            <div className="medical-radio-group flex items-center gap-2">
                                                 <input
                                                     type="radio"
                                                     id="muyMala"
@@ -1271,15 +1271,15 @@ export default function CreateAphDigitalPage() {
                                                     checked={formData.servicioCalidad === "muyMala"}
                                                     onChange={(e) => updateFormData("servicioCalidad", e.target.value)}
                                                 />
-                                                <Label htmlFor="muyMala">MUY MALA</Label>
+                                                <Label htmlFor="muyMala" className="font-normal">Muy mala</Label>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="space-y-3">
-                                        <Label className="text-base font-medium">Recomendaría a Familiares y Amigos:</Label>
+                                        <Label className="text-base font-medium">Recomendaría a familiares y amigos *</Label>
                                         <div className="flex flex-wrap gap-6">
-                                            <div className="medical-radio-group">
+                                            <div className="medical-radio-group flex items-center gap-2">
                                                 <input
                                                     type="radio"
                                                     id="definitivamenteSi"
@@ -1289,9 +1289,9 @@ export default function CreateAphDigitalPage() {
                                                     onChange={(e) => updateFormData("recomendacion", e.target.value)}
                                                     required
                                                 />
-                                                <Label htmlFor="definitivamenteSi">Definitivamente Sí</Label>
+                                                <Label htmlFor="definitivamenteSi" className="font-normal">Definitivamente sí</Label>
                                             </div>
-                                            <div className="medical-radio-group">
+                                            <div className="medical-radio-group flex items-center gap-2">
                                                 <input
                                                     type="radio"
                                                     id="probablementeSi"
@@ -1300,9 +1300,9 @@ export default function CreateAphDigitalPage() {
                                                     checked={formData.recomendacion === "probablementeSi"}
                                                     onChange={(e) => updateFormData("recomendacion", e.target.value)}
                                                 />
-                                                <Label htmlFor="probablementeSi">Probablemente Sí</Label>
+                                                <Label htmlFor="probablementeSi" className="font-normal">Probablemente sí</Label>
                                             </div>
-                                            <div className="medical-radio-group">
+                                            <div className="medical-radio-group flex items-center gap-2">
                                                 <input
                                                     type="radio"
                                                     id="definitivamenteNo"
@@ -1311,9 +1311,9 @@ export default function CreateAphDigitalPage() {
                                                     checked={formData.recomendacion === "definitivamenteNo"}
                                                     onChange={(e) => updateFormData("recomendacion", e.target.value)}
                                                 />
-                                                <Label htmlFor="definitivamenteNo">Definitivamente No</Label>
+                                                <Label htmlFor="definitivamenteNo" className="font-normal">Definitivamente no</Label>
                                             </div>
-                                            <div className="medical-radio-group">
+                                            <div className="medical-radio-group flex items-center gap-2">
                                                 <input
                                                     type="radio"
                                                     id="probablementeNo"
@@ -1322,7 +1322,7 @@ export default function CreateAphDigitalPage() {
                                                     checked={formData.recomendacion === "probablementeNo"}
                                                     onChange={(e) => updateFormData("recomendacion", e.target.value)}
                                                 />
-                                                <Label htmlFor="probablementeNo">Probablemente No</Label>
+                                                <Label htmlFor="probablementeNo" className="font-normal">Probablemente no</Label>
                                             </div>
                                         </div>
                                     </div>
