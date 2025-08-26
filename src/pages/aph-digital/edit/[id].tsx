@@ -39,7 +39,13 @@ export default function EditAphDigitalPage() {
         nombrePaciente: "",
         horaLlegada: getCurrentTime(),
         medicamentosInsumos: [],
+        estadoPaciente: "",
+        diagnostico: "",
+        nombreConductor:"",
+        consentimientoFirma: ""
+
     })
+
 
     useEffect(() => {
         if (router.isReady && id) {
