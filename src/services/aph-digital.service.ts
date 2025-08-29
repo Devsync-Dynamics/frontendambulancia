@@ -203,6 +203,8 @@ export interface IAphDigital {
 
   idUsuarioCreador?: string;
   evidencia?: string;
+
+  nombreFuncionarioAmed?:string;
 }
 
 // DTO para crear AphDigital (sin id, createdAt, updatedAt, creadoPor)

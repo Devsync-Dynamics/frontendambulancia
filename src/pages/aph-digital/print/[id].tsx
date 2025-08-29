@@ -122,13 +122,13 @@ export default function PrintAphDigitalPage() {
             </div>
 
             {/* Nombre del paciente y conductor */}
-            <div className="grid grid-cols-2 gap-2 mb-2">
+            <div className="grid grid-cols-1 gap-2 mb-2">
               <div className="border border-black p-1">
                 <span className="font-bold">Nombre del paciente:</span> {formulario.nombrePaciente || ""}
               </div>
-              <div className="border border-black p-1">
-                <span className="font-bold">Conductor:</span> {formulario.nombreConductor || ""}
-              </div>
+             {/* <div className="border border-black p-1">
+                <span className="font-bold">Conductor:</span> {formulario.nombreConductor || ""} 
+              </div> */}
             </div>
 
             {/* Tipo de servicio */}
@@ -540,7 +540,7 @@ export default function PrintAphDigitalPage() {
                   )}
                 </div>
                 <div className="border-t border-black pt-2 mt-2 text-sm">
-                  <div>Responsable: {formulario?.nombreConductor || ""}</div>
+                  <div>Responsable: {formulario?.nombreFuncionarioAmed || ""}</div>
                   <div>Firma y sello</div>
                 </div>
               </div>
