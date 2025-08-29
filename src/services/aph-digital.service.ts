@@ -74,6 +74,7 @@ export interface IAphDigital {
   fecha: string; // Date como string para el frontend
   nombrePaciente: string;
   nombreConductor ?: string;
+  movil ?: string;
   // Campos adicionales del formulario
   horaLlegada?: string;
   estadoPaciente?: string;

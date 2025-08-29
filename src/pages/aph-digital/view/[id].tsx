@@ -163,9 +163,13 @@ export default function ViewAphDigitalPage() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-muted-foreground">Nombre del
-                                            Paciente</label>
+                                        <label className="text-sm font-medium text-muted-foreground">Conductor</label>
                                         <p className="text-lg font-semibold">{formData.nombreConductor}</p>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-muted-foreground">Móvil</label>
+                                        <p className="text-lg font-semibold">{formData.movil}</p>
                                     </div>
                                 </div>
                             </CardContent>

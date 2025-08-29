@@ -256,13 +256,24 @@ export default function EditAphDigitalPage() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="nombreConductor">Conductor. *</Label>
+                                        <Label htmlFor="nombreConductor">Conductor *</Label>
                                         <Input
                                             id="nombreConductor"
                                             value={formData.nombreConductor}
                                             onChange={(e) => updateFormData("nombreConductor", e.target.value)}
                                             className="medical-input-focus"
                                             placeholder="Ingrese el Nombre del Conductor"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="movil">Móvil *</Label>
+                                        <Input
+                                            id="movil"
+                                            value={formData.movil}
+                                            onChange={(e) => updateFormData("movil", e.target.value)}
+                                            className="medical-input-focus"
+                                            placeholder="Ingrese el número de la móvil"
                                             required
                                         />
                                     </div>
